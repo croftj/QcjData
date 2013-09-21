@@ -1,0 +1,273 @@
+/*!
+
+\page xmldef Form XML Definition
+
+The XML file is comprised of multiple sections. These sections define what
+fields are displayed on forms and tables, user configuration items for the
+application and various blocks for help and resources.
+
+The XML definition for the QcjData Library was developed with the KISS
+principle and therefore does not use such things as namespaces etc. This
+may be its undoing, but in the end it is reasonably simple to read and
+create.
+
+\section formdef QcjData Table and Form Definition
+
+The tag for this section is &lt;form&gt;. It has several attributes. Some
+of these are related to Forms and other tables, some common between the
+two.
+
+\li \c name <em>(common)</em> The name associated with the application
+element. This is defined for the application element with the property
+xml_definition using the Qt designer.
+
+\li \c table_name <em>(common)</em> The table or view name associated with
+this item.
+
+\li \c auto_commit <em>(form)</em> If set to "yes" or "on", transactions
+will be automatically committed.
+
+\li \c index <em>(form)</em> A comma separated list of field names making
+up the primary key for the table or view. Typically, this is a name of
+single field which is used as the primary key for the table. If it is not
+named, it is assumed to be an auto-incrementing integer name \a id for the
+MySql and Sqlite databases and a serial field named \a ident for the
+PostgreSQL database.
+
+\li \c sort_fields <em>(table)</em> Comma separated list of fields names to
+sort the list of records by. These can have the terms "ASC" and "DESC" with
+the name.
+
+\li \c rows <em>(table)</em> Number of rows the table will show initially
+(ignored).
+
+\subsection field_element Field Element
+
+Every form can have one or more field definitions. These are defined with
+the &lt;field&gt; tag. This tag has a number of attributes defining
+information for each field to display on the form or table.
+
+\li \c dataNname <em>(common)</em> Name of the field in the database table
+or view.
+
+\li \c label <em>(common)</em> Label to display for the field
+
+\li \c min_width <em>(common)</em> Minimum width in characters
+(approximately) for the fields geometry. A value of "0" means use something
+reasonable, but maybe not what you want.
+
+\li \c max_width <em>(form)</em> Maximum characters to accept in the field
+element. A value of "0" means use something reasonable, but maybe not what
+you want.
+
+\li \c row <em>(form)</em> Row of the form to place the field and its label
+
+\li \c col <em>(form)</em> Column of the form to place the field and it's
+label.
+
+\li \c rowspan <em>(form)</em> The number of rows the field and it's label
+should occupy A value of "0" is the same as "1".
+
+\li \c colspan <em>(form)</em> The number of columns the field and it's
+label should occupy. A value of "0" is the same as "1".
+
+\li \c read_only <em>(form)</em> Either a "1" or "0". if "1", the field
+should not accept focus. In other words, it will be read only.
+
+\li \c options <em>(form)</em> Several field type can accept options such
+as plain text.
+
+\li \c type <em>(form)</em> Field type. There are a number of different
+types of fields.
+
+\li \c min <em>(form)</em> Numeric fields can have a minimum value imposed.
+
+\li \c max <em>(form)</em> Numeric values can have a maximum value imposed.
+
+\li \c init <em>(form)</em> Initialization string. Used with strsel types
+to initialize their contents.
+
+\li \c mask A character mask to limit what sort of text can be entered in a
+field.
+
+\li \c format <em>(table)</em> The actual sql to use to retrieve the
+contents of the field. For example, format="to_char(order_date, 'DD Mon
+YYYY')" will format the field and use the contents of dataName as the
+reference name.
+
+\subsection delete_element Delete Confirmation
+
+A form definition can have a section with the tag
+&lt;delete_confirmation&gt;, to define a string to prompt the user before
+deleting a record. The string is generally placed in a CDATA section so the
+html tags can be used for simple text highlighting and such. Fields can be
+referenced and placed in the string using a format of :field:<em>[field
+name]</em>:.
+
+\subsection key_generator Primary Key Generator
+
+The &lt;key_generator&gt; section can be used to define an sql statement to
+generate the primary key for the table. If present this sql statement will
+be executed each time a new record is inserted to create the value of the
+primary key for the record. This generated value must be unique for each
+record.
+
+In general, this section is not required when following the general rules
+for primary keys \sa \ref primarykeys.
+
+\subsection field_types QcjDataForm Field Types and Their Options
+
+There are several different field types which can be specified in a form
+definition for data entry.
+
+\li \c checkbox A QcjCheckBoxTF or QcjCheckBoxYN widget which will return
+either a 1/0 or Y/N value. The \a style attribute determines which widget
+will be used. A style of \a yesno creates a QcjCheckBoxYN widget which
+returns either a \a Y or \a N value. A style of \a truefalse creates a
+QcjCheckBoxTF widget which returns either a \a 1 or \a 0 value. In either
+case a checked box returns the affirmative result.
+
+\li \c date A QcjDateEntry widget which presents a date entry widget.
+
+\li \c time A QcjTimeEntry widget which presents a time entry widget.
+
+\li \c double A QDoubleSpinBox that only allows floating point values to be
+entered. Is also allows the attributes of \a decimals to set the number of
+decimal places to display, \a min and \a max to set the upper and lower
+limits of the entry as well as \a suffix which can be an arbitrary string
+displayed after the value on the form.
+
+\li \c integer A QSpinBox allowing the user to select a number between the
+values of the attributes \a min, \a max to set the upper and lower limits
+of the entry as well as the attribute \a suffix which can be an arbitrary
+string displayed after the value on the form.
+
+\li \c lineentry A QLineEdit widget for entering a single line of text.
+This entry type can have an \a mask attribute. The mask is a text string
+specially encoded to limit the actual characters which can be entered into
+the field. See <a
+href="http://doc.trolltech.com/4.2/qlineedit.html#inputMask-prop">http://do
+c.trolltech.com/4.2/qlineedit.html#inputMask-prop</a> on the Trolltech
+documentation server for details.
+
+\li \c money A QcjMoneyEdit widget which properly formats money. The
+currency symbol can be set to the string defined by configuration item in
+the application settings named \a Currency. It also puts in and remove the
+separator character (defined for the Locale) to help see just how much
+money is being spoken of.
+
+\li \c photo A QcjPhotoEntry widget which assumes that the contents of the
+field is a binary image. Double clicking the photo will present a special
+file presentation dialog to select a photo to enter. This is not guaranteed
+to work with a database types. It assumes the database can handle very
+large binary fields. Currently PostgreSQL handles this with a field type of
+bytea.
+
+\li \c sqlmodel A QcjSqlModel widget which is a specialized QComboBox. It
+assumes that the associated database field for the entry is a numeric
+value. On setting up the form, a model must be set for the string select
+using the setModel() function of the underlying QComboBox widget. Each
+entry of the QcjSqlModel are assumed to be in the format of <em>"[value] -
+[string]"</em>. The assumption is that the number is an index (primary key)
+into some table and the text is what the user can recognize such as a name.
+In any case, the value of the field will be passed and returned from the
+item.
+
+\li \c strsel A QcjStringSelect widget which is a specialized QComboBox
+which can get the values to select from different ways which are:
+
+- <em>string:[abc,def,ghi,...]</em> A simple comma separated selection of
+strings.
+
+- <em>config:[configuration name]</em> Uses the comma separated list of
+names in an application configuration setting.
+
+- <em>sqlquery:[select statement]</em> Provides the choices through a
+single value returned from a table or view of the database using the
+provided select statement.
+
+\li \c textedit A QTextEdit widget similar to \a lineedit except that it
+will treat the field as a block of text. This entry type can have an 
+\a options attribute. This attribute can be one of the following
+
+- \a plaintext The text should be rendered unformatted.
+
+- \a richtext The text should be treated and rendered as if it were html
+
+- \a autotext The contents of the text will be looked at and rendered
+accordingly
+
+- \a logtext Not sure.
+
+\li \c timestamp A QcjTimestampEntry widget which presents a time and date
+entry widget.
+
+\li \c truefalse A QcjTrueFalseSelect widget which is similar to the entry
+type \a yesno except that it works with numeric values, a non zero value is
+considered Yes, a zero value as No.
+
+\li \c yesno A QcjYesNoSelect widget which offers the user the choice of
+Yes or No, This field returns a single character of 'Y' for the word Yes or
+'N'. When presenting the field, if the field contains the character of 'Y'
+or 'y', Yes will be selected, otherwise, No will be selected.
+
+\section configdef Configuration Definitions
+
+Application configuration dialogs can be generated using the
+&lt;configuration&gt; tag. Multiple configuration sections may be defined
+to allow grouping them. The values defined in these sections kept in a
+QSettings object for the application. The \a configuration tag has the
+following attributes:
+
+\li \c name The name to reference the section in your code by.
+
+\li \c title The title the application should use in menus etc.
+
+\subsection config_entries Configuration Entries
+
+A configuration entry is specified by using the &lt;entry&gt; tag. It can
+have the following attributes:
+
+\li \c name The name of the parameter to pass to the QSettings object when
+accessing this value.
+
+\li \c label The label display for the user to see on the dialog.
+
+\li \c default The default value to use if the setting has not been set
+previously.
+
+\li \c type The type of entry to present the user. The following types are
+available:
+
+- \a lineedit Simple line edit
+
+- \a password A line edit which hides the typed in contents.
+
+- \a file Provides a lineedit with a browse button. Pressing the button
+presents an open File dialog.
+
+- \a directory Like \a file except the dialog only allows directories to be
+selected.
+
+- \a double A DoubleEntry widget providing a QDoubleSpinBox.
+
+- \a integer An IntegerEntry widget providing a QSpinBox.
+
+- \a yesno A YesNoEntry widget allowing the selection of Yes or No.
+
+Each entry can have help information associated with it using a
+&lt;help&gt; tag which typically contains a CDATA section so that html can
+be used. These help sections will be combined and placed in a help panel on
+the configuration dialog box.
+
+\sa QcjDataConfigure
+
+\section help_resource Help & Resource Definitions
+
+Two other elements are available as well, Help and Resource blocks. These
+are created using &lt;help&gt; and &lt;resource&gt; tags respectively. The
+blocks should be named using the attribute \a name. This is how they are
+referenced. The contents should be a CDATA sections. \sa
+QcjDataXML::getResource(QString) QcjDataXML::getHelpBlock(QString)
+
+*/

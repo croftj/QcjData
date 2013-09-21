@@ -1,0 +1,80 @@
+<ui version="4.0" >
+ <comment>
+*********************************************************************************
+**
+**   $Id$
+**   Copyright (c) 2007 Joe Croft joe@croftj.net
+**   
+**   This file is part of QcjData Class Libraries.
+**
+**   QcjData Class Libraries is free software; you can redistribute it and/or modify
+**   it under the terms of the GNU General Public License as published by
+**   the Free Software Foundation; either version 2 of the License, or
+**   (at your option) any later version.
+**
+**   QcjData Class Libraries is distributed in the hope that it will be useful,
+**   but WITHOUT ANY WARRANTY; without even the implied warranty of
+**   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**   GNU General Public License for more details.
+**
+**   You should have received a copy of the GNU General Public License
+**   along with QcjData Class Libraries; if not, write to the Free Software
+**   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+**
+*********************************************************************************
+</comment>
+ <class>QcjYesNoEntry</class>
+ <widget class="QWidget" name="QcjYesNoEntry" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>114</width>
+    <height>40</height>
+   </rect>
+  </property>
+  <property name="sizePolicy" >
+   <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize" >
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle" >
+   <string>YesNo</string>
+  </property>
+  <layout class="QGridLayout" >
+   <item row="0" column="0" >
+    <widget class="QComboBox" name="QcjYesNoSelect" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <item>
+      <property name="text" >
+       <string>Yes</string>
+      </property>
+     </item>
+     <item>
+      <property name="text" >
+       <string>No</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <includes>
+  <include location="local" >qstring.h</include>
+ </includes>
+ <resources/>
+ <connections/>
+</ui>
