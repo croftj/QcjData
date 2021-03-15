@@ -66,8 +66,8 @@
 QcjHttpService::QcjHttpService(int socketDescripter, QObject *parent, int max_req, QStringList *extraMethods, long ttl) : 
    QThread(parent)
 {
-   printf("QcjHttpService::QcjHttpService(%s): Enter, socknum = %d\n", qPrintable(QString::number(currentThreadId())), socknum);
-   fflush(stdout);
+//   printf("QcjHttpService::QcjHttpService(%s): Enter, socknum = %d\n", qPrintable(QString::number(currentThreadId())), socknum);
+//   fflush(stdout);
    if ( socketDescripter >= 0 ) 
    {
       socknum = socketDescripter;
@@ -86,19 +86,25 @@ QcjHttpService::QcjHttpService(int socketDescripter, QObject *parent, int max_re
 
       if ((sock = new QTcpSocket()) == NULL)
       {
-         printf("QcjHttpService::QcjHttpService(%s): Error creating socket\n", qPrintable(QString::number(currentThreadId())));
-         fflush(stdout);
+//         printf("QcjHttpService::QcjHttpService(%s): Error creating socket\n", qPrintable(QString::number(currentThreadId())));
+//         fflush(stdout);
          return;
       }
-      printf("QcjHttpService::QcjHttpService(%s): setting descripter\n", qPrintable(QString::number(currentThreadId())));
-      fflush(stdout);
+//      printf("QcjHttpService::QcjHttpService(%s): setting descripter\n", qPrintable(QString::number(currentThreadId())));
+//      fflush(stdout);
       if (! sock->setSocketDescriptor(socknum)) {
-         printf("QcjHttpService::QcjHttpService(%s): Exit in error\n", qPrintable(QString::number(currentThreadId())));
-         fflush(stdout);
+//         printf("QcjHttpService::QcjHttpService(%s): Exit in error\n", qPrintable(QString::number(currentThreadId())));
+//         fflush(stdout);
          return;
       }
-      printf("QcjHttpService::QcjHttpService(%s): Connecting signals and handles\n", qPrintable(QString::number(currentThreadId())));
-      fflush(stdout);
+//      printf("QcjHttpService::QcjHttpService(%s): Connecting signals and handles\n", qPrintable(QString::number(currentThreadId())));
+//      fflush(stdout);
+
+      /********************************************************/
+      /* Add the socket to the list of open sockets so they   */
+      /* can be easily closed later if this object is deleted */
+      /********************************************************/
+      m_openSocketList.append(sock);
       connect(sock, SIGNAL(readyRead()),                          this, SLOT(haveData()), Qt::QueuedConnection);
       connect(sock, SIGNAL(disconnected()),                       this, SLOT(haveDisconnect()), Qt::QueuedConnection);
       connect(sock, SIGNAL(error(QAbstractSocket::SocketError)),  this, SLOT(haveError(QAbstractSocket::SocketError)));
@@ -109,8 +115,8 @@ QcjHttpService::QcjHttpService(int socketDescripter, QObject *parent, int max_re
       inBody = false;
       request = 0;
    }
-   printf("QcjHttpService::QcjHttpService(%s): exit\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::QcjHttpService(%s): exit\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
 }
 
 /*!
@@ -129,8 +135,8 @@ void QcjHttpService::run()
    QString version;
    bool err = false;
 
-   printf("QcjHttpService::run(%s): Enter, socknum = %d\n", qPrintable(QString::number(currentThreadId())), socknum);
-   fflush(stdout);
+//   printf("QcjHttpService::run(%s): Enter, socknum = %d\n", qPrintable(QString::number(currentThreadId())), socknum);
+//   fflush(stdout);
 
    ttlTimer = new QTimer;
    connect(ttlTimer, SIGNAL(timeout()), this, SLOT(haveTimeOut()));
@@ -147,35 +153,35 @@ void QcjHttpService::run()
    {
       if ( exitFlag ) 
       {
-         printf("QcjHttpService::run(%s): exit flag set, exiting!\n", qPrintable(QString::number(currentThreadId())));
-         fflush(stdout);
+//         printf("QcjHttpService::run(%s): exit flag set, exiting!\n", qPrintable(QString::number(currentThreadId())));
+//         fflush(stdout);
          clearLocks();
-         printf("QcjHttpService::run(%s): Calling return\n", qPrintable(QString::number(currentThreadId())));
-         fflush(stdout);
+//         printf("QcjHttpService::run(%s): Calling return\n", qPrintable(QString::number(currentThreadId())));
+//         fflush(stdout);
          return;
       }
 
       if ( inArray.size() == 0 )
       {
-         printf("QcjHttpService::run(%s): waiting input, sock %d\n", qPrintable(QString::number(currentThreadId())), socknum);
-         fflush(stdout);
+//         printf("QcjHttpService::run(%s): waiting input, sock %d\n", qPrintable(QString::number(currentThreadId())), socknum);
+//         fflush(stdout);
          haveInput.wait(&bufLock);
       }
 
       if ( exitFlag ) 
       {
-         printf("QcjHttpService::run(%s): exit flag set, exiting!\n", qPrintable(QString::number(currentThreadId())));
-         fflush(stdout);
+//         printf("QcjHttpService::run(%s): exit flag set, exiting!\n", qPrintable(QString::number(currentThreadId())));
+//         fflush(stdout);
          clearLocks();
-         printf("QcjHttpService::run(%s): Calling return\n", qPrintable(QString::number(currentThreadId())));
-         fflush(stdout);
+//         printf("QcjHttpService::run(%s): Calling return\n", qPrintable(QString::number(currentThreadId())));
+//         fflush(stdout);
          return;
       }
 
       if ( ! inBody ) 
       {
-         printf("QcjHttpService::run(%s): Not in body, have %d bytes available\n", qPrintable(QString::number(currentThreadId())), inArray.size());
-         fflush(stdout);
+//         printf("QcjHttpService::run(%s): Not in body, have %d bytes available\n", qPrintable(QString::number(currentThreadId())), inArray.size());
+//         fflush(stdout);
          while ( inArray.size() > 0 )
          {
             char ch;
@@ -185,16 +191,16 @@ void QcjHttpService::run()
             lineBuffer += ch;
             if ( ch == '\0' ) 
             {
-               printf("QcjHttpService::run(%s): have null byte\n", qPrintable(QString::number(currentThreadId())));
-               fflush(stdout);
+//               printf("QcjHttpService::run(%s): have null byte\n", qPrintable(QString::number(currentThreadId())));
+//               fflush(stdout);
                bufLock.lock();
                continue;
             }
 
             if ( ch == '\n' )
             {
-               printf("QcjHttpService::run(%s): Have line: |%s|\n", qPrintable(QString::number(currentThreadId())), qPrintable(lineBuffer));
-               fflush(stdout);
+//               printf("QcjHttpService::run(%s): Have line: |%s|\n", qPrintable(QString::number(currentThreadId())), qPrintable(lineBuffer));
+//               fflush(stdout);
                errTimer->start(500);
                QString in;
                in.append(lineBuffer);
@@ -203,8 +209,8 @@ void QcjHttpService::run()
                in.remove('\n');
                if ( request == 0 ) 
                {
-                  printf("QcjHttpService::run(%s): Processing request\n", qPrintable(QString::number(currentThreadId())));
-                  fflush(stdout);
+//                  printf("QcjHttpService::run(%s): Processing request\n", qPrintable(QString::number(currentThreadId())));
+//                  fflush(stdout);
                   request = new QMap<QString, QVariant>;
 
                   method.clear();
@@ -212,8 +218,8 @@ void QcjHttpService::run()
                   version.clear();
                   QStringList sl = in.split(" ");
 
-                  printf("QcjHttpService::run(%s): Have %d request parts\n", qPrintable(QString::number(currentThreadId())), sl.size());
-                  fflush(stdout);
+//                  printf("QcjHttpService::run(%s): Have %d request parts\n", qPrintable(QString::number(currentThreadId())), sl.size());
+//                  fflush(stdout);
 
                   if ( sl.size() > 0 ) 
                      method = sl[0];
@@ -224,20 +230,20 @@ void QcjHttpService::run()
                   else 
                      err = true;
 
-                  printf("QcjHttpService::run(%s): method = |%s|\n", qPrintable(QString::number(currentThreadId())), qPrintable(method));
-                  fflush(stdout);
+//                  printf("QcjHttpService::run(%s): method = |%s|\n", qPrintable(QString::number(currentThreadId())), qPrintable(method));
+//                  fflush(stdout);
                   if ( err ) 
                   {
-                     printf("QcjHttpService::run(%s): Returning error and exiting\n", qPrintable(QString::number(currentThreadId())));
-                     fflush(stdout);
+//                     printf("QcjHttpService::run(%s): Returning error and exiting\n", qPrintable(QString::number(currentThreadId())));
+//                     fflush(stdout);
                      errorResponse(QcjHttpService::BadRequest, "Malformed Request");
                      delete request;
                      request = 0;
                   }
                   else if ( methods.contains(method) )
                   {
-                     printf("QcjHttpService::run(%s): Have valid method\n", qPrintable(QString::number(currentThreadId())));
-                     fflush(stdout);
+//                     printf("QcjHttpService::run(%s): Have valid method\n", qPrintable(QString::number(currentThreadId())));
+//                     fflush(stdout);
                      QString args("");
                      QString resource("");
                      QStringList reslist = path.split("?");
@@ -267,8 +273,8 @@ void QcjHttpService::run()
                   QRegExp re("(.+): (.*)");
                   re.setMinimal(true);
 
-                  printf("QcjHttpService::run(%s): Testing for tag\n", qPrintable(QString::number(currentThreadId())));
-                  fflush(stdout);
+//                  printf("QcjHttpService::run(%s): Testing for tag\n", qPrintable(QString::number(currentThreadId())));
+//                  fflush(stdout);
                   QStringList sl = in.split(": ");
                   if ( sl.size() == 1 ) 
                   {
@@ -278,8 +284,8 @@ void QcjHttpService::run()
                   {
                      QString tag = sl[0];
                      QString val = sl[1];
-                     printf("QcjHttpService::run(%s): tag = |%s|, val = |%s|\n", qPrintable(QString::number(currentThreadId())), qPrintable(tag), qPrintable(val));
-                     fflush(stdout);
+//                     printf("QcjHttpService::run(%s): tag = |%s|, val = |%s|\n", qPrintable(QString::number(currentThreadId())), qPrintable(tag), qPrintable(val));
+//                     fflush(stdout);
                      bool isint;
                      long x = val.toLong(&isint);
                      if ( isint ) 
@@ -291,20 +297,20 @@ void QcjHttpService::run()
                else 
                {
                   expectingBytes = request->value("Content-Length").toLongLong();
-                  printf("QcjHttpService::run(%s): content length = %ld\n", qPrintable(QString::number(currentThreadId())), (long)expectingBytes);
-                  fflush(stdout);
+//                  printf("QcjHttpService::run(%s): content length = %ld\n", qPrintable(QString::number(currentThreadId())), (long)expectingBytes);
+//                  fflush(stdout);
                   if ( expectingBytes == 0 ) 
                   {
-                     printf("QcjHttpService::run(%s): Not getting any data\n", qPrintable(QString::number(currentThreadId())));
-                     fflush(stdout);
+//                     printf("QcjHttpService::run(%s): Not getting any data\n", qPrintable(QString::number(currentThreadId())));
+//                     fflush(stdout);
                      QMap<QString, QVariant> response;
                      errTimer->stop();
-                     printf("QcjHttpService::run(%s): Calling processRequest()\n", qPrintable(QString::number(currentThreadId())));
-                     fflush(stdout);
+//                     printf("QcjHttpService::run(%s): Calling processRequest()\n", qPrintable(QString::number(currentThreadId())));
+//                     fflush(stdout);
                      processRequest(request, &response);
                      processResponse(response);
-                     printf("QcjHttpService::run(%s): Clearing bufs etc.()\n", qPrintable(QString::number(currentThreadId())));
-                     fflush(stdout);
+//                     printf("QcjHttpService::run(%s): Clearing bufs etc.()\n", qPrintable(QString::number(currentThreadId())));
+//                     fflush(stdout);
                      delete request;
                      request = 0;
                   }
@@ -318,11 +324,11 @@ void QcjHttpService::run()
             bufLock.lock();
          }
       }
-      printf("QcjHttpService::run(%s): waiting for more data to come in\n", qPrintable(QString::number(currentThreadId())));
-      fflush(stdout);
+//      printf("QcjHttpService::run(%s): waiting for more data to come in\n", qPrintable(QString::number(currentThreadId())));
+//      fflush(stdout);
    }
-   printf("QcjHttpService::run(%s): Exit\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::run(%s): Exit\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
 }
 
 /*!
@@ -334,8 +340,8 @@ void QcjHttpService::run()
 */ 
 void QcjHttpService::haveData()
 {
-   printf("QcjHttpService::haveData(%s): Enter bytes avail = %ld\n", qPrintable(QString::number(currentThreadId())), (long)sock->bytesAvailable());
-   fflush(stdout);
+//   printf("QcjHttpService::haveData(%s): Enter bytes avail = %ld\n", qPrintable(QString::number(currentThreadId())), (long)sock->bytesAvailable());
+//   fflush(stdout);
    while (sock->bytesAvailable() > 0) 
    {
       char buf[1024];
@@ -343,21 +349,21 @@ void QcjHttpService::haveData()
       if ( (bytes = sock->read(buf, sizeof(buf))) > 0 )
       {
          bufLock.lock();
-         printf("QcjHttpService::haveData(%s): appending %d bytes () to inArray\n", qPrintable(QString::number(currentThreadId())), bytes);
-         fflush(stdout);
+//         printf("QcjHttpService::haveData(%s): appending %d bytes () to inArray\n", qPrintable(QString::number(currentThreadId())), bytes);
+//         fflush(stdout);
          inArray.append(QByteArray(buf, bytes));
-         printf("QcjHttpService::haveData(%s): inArray has %d bytes available\n", qPrintable(QString::number(currentThreadId())), inArray.size());
-         fflush(stdout);
+//         printf("QcjHttpService::haveData(%s): inArray has %d bytes available\n", qPrintable(QString::number(currentThreadId())), inArray.size());
+//         fflush(stdout);
          bufLock.unlock();
       }
       else if ( bytes < 0 )
          return;
    }
-   printf("QcjHttpService::haveData(%s): waking thread\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::haveData(%s): waking thread\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
    haveInput.wakeAll();
-   printf("QcjHttpService::haveData(%s): Exit\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::haveData(%s): Exit\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
 }
 
 
@@ -371,20 +377,20 @@ void QcjHttpService::haveData()
 */ 
 void QcjHttpService::processResponse(QMap<QString, QVariant> rsp)
 {
-   printf("QcjHttpService::processResponse(%s): Enter\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::processResponse(%s): Enter\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
    sendResponse(&rsp);
 
-   printf("QcjHttpService::processResponse(%s): maxRequests = %d\n", qPrintable(QString::number(currentThreadId())), maxRequests);
-   fflush(stdout);
+//   printf("QcjHttpService::processResponse(%s): maxRequests = %d\n", qPrintable(QString::number(currentThreadId())), maxRequests);
+//   fflush(stdout);
    if ( --maxRequests == 0) 
    {
-      printf("QcjHttpService::processResponse(%s): terminating socket connection\n", qPrintable(QString::number(currentThreadId())));
-      fflush(stdout);
+//      printf("QcjHttpService::processResponse(%s): terminating socket connection\n", qPrintable(QString::number(currentThreadId())));
+//      fflush(stdout);
       emit closeSocket(sock);
    }
-   printf("QcjHttpService::processResponse(%s): Exit\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::processResponse(%s): Exit\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
 }
 
 /*!
@@ -398,67 +404,67 @@ void QcjHttpService::sendResponse(QMap<QString, QVariant> *rsp)
 {
    QByteArray body;
 
-   printf("QcjHttpService::sendResponse(%s): Enter\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::sendResponse(%s): Enter\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
 
    QMapIterator<QString, QVariant> i(*rsp);
    while (i.hasNext()) 
    {
       i.next();
-      if ( i.key() == "Request-Body" ) 
-         printf("DbPhotoService::sendResponse(%s): rsp: |%s| %d length\n", qPrintable(QString::number(currentThreadId())), qPrintable(i.key()), i.value().toByteArray().size());
-      else
-         printf("DbPhotoService::sendResponse(%s): rsp: |%s| = |%s|\n", qPrintable(QString::number(currentThreadId())), qPrintable(i.key()), qPrintable(i.value().toString()));
-      fflush(stdout);
+//      if ( i.key() == "Request-Body" ) 
+//         printf("DbPhotoService::sendResponse(%s): rsp: |%s| %d length\n", qPrintable(QString::number(currentThreadId())), qPrintable(i.key()), i.value().toByteArray().size());
+//      else
+//         printf("DbPhotoService::sendResponse(%s): rsp: |%s| = |%s|\n", qPrintable(QString::number(currentThreadId())), qPrintable(i.key()), qPrintable(i.value().toString()));
+//      fflush(stdout);
    }
 
    if ( rsp->value("Status").toInt() != QcjHttpService::OK ) 
    {
-      printf("QcjHttpService::sendResponse(%s): Sending error response\n", qPrintable(QString::number(currentThreadId())));
-      fflush(stdout);
+//      printf("QcjHttpService::sendResponse(%s): Sending error response\n", qPrintable(QString::number(currentThreadId())));
+//      fflush(stdout);
       emit send(sock, qPrintable("HTTP/1.1 " + rsp->value("Status").toString() + " " + rsp->value("StatusString").toString() + "\r\n"));
-      printf("QcjHttpService::sendResponse(%s): returning\n", qPrintable(QString::number(currentThreadId())));
-      fflush(stdout);
+//      printf("QcjHttpService::sendResponse(%s): returning\n", qPrintable(QString::number(currentThreadId())));
+//      fflush(stdout);
       return;
    }
 
-   printf("QcjHttpService::sendResponse(%s): Sending regular response\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::sendResponse(%s): Sending regular response\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
    emit send(sock, qPrintable("HTTP/1.1 " + rsp->value("Status").toString() + " " + rsp->value("StatusString").toString() + "\r\n"));
 
-   printf("QcjHttpService::sendResponse(%s): Iterating headers\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::sendResponse(%s): Iterating headers\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
    QMapIterator<QString, QVariant> it(*rsp);
    while (it.hasNext()) 
    {
       it.next();
-      printf("QcjHttpService::sendResponse(%s): fetching key\n", qPrintable(QString::number(currentThreadId())));
-      fflush(stdout);
+//      printf("QcjHttpService::sendResponse(%s): fetching key\n", qPrintable(QString::number(currentThreadId())));
+//      fflush(stdout);
       QString tag = it.key();
       if ( tag == "Request-Body" ) 
       {
-         printf("QcjHttpService::sendResponse(%s): Setting body\n", qPrintable(QString::number(currentThreadId())));
-         fflush(stdout);
+//         printf("QcjHttpService::sendResponse(%s): Setting body\n", qPrintable(QString::number(currentThreadId())));
+//         fflush(stdout);
          body = it.value().toByteArray();
       }
       else 
       {
-         printf("QcjHttpService::sendResponse(%s): Sending tag\n", qPrintable(QString::number(currentThreadId())));
-         fflush(stdout);
+//         printf("QcjHttpService::sendResponse(%s): Sending tag\n", qPrintable(QString::number(currentThreadId())));
+//         fflush(stdout);
          QString val = it.value().toString();
          emit send(sock, qPrintable(tag + ": " + val + "\r\n"));
       }
    }
-   printf("QcjHttpService::sendResponse(%s): Sending body\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::sendResponse(%s): Sending body\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
 
    if ( body.size() > 0 ) 
    {
       emit send(sock, "\r\n");
       emit send(sock, body);
    }
-   printf("QcjHttpService::sendResponse(%s): Exit\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::sendResponse(%s): Exit\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
 }
 
 /*!
@@ -479,12 +485,12 @@ void QcjHttpService::haveTimeout()
 */ 
 void QcjHttpService::haveError(QAbstractSocket::SocketError)
 {
-   printf("QcjHttpService::haveError(%s): Enter, flagging thread %s to exit\n", qPrintable(QString::number(currentThreadId())), qPrintable(QString::number(myThreadId)));
-   fflush(stdout);
+//   printf("QcjHttpService::haveError(%s): Enter, flagging thread %s to exit\n", qPrintable(QString::number(currentThreadId())), qPrintable(QString::number(myThreadId)));
+//   fflush(stdout);
    exitFlag = true;
    haveInput.wakeAll();
-   printf("QcjHttpService::haveError(%s): Exit\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::haveError(%s): Exit\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
 }
 
 
@@ -494,12 +500,14 @@ void QcjHttpService::haveError(QAbstractSocket::SocketError)
 */ 
 void QcjHttpService::haveDisconnect()
 {
-   printf("QcjHttpService::haveDisconnect(%s): Enter, flagging thread %s to exit\n", qPrintable(QString::number(currentThreadId())), qPrintable(QString::number(myThreadId)));
-   fflush(stdout);
+//   printf("QcjHttpService::haveDisconnect(%s): Enter, flagging thread %s to exit\n", qPrintable(QString::number(currentThreadId())), qPrintable(QString::number(myThreadId)));
+//   fflush(stdout);
    exitFlag = true;
+   m_openSocketList.removeAll(sock);
+
    haveInput.wakeAll();
-   printf("QcjHttpService::haveDisconnect(%s): Exit\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::haveDisconnect(%s): Exit\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
 }
 
 /*!
@@ -544,11 +552,11 @@ QMap<QString, QString> QcjHttpService::parseArguments(QString args)
 */ 
 void QcjHttpService::haveTimeOut()
 {
-   printf("QcjHttpService::haveTimeOut(%s): Enter\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::haveTimeOut(%s): Enter\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
    emit closeSocket(sock);
-   printf("QcjHttpService::haveTimeOut(%s): Exit\n", qPrintable(QString::number(currentThreadId())));
-   fflush(stdout);
+//   printf("QcjHttpService::haveTimeOut(%s): Exit\n", qPrintable(QString::number(currentThreadId())));
+//   fflush(stdout);
 }
 
 

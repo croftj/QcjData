@@ -43,7 +43,17 @@ public:
    QcjHttpService(int socketDescripter, QObject *parent = 0, int max_req = 10, 
                   QStringList *extraMethods = 0, long ttl = 200);
 
-   
+   ~QcjHttpService()
+   {
+      foreach(QTcpSocket *sock, m_openSocketList)
+      {
+         qDebug() << __FUNCTION__ << "Closing socket " << (unsigned long int)sock;
+         emit closeSocket(sock);
+      }
+   }
+
+   typedef QList<QTcpSocket*> NetSocketList_t;
+
    /*!
           \enum ErrorCodes
           
@@ -169,6 +179,7 @@ protected:
    QMap<QString, QString> parseArguments(QString args);
    void run();
 
+   NetSocketList_t                  m_openSocketList;
    QMap<QString, QVariant>          *request;
    QStringList                      methods;
    QByteArray                       inArray;
