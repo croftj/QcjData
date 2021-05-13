@@ -22,6 +22,7 @@
 *********************************************************************************/
 
 # include "QcjHttpService.h"
+# include <QUrl>
 
 /*!
        \class QcjHttpService
@@ -539,7 +540,7 @@ QMap<QString, QString> QcjHttpService::parseArguments(QString args)
    {
       QStringList sl1 = sl[x].split("=");
       if ( sl1.size() == 2 ) 
-         rv.insert(sl1[0], sl1[1]);
+         rv.insert(sl1[0], QUrl::fromPercentEncoding(sl1[1].toUtf8()));
    }
    return(rv);
 }

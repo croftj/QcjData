@@ -26,6 +26,8 @@
 #include "QcjDataHelpers.h"
 #include "QcjDataStatics.h"
 
+#define NO_PHOTO_SELECT
+
 #ifndef NO_PHOTO_SELECT
 #include "QcjPhotoSelect.h"
 #endif

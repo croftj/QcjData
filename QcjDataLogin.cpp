@@ -33,6 +33,9 @@ extern QSqlDatabase db;
 extern QSqlDatabase *pDb;
 extern QSettings *pConfig;
 
+
+#define DEFAULT_DB_TYPE QPSQL
+
 QcjDataLogin::QcjDataLogin(QWidget *p) : QDialog(p)
 {
     ui.setupUi(this);
