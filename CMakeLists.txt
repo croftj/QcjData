@@ -17,10 +17,6 @@ find_package ( Qt5Xml REQUIRED )
 
 ADD_LIBRARY(QcjData STATIC
     QcjDataFrame.cpp
-    LogRegistery.cpp
-    Logger.cpp
-    LogLevelSelect.cpp
-    LogLevelWidget.cpp
     QcjDataConfigure.cpp
     QcjDataForm.cpp
     QcjDataHelpers.cpp
@@ -43,10 +39,6 @@ ADD_LIBRARY(QcjData STATIC
     Qcjtruefalse.cpp
     Qcjyesnoentry.cpp
     
-    ${CMAKE_BINARY_DIR}/moc_qcj_Logger.cpp
-    ${CMAKE_BINARY_DIR}/moc_qcj_LogLevelSelect.cpp
-    ${CMAKE_BINARY_DIR}/moc_qcj_LogLevelWidget.cpp
-    ${CMAKE_BINARY_DIR}/moc_qcj_LogRegistery.cpp
     ${CMAKE_BINARY_DIR}/moc_qcj_QcjAction.cpp
     ${CMAKE_BINARY_DIR}/moc_qcj_QcjDataConfigure.cpp
     ${CMAKE_BINARY_DIR}/moc_qcj_QcjDataDelegate.cpp
@@ -109,10 +101,6 @@ target_link_libraries(QcjData)
 #    message("QcjData, Include: ${INCPATH}")
 #endforeach()
 
-qt5_generate_moc(${CMAKE_CURRENT_SOURCE_DIR}/Logger.h                 ${CMAKE_BINARY_DIR}/moc_qcj_Logger.cpp)
-qt5_generate_moc(${CMAKE_CURRENT_SOURCE_DIR}/LogLevelSelect.h         ${CMAKE_BINARY_DIR}/moc_qcj_LogLevelSelect.cpp)
-qt5_generate_moc(${CMAKE_CURRENT_SOURCE_DIR}/LogLevelWidget.h         ${CMAKE_BINARY_DIR}/moc_qcj_LogLevelWidget.cpp)
-qt5_generate_moc(${CMAKE_CURRENT_SOURCE_DIR}/LogRegistery.h           ${CMAKE_BINARY_DIR}/moc_qcj_LogRegistery.cpp)
 qt5_generate_moc(${CMAKE_CURRENT_SOURCE_DIR}/QcjAction.h              ${CMAKE_BINARY_DIR}/moc_qcj_QcjAction.cpp)
 qt5_generate_moc(${CMAKE_CURRENT_SOURCE_DIR}/QcjDataConfigure.h       ${CMAKE_BINARY_DIR}/moc_qcj_QcjDataConfigure.cpp)
 qt5_generate_moc(${CMAKE_CURRENT_SOURCE_DIR}/QcjDataDelegate.h        ${CMAKE_BINARY_DIR}/moc_qcj_QcjDataDelegate.cpp)
