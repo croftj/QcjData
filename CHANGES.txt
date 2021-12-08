@@ -1,0 +1,122 @@
+10?? ??/??/2009  (beta) 
+                        Added MySql and Sqlite support.
+
+                        Fixed primary key generation for the various ways a
+                        new record cn be created and inserted into any of
+                        the three types of databases: postresql, mysql and
+                        sqlite.
+                        
+                        Removed Qt3 dependencies.
+
+                        Added time, time24 and datetype field types to the
+                        report generator.
+
+                        Modified to speed up initialization times of large
+                        tables.
+
+                        Cleaned up warnings.
+
+                        First wack at imposing cache size limits based on
+                        byte sizes and the quantity of photos.
+
+                        Added functionality to help with building search
+                        criteria from field contents.
+
+                        Modified to allow records to be insert with field
+                        presets and not index fields defined.
+
+                        Modified to better support multiple colume reports.
+
+                        Modified QcjDataSheet to report single and double
+                        mouse clicks.
+
+                        Added NO_PHOTO_SELECT define to not require
+                        PhotoSelect to build the forms.
+
+                        Modified the reports to use the full page when
+                        printing.
+
+                        Fixed to have defaults defined in the xml form
+                        definition be applied to new records.
+
+                        Modified to set the QcjYesNoSelect default to "N"
+                        if none given on form initialization.
+
+                        Fixed to make newly inserted record the current record.
+
+                        Modified to add functions getIndexMap,
+                        getIndexFilter and makeFilter.
+
+                        Made login dialog modal in the hope that it always goes on top.
+
+                        Modified to allow date fields to indicate month
+                        begin, month end, year begin, year end on forms and
+                        in reports.
+
+                        Modified to show a busy cursor when generating a
+                        report.
+
+                        Added ability to have a graphic on a report.
+
+                        Fixed tables to have a non automatic refresh mode.
+
+                        Added splitters to the QcjPhotoSelect dialog.
+
+                        Added emptyTable signal to QcjDataSqlTable which
+                        indicate that the table has no records on refresh.
+
+                        Added ability to include a banner to report
+                        sections.
+
+                        Added Resource definitions to the xml file. These
+                        definitions can be grouped.
+
+                        Modified search order and paths for the xml
+                        definition file. The new list in order is:
+
+                           ~/.<app_name>.xml
+                           ./<app_name>.xml
+                           ~/.xml/<app_name>.xml
+                           /opt/<app_name>/default_forms.xml
+                           <app_path>/<app_name>.xml
+                           <app_path>/../<app_name>.xml
+
+                        Added ability to refresh a form without geting an
+                        error message when probelms occur.
+
+                        Added validator and echo attributes to lineedit
+                        fields.
+
+                        Modified to allow the user to configure the
+                        currency symbol as well as use the Locale settings
+                        for formatting money fields.
+
+                        Added KeyValue form and designer plugin.
+
+                        Added time entry field type for forms.
+
+                        Modified to allow specifying a suffix for the
+                        integer and float spin boxes.
+
+                        Modified to expand the echo attribute to be
+                        includse "yes", "normal" and "no".
+
+
+1017 5/18/2007  (beta)  Moved to a new release numbering scheme. The new numbering
+                        scheme will now be simple build numbers. These are not
+                        guaranteed to be sequential, only ascending.
+
+                        Added checkbox field entry widget for Data Forms.
+
+                        Started documenting the classes for generating reports.
+
+                        Added ability to reverse the order a table is ordered
+                        by clicking on it's title a secend, third etc time.
+
+                        Fixed crash caused by missing the filter parameter in a
+                        file type configuration definition.
+
+0.99.1  4/29/2007       Fixed type in a couple of files.
+
+0.99    4/29/2007       Initial release to the public
+

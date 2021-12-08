@@ -1,0 +1,439 @@
+/*!
+
+\page app_xml Example Application XML File
+
+This is an example of an applications XML file. It shows how many of the
+elements are represented.
+
+\code
+<!--
+
+   This file is the default XML file provided this the SwRel Program. It Describes the layout
+   of the tables and forms used by the program. Every form and table has a section describing it. 
+
+   The program relies on certain fields being present in the forms and tables. The required fields will be specified in th e comments
+   for the form or table definition.
+-->
+
+<document>
+   <form name="srr_form" rows="11" cols="4" auto_commit="off" table_name="srr" index="ident">
+      <field dataName="release_type"   label="Release Type" row="0"  col="0"  colspan="0" rowspan="0" min_width="0"  max_width="0"  read_only="1" type="strsel" init="string:GA,Beta,Car Fix,Interim" default="GA"/>
+      <field dataName="clientspec"     label="Client Spec"  row="1"  col="0"  colspan="0" rowspan="0" min_width="0"  max_width="0"  read_only="1" type="strsel" init=""/>
+      <field dataName="date_in"        label="Date Created" row="2"  col="0"  colspan="0" rowspan="0" min_width="10" max_width="5"  read_only="1" type="date"/>
+      <field dataName="state"          label="State"        row="3"  col="0"  colspan="0" rowspan="0" min_width="0"  max_width="0"  read_only="1" type="strsel" init="string:Submitted,Built,Closed,New Revision,Pending" default="Pending"/>
+      <field dataName="branchspec"     label="Branch Spec"  row="4"  col="0"  colspan="0" rowspan="0" min_width="0"  max_width="0"  read_only="1" type="lineedit"/>
+      <field dataName="pn"             label="Part #"       row="5"  col="0"  colspan="0" rowspan="0" min_width="0"  max_width="0"  read_only="1" type="strsel" init="sqlquery:select pn from pn order by pn asc" />
+      <field dataName="submit_by"      label="Submitted by" row="6"  col="0"  colspan="0" rowspan="0" min_width="0"  max_width="0"  read_only="1" type="strsel" init=""/>
+      <field dataName="ident"          label="Srr #"        row="0"  col="1"  colspan="0" rowspan="0" min_width="0"  max_width="0"  read_only="1" type="lineedit"/>
+      <field dataName="version"        label="Version"      row="1"  col="1"  colspan="0" rowspan="0" min_width="0"  max_width="0"  read_only="0" type="lineedit"/>
+      <field dataName="revision"       label="Revision"     row="2"  col="1"  colspan="0" rowspan="0" min_width="0"  max_width="5"  read_only="0" type="lineedit"/>
+      <field dataName="brief"          label="Short Descr"  row="3"  col="1"  colspan="1" rowspan="0" min_width="0"  max_width="0"  read_only="0" type="lineedit"/>
+      <field dataName="descr"          label="Description"  row="4"  col="1"  colspan="0" rowspan="3" min_width="0"  max_width="0"  read_only="0" type="textedit"/>
+      <field dataName="exe_files"      label="Executibles"  row="7"  col="0"  colspan="0" rowspan="2" min_width="0"  max_width="0"  read_only="1" type="textedit"/>
+      <field dataName="media_files"    label="Media Files"  row="7"  col="1"  colspan="0" rowspan="2" min_width="0"  max_width="0"  read_only="1" type="textedit"/>
+      <delete_confirmation>
+              <![CDATA[ Delete SRR <b>:field:ident:</b> for part number <b>:field:pn:</b>. 
+              This cannot be undone. Are you sure?]]> 
+      </delete_confirmation>
+   </form>
+
+   <form name="srr_table" rows="15" table_name="srr" sort_fields="ident desc">
+      <field dataName="ident"          label="Srr #"        min_width="0" />
+      <field dataName="pn"             label="Part #"       min_width="0" />
+      <field dataName="date_in"        label="Date Created" min_width="0" />
+      <field dataName="state"          label="State"        min_width="0" />
+      <field dataName="release_type"   label="Release Type" min_width="0" />
+      <field dataName="submit_by"      label="Submitted by" min_width="0" />
+      <field dataName="version"        label="Version"      min_width="0" />
+      <field dataName="revision"       label="Revision"     min_width="0" />
+      <field dataName="clientspec"     label="Client Spec"  min_width="0" />
+      <field dataName="branchspec"     label="Branch Spec"  min_width="0" />
+      <field dataName="brief"          label="Short Descr"  min_width="0" />
+   </form>
+   <form name="pn_form" rows="11" cols="4" auto_commit="off" table_name="pn" index="ident">
+      <field dataName="ident"          label="ident"        row="0"  col="0"  colspan="0" rowspan="0" min_width="8"  max_width="0"  read_only="1" type="lineedit" />
+      <field dataName="pn"             label="Part #"       row="1"  col="0"  colspan="0" rowspan="0" min_width="8"  max_width="0"  read_only="0" type="lineedit" picture="40-000-000"/>
+      <field dataName="descr"          label="Decription"   row="2"  col="0"  colspan="0" rowspan="0" min_width="0"  max_width="0"  read_only="0" type="lineedit" />
+      <field dataName="subsystem"      label="SubSystem"    row="3"  col="0"  colspan="0" rowspan="0" min_width="7"  max_width="0"  read_only="0"  type="strsel" init="string:LTSC,SLT,ALIT,ORCL,NxTEST,ARTS,T9SX" />
+   </form>
+   <form name="pn_table" rows="11" table_name="pn" sort_fields="pn" >
+      <field dataName="ident"          label="ident"        min_width="0" />
+      <field dataName="pn"             label="Part #"       min_width="0" mask="99-999-990"/>
+      <field dataName="descr"          label="Decription"   min_width="0" />
+      <field dataName="subsystem"      label="SubSystem"    min_width="0" />
+   </form>
+   <form name="user_form" rows="11" cols="4" auto_commit="on" table_name="users" index="ident">
+      <field dataName="ident"          label="ident"           row="0"  col="0"  colspan="0" rowspan="0" min_width="8"  max_width="0"  read_only="1" type="lineedit" />
+      <field dataName="p4user"         label="Perforce User"   row="1"  col="0"  colspan="0" rowspan="0" min_width="8"  max_width="0"  read_only="0" type="lineedit" />
+      <field dataName="fullname"       label="Full Name"       row="2"  col="0"  colspan="0" rowspan="0" min_width="0"  max_width="0"  read_only="0" type="lineedit" />
+      <field dataName="admin"          label="Administrator"   row="3"  col="0"  colspan="0" rowspan="0" min_width="7"  max_width="0"  read_only="0"  type="yesno" />
+   </form>
+   <form name="user_table" rows="11" table_name="users" sort_fields="fullname" >
+      <field dataName="ident"          label="ident"     min_width="0" />
+      <field dataName="p4user"         label="P4 User"   min_width="0" />
+      <field dataName="fullname"       label="Full Name" min_width="0" />
+      <field dataName="admin"          label="Admin"     min_width="0" />
+   </form>
+   <configuration name="app" title="Release Tool Configuration">
+      <entry name="userinitials"          label="Initials"            type="lineedit" default="" >
+         <help>
+            <![CDATA[ 
+               <center>
+               <h2>Configurations</h2>
+               All of these values must be filled in for this application to perform properly.
+               <hr width="66%">
+               </center>
+               <p>
+               <b>Initials</b> are the initials of the user to use as a prefix to client spec names etc.
+            ]]> 
+         </help>
+      </entry>
+      <entry name="p4user"          label="P4 User"            type="lineedit" default="" >
+         <help>
+            <![CDATA[ 
+               <b>P4 User</b> is the user name to use when accessing Perforce 
+            ]]> 
+         </help>
+      </entry>
+      <entry name="releasepath"          label="Release Path"            type="directory" default="" >
+         <help>
+            <![CDATA[ 
+               <b>Release Path</b> is the path of the directory to place the files when dropping a release.
+            ]]> 
+         </help>
+      </entry>
+      <entry name="p4port"          label="P4 Port"            type="lineedit" default="perforce.server:1666">
+         <help>
+            <![CDATA[ 
+               <b>P4 Port</b> is the server name and 
+               port of the perforce server. It should be in the 
+               format of  <em>&lt;servername&gt;:&lt;port&gt;</em>
+            ]]> 
+         </help>
+      </entry>
+      <entry name="p4exe"           label="P4 Command"  type="file" >
+         <help>
+            <![CDATA[ 
+               <b>P4 Command</b> is the fully qualified path name of the p4 command line 
+               executible. Normally this is command is <em>p4</em> or <em>p4.exe</em> with a path name. 
+            ]]> 
+         </help>
+      </entry>
+      <entry name="mkisoexe"           label="Mkisofs command"  type="file" >
+         <help>
+            <![CDATA[ 
+               <b>Mkisofs Command</b> is the fully qualified path name of the mkisofs command line 
+               executible. Normally this is command is <em>mkisofs</em> or <em>mkisofs.exe</em> with a path name.
+               On Windows this program was included most likely included with the installation and you can leave
+               this entry blank.
+            ]]> 
+         </help>
+      </entry>
+      <entry name="DBHost"          label="SRR QcjDatabase Host"            type="lineedit" default="postgres.server" >
+         <help>
+            <![CDATA[ 
+               <b>SRR QcjDatabase Host</b> is the hostname of the SRR database server
+            ]]> 
+         </help>
+      </entry>
+      <entry name="DBPort"          label="SRR QcjDatabase Port"  type="lineedit" default="5432" >
+         <help>
+            <![CDATA[ 
+               <b>SRR QcjDatabase Port</b> is the port for accessing the SRR database server
+            ]]> 
+         </help>
+      </entry>
+      <entry name="DBName"          label="SRR QcjDatabase Name"  type="lineedit" default="cm" >
+         <help>
+            <![CDATA[ 
+               <b>SRR QcjDatabase Name</b> is the name of the SRR database 
+            ]]> 
+         </help>
+      </entry>
+      <entry name="DBUser"          label="SRR QcjDatabase User"  type="lineedit" default="cmuser" >
+         <help>
+            <![CDATA[ 
+               <b>SRR QcjDatabase User</b> is the username for accessing the SRR database 
+            ]]> 
+         </help>
+      </entry>
+   </configuration>
+   <help name="droprelease1">
+<![CDATA[
+<center>
+<h2>Dropping a Release - Initial Step</h2>
+<hr width="66%">
+</center>
+To start, you must choose to either create a new clientspec for the release or use an existing one. To make this descision, ask your self the following questions:
+<p>
+<ol>
+   <li>Is this a new SRR that has not been released yet?
+   <li>If it is an existing release, did you release it before? Do you want it in the same place on your machine as before?
+</ol>
+If you answered yes to 1, or no to either of the questions in 2, then select that you want to create a new clientspec. The program will attempt to give you a 
+good name, but it is up to you to make sure that it does not exist. A path to the directory to place the files is required as well.
+<p>
+Otherwise, if you answered yes to both othe the questions of 2, then select that you want to use an existing clientspec and choose the appropriate clientsspec from the list. 
+<p>
+In any case, you will end up with a master clientspec (to be used as a template for others), a user clientspec, and branchspec. By using the clientspec and the branchspec together,
+a release line can be dropped, or subsequent changes can be moved onto it from the original development line.
+]]>
+   </help>
+   <help name="droprelease2">
+<![CDATA[
+<center>
+<h2>Dropping a Release - The actual Drop</h2>
+<![CDATA[
+<hr width="66%">
+</center>
+Fill in the description to be used in the changelist of perforce for the release line. If this is a  subsequent release of an existing line. It will be good to give some meaning full explanation of what was changed.
+<p>
+Check the <em>Safe Resolve</em> checkbox if you want to perform a safe resolve, versus a merge. A safe resolve will only
+work if there were only changes in <em>thier</em> files or <em>yours</em> but not both. In either cases changes to binary files
+and conflicting changes will be skipped and the release will fail. 
+]]>
+   </help>
+   <help name="droprelease3">
+<![CDATA[
+<center>
+<h2>Dropping a Release - Verification of the Release Line</h2>
+<hr width="66%">
+</center>
+Check the files section of the form and browse the list to ensure all of the files you expect are present.
+<p>
+One Gotcha of this program is if you are dropping a subsequent release of an existing release line, and you are using a new clientspec, you will only
+get the files that are being changed. Not the entire line. This is still valid, but you will not be able to build the line of code until you manually sync in the
+remaining files manually either with the command line tool, p4v, p4v.exe or p4win.exe.
+<p>
+If there are any doubtsa or you know there is a problem, click on the <em>Revert Release</em> button.
+<p>
+If all is well, cliock on the <em>Submit Button</em>. Be sure you want to keep the release because once you submit it there is not turning back.
+]]>
+   </help>
+   <help name="droprelease_err">
+<![CDATA[
+<center>
+<h2>Dropping a Release - Error Occured</h2>
+<hr width="66%">
+</center>
+Some form of error occured when dropping the release. Your best bet at this point to to click the <em>Revert Release</em> button. 
+The clientspecs and branch specs will not be deleted.
+]]>
+   </help>
+   <help name="releasesubmitted">
+<![CDATA[
+<center>
+<h2>Release Submitted</h2>
+<hr width="66%">
+</center>
+The release has been submitted. You must now build it. Even if you built it for a test run, your
+releae must be built again because the Id: tags buried in the source code have changed. 
+<p>
+The following items are at your disposal in the future:
+<ol>
+   <li>CLIENT - This clientspec should be used to access the code where it was just placed on your machine.
+   <li>BRANCH - This branchspec should be used in the future for moving changes to and from the release line.
+   <li>CLIENTTPL - This clientspec may be used by yourself and other to create other clientspecs for access the release line.
+</ol>
+]]>
+   </help>
+   <help name="mediabuild">
+<![CDATA[
+<center>
+<h2>Build Release Media</h2>
+<hr width="66%">
+</center>
+Once a release has been dropped and properly built, the media for distributing product can be created and placed into perforce. This assumes that
+the files created by the build are accessible by this program.
+<p>
+Select the <em>Srr</em> of the release if it is not already selected, then enter the path where the files can be located. The path can be selected by
+one of two means. It can be manually entered by typing it in or browsing for it, or it can be taken from the clientspec which was used for retrieving the code from
+perforce for the build. 
+<p>
+Once the <em>Srr</em> and the <em>Path</em> have been selected, Clicking the <em>Build Media</em> will create the build. Once this completes, be sure to review
+the output from the operation and the file list to ensure that everything was build properly. 
+<p>
+Assuming the build went well, the <em>Submit Media</em> button can be clicked to place the files into Perforce and update the Srr.
+<p>
+If there were any problems with the build, the <em>Cancel</em> button can be clicked to revert the submission of the media files into Perforce.
+]]>
+   </help>
+   <help name="mediabuild1">
+<![CDATA[
+At this point, it apears that all went well with the building the media and adding it to perforce. ONLY YOU can 
+be the judge of this. 
+<p>
+Please review the results closely, if they look like the operations performed as expected, click the "Submit Media" button,
+otherwise, click the "Cancel" button.
+
+]]>
+   </help>
+
+   <resource name="media_submitted">
+<![CDATA[
+The media has been submitted into Perforce. The sky is blue, the breaze is sofe and warm and life is good!
+<p>
+]]>
+   </resource>
+   <resource name="media_reverted">
+<![CDATA[
+<p>
+The media files have been reverted.
+<p>
+]]>
+   </resource>
+
+   <resource name="release_dropped">
+<![CDATA[
+<p>
+The release was dropped without error. Please review the filelist below and verify
+all of the files you expected were actually dropped.
+<p>
+It would also be good to attempt a trial build before actually submitting the release.
+<p>
+If there are any problems found, the release can be reverted without a problem.
+<p>
+If you choose to Submit the Release, it cannot be Reverted Later.
+<p>
+]]>
+   </resource>
+   <resource name="release_reverted">
+<![CDATA[
+The release was reverted without error.
+]]>
+   </resource>
+   <resource name="integrate_none">
+<![CDATA[
+No files were integrated. Could you have possibly chosen the wrong clientspec or release line?
+]]>
+   </resource>
+   <resource name="resolve_fail">
+<![CDATA[
+The integration was too complex for this tool. It must be done manually using the clientspec 'CLIENT'
+and the branchspec 'BRANCH'.
+
+You should now revert the release by clicking the "Revert Release" button.
+]]>
+   </resource>
+   <resource name="release_submitted">
+<![CDATA[
+ The release has been successfully submitted. You can continue using the clientspec CLIENT for
+ accessing it from perforce. The clientspec CLIENTTPL as a template to make new clientspecs with. If future
+ integrations need to be performed either from or to this line manually, be sure to use the branchspec BRANCH.
+]]>
+   </resource>
+   <resource name="clientspec_template">
+<![CDATA[
+# A Perforce Client Specification.
+#
+#  Client:      The client name.
+#  Update:      The date this specification was last modified.
+#  Access:      The date this client was last used in any way.
+#  Owner:       The user who created this client.
+#  Host:        If set, restricts access to the named host.
+#  Description: A short description of the client (optional).
+#  Root:        The base directory of the client workspace.
+#  AltRoots:    Up to two alternate client workspace roots.
+#  Options:     Client options:
+#                      [no]allwrite [no]clobber [no]compress
+#                      [un]locked [no]modtime [no]rmdir
+#  LineEnd:     Text file line endings on client: local/unix/mac/win/share.
+#  View:        Lines to map depot files into the client workspace.
+#
+# Use 'p4 help client' to see more about client views and options.
+
+Client:	CLIENT
+
+Update:	2006/05/26 10:40:02
+
+Access:	2006/06/11 18:10:06
+
+Owner:	USER
+
+Description:
+	DESCRIPTION
+
+Root:	ROOT
+
+Options:	noallwrite noclobber nocompress crlf unlocked nomodtime normdir
+
+LineEnd:	local
+
+View:
+   //depot/Release/PN/SRR/... //CLIENT/...
+]]>
+   </resource>
+   <resource name="branchspec_template">
+<![CDATA[
+# A Perforce Branch Specification.
+#
+#  Branch:      The branch name.
+#  Update:      The date this specification was last modified.
+#  Access:      The date of the last 'integrate' using this branch.
+#  Owner:       The user who created this branch.
+#  Description: A short description of the branch (optional).
+#  Options:     Branch update options: [un]locked.
+#  View:        Lines to map source depot files to target depot files.
+#
+# Use 'p4 help branch' to see more about branch views.
+
+Branch:	BRANCH
+
+Owner:	USER
+
+Description:
+	DESCRIPTION
+
+Options:	unlocked
+
+View:
+VIEW
+]]>
+   </resource>
+   <resource name="media_clientspec_template">
+<![CDATA[
+# A Perforce Client Specification.
+#
+#  Client:      The client name.
+#  Update:      The date this specification was last modified.
+#  Access:      The date this client was last used in any way.
+#  Owner:       The user who created this client.
+#  Host:        If set, restricts access to the named host.
+#  Description: A short description of the client (optional).
+#  Root:        The base directory of the client workspace.
+#  AltRoots:    Up to two alternate client workspace roots.
+#  Options:     Client options:
+#                      [no]allwrite [no]clobber [no]compress
+#                      [un]locked [no]modtime [no]rmdir
+#  LineEnd:     Text file line endings on client: local/unix/mac/win/share.
+#  View:        Lines to map depot files into the client workspace.
+#
+# Use 'p4 help client' to see more about client views and options.
+
+Client:	CLIENT
+
+Update:	2006/05/26 10:40:02
+
+Access:	2006/06/11 18:10:06
+
+Owner:	USER
+
+Description:
+	DESCRIPTION
+
+Root:	ROOT
+
+Options:	noallwrite noclobber nocompress crlf unlocked nomodtime normdir
+
+LineEnd:	local
+
+View:
+   //depot/Release/CMBuilds/... //CLIENT/...
+]]>
+   </resource>
+</document>
+
+\endcode
+*/
+
+

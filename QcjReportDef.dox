@@ -1,0 +1,131 @@
+/*!
+
+\page repdef Report XML Definition
+
+<table border="1" cellpadding="10"><tr><th> <b>This document is incomplete.
+More will be added as time goes on! Please excuse the mess.</b>
+</th></tr></table>
+
+The XML file for reports are comprised of several sections each defining a
+particular characteristic of the report. Just as the XML definition for the
+forms, this definition follows the KISS principle is not overly strict and
+should be easily read and modified.
+
+\section common Common definitions allowed in most sections
+
+\subsection refdata Referencing data
+
+The format to reference configuration data, input arguments or data from
+fields of a datasource is
+<em>::&gt;source&lt;[:&gt;format&lt;]:&gt;name%lt:</em>. The following
+sources are available:
+
+\li \c field The field type is the only one which can have a format. The 
+\a name is the name of the field. It can specify an alternative data source
+using the format of &lt;data source&gt;.&lt;field name&gt;. The following
+formats can be given.
+
+- \a date A formated date.
+
+- \a datetime A formatted date and time.
+
+- \a money A float formatted as $n.dd. Just as the \a money field of a
+form, the currency symbol can be defined by the configuration item in the
+application settings named \a Currency and the group separator is 
+defined by the Locale.
+
+- \a month The 4 digit year followed by the 2 digit number of the month.
+
+- \a string A simple string of text.
+
+- \a time A time formatted using a 12 hour clock and AM/PM indication.
+
+- \a time24 A time formatted using a 24 hour clock.
+
+\li \c config A value from the applications settings. The name is the name
+of the setting.
+
+\li \c input An Input argument from the user.
+
+\subsection formatting attributes
+
+From within sections types of \a section, \a body, \a field and \a header
+the following attributes as well as most any other valid html table
+attributes may be specified.
+
+\li \c align Horizontal alignment which can be set to \a left, \a right or
+\a center
+
+\li \c bgcolor Background color
+
+\li \c color Text color
+
+\li \c font Font to use, the name of the font is system dependant.
+
+\li \c size Font size
+
+\li \c width Width of the item in it's parents space
+
+\section report Report Tag
+
+The main element of the report is naturally &lt;report&gt;. This element
+should have the following attribute
+
+\li \c name The name of the report. This is what will presented to the user
+for selecting the report.
+
+Reports can have multiple definitions of the following types of child
+elements:
+
+\li \c input Input arguments provided by the user or calling program
+
+\li \c data_source A definition of a source of data, typically an sql
+string
+
+\li \c section A group of related information comprising of \a header, 
+\a footer, \a body \a or column elements.
+
+Typically, these elements are defined in the order above.
+
+\subsection inputsources Input Sources
+
+Inputs from the user or the program are defined by &lt;input;&gt; elements.
+They use the following attributes to describe them:
+
+\li \c name The name to reference them with from within the report.
+
+\li \c label The label to present to the user for inputting the data
+
+\li \c type The type of data to be input. This will effect the widget used
+to get the information from the user. The following type are defined:
+
+- \a date A Date Field. The default value can have any of the following
+values \a today, \a now, \a tomorrow or \a yesterday.
+
+- \a double A floating point number
+
+- \a integer An integer number
+
+- \a lineedit A line of text
+
+- \a password A hidden line of text
+
+- \a truefalse A Yes or No selection returning a value of either 1 or 0
+
+- \a yesno A Yes or No selection returning a value of either Y or N
+
+\subsection datasources Data Sources
+
+These are defined with the tag &ltdata_source&gt;. They should each have an
+attribute \a name by which the data source will be referenced from the
+other sections. The body of the \a data_source element should be a cdata
+section with the sql required to retrieve the data from the database.
+
+\subsection sections Report Sections
+
+These are the most complex of elements. \a Sections can be nested and their
+data grouped.
+
+*/
+
+
