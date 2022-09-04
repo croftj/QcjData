@@ -21,15 +21,10 @@
 **
 *********************************************************************************/
 #include <QtGui>
+#include <QHeaderView>
 #include <QMessageBox>
 #include <QSqlError>
 #include "QcjData/QcjDataLogin.h"
-#include "QcjData/QcjDataSqlTable.h"
-#include "QcjData/QcjDataStatics.h"
-
-#include <QtGui>
-#include <QMessageBox>
-#include <QSqlError>
 #include "QcjData/QcjDataSqlTable.h"
 #include "QcjData/QcjDataStatics.h"
 
