@@ -97,6 +97,7 @@ public slots:
    void setState(Qcj::FrameState newState);
 
 protected slots:
+   void haveActivatedAction(bool);
    void haveClearAction(bool = false);
    void haveDelAction(bool = false);
    void haveDownAction(bool = false);
@@ -111,6 +112,7 @@ protected slots:
 private:
    bool                    enabled[Qcj::Actions];
    QAbstractButton         *buttons[Qcj::Actions];
+   QAction                 *activatedAction;
    QAction                 *clearAction;
    QAction                 *delAction;
    QAction                 *newAction;

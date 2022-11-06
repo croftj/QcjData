@@ -33,6 +33,12 @@ QcjDataFrame::QcjDataFrame(QWidget *pParent) :
 #ifndef QT4_DESIGNER_PLUGIN
    printf("QcjDataFrame::QcjDataFrame(): Enter\n");
    fflush(stdout);
+   activatedAction = new QAction(this);
+   activatedAction->setShortcut(Qt::Key_Return);
+   activatedAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+   connect(activatedAction, SIGNAL(triggered(bool)), this, SLOT(haveActivatedAction(bool)));
+   addAction(activatedAction);
+
    clearAction = new QAction(this);
    clearAction->setShortcut(Qt::Key_F10);
    clearAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -141,6 +147,23 @@ void QcjDataFrame::connectButton(Qcj::Action act, QAbstractButton *btn)
 #endif
 }
 
+void QcjDataFrame::haveActivatedAction(bool)
+{
+#ifndef QT4_DESIGNER_PLUGIN
+   printf("QcjDataFrame::haveActivatedAction(): Enter\n");
+   fflush(stdout);
+   if ( enabled[Qcj::DownAction] ) 
+   {
+      printf("QcjDataFrame::haveDownAction(): Action Enabled\n");
+      if ( pTable != 0 ) 
+      {
+         pTable->activateCurrentRecord();
+      }
+   }
+   printf("QcjDataFrame::haveClearAction(): Exit\n");
+   fflush(stdout);
+#endif
+}
 
 void QcjDataFrame::haveClearAction(bool)
 {

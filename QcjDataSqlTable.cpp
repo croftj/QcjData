@@ -152,6 +152,10 @@ void QcjDataSqlTable::addColumn(QString field, QString label)
 //   insertColumn(0);
 }
 
+void QcjDataSqlTable::activateCurrentRecord()
+{
+   recordActivated(pModel->index(current_row, 0));
+}
 /*!
       \nint QcjDataSqlTable::findRow(QMap<QString, QString> clause, int from, bool caseSensitive)
 

@@ -25,7 +25,8 @@ namespace Qcj
 {
    enum Action
    {
-      ClearAction = 0,
+      ActivatedAction = 0,
+      ClearAction,
       DelAction,
       DownAction,
       NewAction,
