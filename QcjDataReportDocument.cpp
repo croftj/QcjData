@@ -179,6 +179,48 @@ QVector<QString> QcjDataReportDocument::getRequiredArguments()
 }
 
 /*!
+       \fn QFont QcjDataReportDocument::getFontDefinition(QDocElement docElem, QFont font)
+       
+       This function scans the passed in QDocElement and modifies a copy of the passed 
+       in QFont definition and returns the copied QFont option.
+*/ 
+QFont QcjDataReportDocument::getFontDefinition(QDomElement docElem, QFont font)
+{
+   QFont rv(font);
+   
+   QDomNode n = docElem.firstChild();
+   while ( !n.isNull() ) 
+   {
+      QDomElement e = n.toElement(); // try to convert the node to an element.
+      if ( !e.isNull() && e.tagName() == "font" )
+      {
+         if ( e.hasAttribute("family") )
+         {
+            rv.setFamily(e.attribute("family"));
+         }
+         if ( e.hasAttribute("point_size") )
+         {
+            rv.setPointSize(e.attribute("point_size").toInt());
+         }
+         if ( e.hasAttribute("italic") )
+         {
+            if (e.attribute("italic") == "Y")
+            {
+               font.setItalic(true);
+            }
+            else
+            {
+               font.setItalic(false);
+            }
+         }
+         break;
+      }
+      n = n.nextSibling();
+   }
+   return(rv);
+}
+
+/*!
        \fn QStringList QcjDataReportDocument::getArgumentDetails(QString name)
        
        This member function returns a list of the details defining the
@@ -461,28 +503,40 @@ QString QcjDataReportDocument::formatDataValue(QString field)
          {
             case 1:
                rv = (format == "mon") ? "Jan" : "January";
+               break;
             case 2:
                rv = (format == "mon") ? "Feb" : "February";
+               break;
             case 3:
                rv = (format == "mon") ? "Mar" : "March";
+               break;
             case 4:
                rv = (format == "mon") ? "Apr" : "April";
+               break;
             case 5:
                rv = (format == "mon") ? "May" : "May";
+               break;
             case 6:
                rv = (format == "mon") ? "Jun" : "June";
+               break;
             case 7:
                rv = (format == "mon") ? "Jul" : "July";
+               break;
             case 8:
                rv = (format == "mon") ? "Aug" : "Aug";
+               break;
             case 9:
                rv = (format == "mon") ? "Sep" : "September";
+               break;
             case 10:
                rv = (format == "mon") ? "Oct" : "October";
+               break;
             case 11:
                rv = (format == "mon") ? "Nov" : "Novemeber";
+               break;
             case 12:
                rv = (format == "mon") ? "Dec" : "December";
+               break;
             default:
                rv = val.toString();
          }
@@ -520,6 +574,7 @@ QString QcjDataReportDocument::generateReport(QMap<QString, QString> args, bool 
    QString bodyAttribs;
    QMap<QString, QString> attribMap;
    QString body;
+   QFont documentFont;
 
    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
    inputValues = args;
@@ -532,6 +587,9 @@ QString QcjDataReportDocument::generateReport(QMap<QString, QString> args, bool 
    printf("QcjDataReportDocument::generateReport(): height = %f, width = %f\n", size().height(), size().width());
 
    QDomElement docElem = def.documentElement();
+
+   documentFont = getFontDefinition(docElem, QFont());
+
    printf("QcjDataReportDocument::generateReport(): Document element named |%s|\n", qPrintable(docElem.tagName()));
    attribMap.insert("name", "");
    bodyAttribs = parseAttributes(docElem, &attribMap);
@@ -888,7 +946,7 @@ QString QcjDataReportDocument::processHeaderFooter(QDomElement elem)
       }
       printf("QcjDataReportDocument::processHeaderFooter(): Adding row to body |%s|\n", qPrintable(row));
       fflush(stdout);
-      row.trimmed();
+      row = row.trimmed();
       if ( attribMap["font"].size() > 0 ||
            attribMap["size"].size() > 0 ||
            attribMap["color"].size() > 0 ) 
@@ -1223,7 +1281,7 @@ QString QcjDataReportDocument::processFieldData(QDomElement elem)
          }
          printf("QcjDataReportDocument::processFieldData(): Adding row |%s| to body\n", qPrintable(row));
          fflush(stdout);
-         row.trimmed();
+         row = row.trimmed();
          body += row + "\n";
          if ( bold ) 
             body += "</b>";

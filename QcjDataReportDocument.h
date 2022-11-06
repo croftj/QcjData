@@ -25,6 +25,7 @@
 #define DATAREPORTDOCUMENT_H
 
 # include <QDomDocument>
+# include <QDomElement>
 # include <QMap>
 # include <QPrinter>
 # include <QSqlQuery>
@@ -68,6 +69,7 @@ protected:
    QString                    formatDataValue(QString field);
    QString                    parseAttributes(QDomElement e, 
                                               QMap<QString, QString> *params = NULL);
+   QFont                      getFontDefinition(QDomElement docElem, QFont font);
 
 private:
    bool                       haveError;
