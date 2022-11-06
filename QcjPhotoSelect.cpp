@@ -30,6 +30,7 @@
 # include <QPixmap>
 # include <QString>
 # include <QStringList>
+# include <QTransform>
 # include "QcjPhotoSelect.h"
 
 QcjPhotoSelect::QcjPhotoSelect(QString defPath, QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
@@ -65,7 +66,7 @@ QcjPhotoSelect::QcjPhotoSelect(QString defPath, QWidget *parent, Qt::WindowFlags
 
 QPixmap QcjPhotoSelect::pixmap()
 {
-   return(((QGraphicsPixmapItem*)scene.itemAt(0, 0))->pixmap());
+   return(((QGraphicsPixmapItem*)scene.itemAt(0, 0, QTransform()))->pixmap());
 }
 
 QString QcjPhotoSelect::fileName()
@@ -103,7 +104,7 @@ void QcjPhotoSelect::showPixmap(QPixmap &pm)
 {
    printf("QcjPhotoSelect::showPixmap(): Enter\n");
    fflush(stdout);
-   QGraphicsItem *item = scene.itemAt(0, 0);
+   QGraphicsItem *item = scene.itemAt(0, 0, QTransform());
    if ( item != 0 ) 
    {
       printf("QcjPhotoSelect::showPixmap(): Removing existing item\n");
@@ -122,7 +123,7 @@ void QcjPhotoSelect::showPixmap(QPixmap &pm)
 int QcjPhotoSelect::exec()
 {
    show();
-   QGraphicsItem *item = scene.itemAt(0, 0);
+   QGraphicsItem *item = scene.itemAt(0, 0, QTransform());
    if ( item != 0 ) 
    {
       ui.graphicsView->fitInView(item, Qt::KeepAspectRatioByExpanding);
@@ -136,7 +137,7 @@ void QcjPhotoSelect::haveAdjust()
 {
    printf("QcjPhotoSelect::haveAdjust(): Enter\n");
    fflush(stdout);
-   QGraphicsItem *item = scene.itemAt(0, 0);
+   QGraphicsItem *item = scene.itemAt(0, 0, QTransform());
    if ( item != 0 ) 
    {
       printf("QcjPhotoSelect::haveAdjust(): Adjusting existing item\n");
