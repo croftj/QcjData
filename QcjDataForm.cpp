@@ -30,7 +30,7 @@
 //#include <q3listbox.h>
 #include <qlineedit.h>
 #include <qmessagebox.h>
-#include <qregexp.h>
+#include <QRegExp>
 //#include <q3sqlcursor.h>
 #include <QBuffer>
 #include <QPixmap>
@@ -219,7 +219,7 @@ void QcjDataForm::setFields(QcjDataFields *fds, QSettings *pCfg, QcjDataXML *pFD
    printf("QcjDataForm::setFields(): xmldef = |%s|\n", (const char*)xmldef.toLocal8Bit());
    fflush(stdout);
    const QcjDataFields *pFds = fds;
-   while (pFds->dataName != QString::null && pFds->dataName != QString("--ENDOFFIELDS--"))
+   while (! pFds->dataName.isEmpty() && pFds->dataName != QString("--ENDOFFIELDS--"))
    {
       printf("QcjDataForm::setFields(): New field |%s|\n", (const char*)pFds->dataName.toLocal8Bit());
       fflush(stdout);
@@ -313,7 +313,7 @@ void QcjDataForm::_setFields(QcjDataFields *fields, QSettings *pCfg, QcjDataXML 
    // Iterate through all of the field definitions and 
    // place them into the grid.
    //
-   while (fields->dataName != QString::null && fields->dataName != QString("--ENDOFFIELDS--"))
+   while (! fields->dataName.isEmpty() && fields->dataName != QString("--ENDOFFIELDS--"))
    {
       count++;
       printf("QcjDataForm::_setFields(): *************** New field, count = %d\n", count);
@@ -473,7 +473,7 @@ void QcjDataForm::_setFields(QcjDataFields *fields, QSettings *pCfg, QcjDataXML 
                      fflush(stdout);
                   }
                }
-               if ( init != QString::null ) 
+               if ( ! init.isEmpty() ) 
                {
                   printf("QcjDataForm::_setFields():QcjStringSelect init string = |%s|\n", (const char*)init.toLocal8Bit());
                   fflush(stdout);
@@ -708,7 +708,7 @@ void QcjDataForm::updateFieldSettings(QSettings *pCfg, QcjDataXML *pFDef)
                      ((QcjStringSelect*)wdt)->addItem(query->value(0).toString(), query->value(1));
                   }
                }
-               if ( init != QString::null ) 
+               if ( ! init.isEmpty() ) 
                {
                   printf("QcjDataForm::updateFieldSettings():QcjStringSelect init string = |%s|\n", (const char*)init.toLocal8Bit());
                   ((QcjStringSelect*)wdt)->initialize(init);
@@ -1101,7 +1101,7 @@ void QcjDataForm::updateRecord()
       QString index = pFormDef->getIndexField(xmldef);
       QStringList fields = index.split(',');
 
-      if ( index != QString::null && index != "") 
+      if ( ! index.isEmpty() && index != "") 
       {
          for ( QStringList::Iterator it = fields.begin(); it != fields.end(); ++it ) {
             printf("QcjDataForm::updateRecord():field = |%s|\n", (const char*)(*it).toLocal8Bit());
@@ -1237,7 +1237,7 @@ void QcjDataForm::insertRecord()
    /*   If  no  index  generation was defined in  */
    /*   the form definition                       */
    /***********************************************/
-   if ((idx = pFormDef->getNewIndex(xmldef)) == QString::null) 
+   if ((idx = pFormDef->getNewIndex(xmldef)).isEmpty())
    {
       if ( db->driverName() != "QMYSQL" && db->driverName() != "QSQLITE" ) 
       {
@@ -1273,7 +1273,7 @@ void QcjDataForm::insertRecord()
    QSqlQuery q1;
 
    printf("QcjDataForm::insertRecord(): Setting default field values, index field = |%s|\n", qPrintable(indexname));
-   if ((sql = pFormDef->getInsertQuery(xmldef, idx)) == QString::null)
+   if ((sql = pFormDef->getInsertQuery(xmldef, idx)).isEmpty())
    {
 
       /***********************************************/
@@ -1303,7 +1303,7 @@ void QcjDataForm::insertRecord()
          }
          ++it;
       }
-      if ( indexname != QString::null ) 
+      if ( ! indexname.isEmpty() ) 
       {
          printf("QcjDataForm::insertRecord(): new index = |%s|\n", qPrintable(idx));
          if ( fname.size() > 0 ) 
@@ -1319,7 +1319,7 @@ void QcjDataForm::insertRecord()
 
       q1.prepare(sql);
 
-      if ( indexname != QString::null ) 
+      if ( ! indexname.isEmpty() ) 
          q1.bindValue(":idxname", idx);
 
       it = fieldDefaults.begin();
@@ -1331,7 +1331,7 @@ void QcjDataForm::insertRecord()
       }
 
 
-      if ( indexname != QString::null ) 
+      if ( ! indexname.isEmpty() ) 
       {
          q1.bindValue(QString(":") + indexname, idx);
          QSqlField f(indexname, QVariant::String);
@@ -1521,7 +1521,7 @@ void QcjDataForm::insertRecord(QMap<QString, QString> &fields)
             /*   otherwise   generate   the  key  if  the  */
             /*   database uses sequences for such things.  */
             /***********************************************/
-            if ( (idx = pFormDef->getNewIndex(xmldef)) == QString::null )
+            if ( (idx = pFormDef->getNewIndex(xmldef)).isEmpty() )
             {
                if ( db->driverName() != "QMYSQL" && db->driverName() != "QSQLITE" ) 
                {

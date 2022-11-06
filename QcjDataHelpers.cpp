@@ -26,7 +26,7 @@
 #include "QcjDataHelpers.h"
 #include "QcjDataStatics.h"
 
-#define NO_PHOTO_SELECT
+//#define NO_PHOTO_SELECT
 
 #ifndef NO_PHOTO_SELECT
 #include "QcjPhotoSelect.h"
@@ -205,7 +205,7 @@ void QcjStringSelect::initialize(QString s)
    printf("QcjStringSelect::initialize(): s = |%s|\n", (const char*)s.toLocal8Bit());
 #ifndef QT4_DESIGNER_PLUGIN
    clear();
-   if ( s != QString::null ) 
+   if ( s != QString() ) 
    {
       QStringList namesList = s.split( "," );
       addItems( namesList );
@@ -297,7 +297,7 @@ void QcjSqlModel::initialize(QString s)
    printf("QcjSqlModel::initialize(): s = |%s|\n", (const char*)s.toLocal8Bit());
 #ifndef QT4_DESIGNER_PLUGIN
    clear();
-   if ( s != QString::null ) 
+   if ( s != QString() ) 
    {
       QStringList namesList = s.split( "," );
       addItems( namesList );

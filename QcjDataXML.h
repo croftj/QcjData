@@ -71,7 +71,7 @@ public:
    QString                 getNewIndex(QString name);
    QVariant                getResource(QString blockName);
    QMap<QString, QVariant> getResourceMap(QString blockName);
-   QStringList             getResourceNames(QString group = QString::null);
+   QStringList             getResourceNames(QString group = QString());
    int                     getRows(QString name);
    QStringList             getSortFields(QString name);
    QString                 getTable(QString name);
