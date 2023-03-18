@@ -22,6 +22,7 @@
 *********************************************************************************/
 #include <qfile.h>
 #include <qlineedit.h>
+#include <QDebug>
 #include <QMessageBox>
 #include <qregexp.h>
 #include <qsettings.h>
@@ -518,6 +519,13 @@ std::vector<struct QcjDataFields> QcjDataXML::getFields(QString name, QWidget *p
                      printf("QcjDataXML::getFields():done\n");
                      fflush(stdout);
 //                     p->propName = "fred";
+                  }
+                  else if (type == "phone")
+                  {
+                     printf("QcjDataXML::getFields():Creating QcjPhoneEntry\n");
+                     fflush(stdout);
+                     p->widget = new QcjPhoneEdit(parent);
+                     p->propName = "phone";
                   }
                   else if (type == "date")
                   {
@@ -1188,7 +1196,75 @@ QStringList QcjDataXML::getFieldNames(QString name)
       n = n.nextSibling();
    }
 #endif
-   printf("QcjDataXML::getFieldNames():Exit\n");
+   qDebug() << "Exiting rv = " << rv;
+   return(rv);
+}
+
+/*!
+      \fn QStringList QcjDataXML::getFieldGrouping()
+      
+      Returns a list of the quick_search fields for the named form that 
+      are in the target group.
+*/
+QStringList QcjDataXML::getFieldGrouping(QString name, QString target_group)
+{
+   QStringList rv;
+   
+#ifndef QT4_DESIGNER_PLUGIN
+   printf("QcjDataXML::getFieldGroupings():Entry, looking for |%s|, target_group = |%s|!\n", qPrintable(name), qPrintable(target_group));
+   QDomElement docElem = def.documentElement();
+
+   QDomNode n = docElem.firstChild();
+   while ( !n.isNull() ) 
+   {
+      QDomElement e = n.toElement(); // try to convert the node to an element.
+      if ( !e.isNull() && e.tagName() == "form" && e.attribute("name") != QString() && e.attribute("name") == name ) 
+      {
+         printf("QcjDataXML::getFieldGroupings():Found form definition e |%s|\n", qPrintable(e.attribute("name")));
+         QDomNode n1 = n.firstChild();
+         for ( int idx = 0; !n1.isNull(); idx++ ) 
+         {
+            QDomElement e1 = n1.toElement(); // try to convert the node to an element.
+            printf("QcjDataXML::getFieldGroupings():Testing for dataName attribute in element of |%s|\n", qPrintable(e1.tagName()));
+//            if ( !e1.isNull() && e1.tagName() == "field" && e.attribute("dataName") != QString() )
+            if ( !e1.isNull() && e1.tagName() == "quick_search")
+            {
+               QDomNode n2 = n1.firstChild();
+               for ( int idx = 0; !n2.isNull(); idx++ ) 
+               {
+                  QDomElement e2 = n2.toElement(); // try to convert the node to an element.
+                  printf("QcjDataXML::getFieldGroupings():Testing for dataName attribute in element of |%s|\n", qPrintable(e2.tagName()));
+                  if ( !e2.isNull() && e2.tagName() == "field")
+                  {
+                     printf("QcjDataXML::getFieldGroupings(): Found form definition e2 |%s|!\n", qPrintable(e2.tagName()));
+                     if ( e2.attribute("dataName") != QString() && e2.attribute("group") == target_group) 
+                     {
+                        printf("QcjDataXML::getFieldGroupings(): Attribute dataName = |%s|\n", qPrintable(e2.attribute("dataName")));
+                        fflush(stdout);
+                        rv << e2.attribute("dataName");
+                     }
+                  }
+                  n2 = n2.nextSibling();
+               }
+               printf("QcjDataXML::getFieldGroupings():n2 = %d!\n", n2.isNull());
+               fflush(stdout);
+            }
+            printf("QcjDataXML::getFieldGroupings():Moving to next datafield\n");
+            fflush(stdout);
+            n1 = n1.nextSibling();
+            printf("QcjDataXML::getFieldGroupings():n1 = %d!\n", n1.isNull());
+            fflush(stdout);
+         }
+         break;
+      }
+      else if ( e.attribute("name") != QString()) 
+         printf("QcjDataXML::getFieldGroupings():skipping form definition |%s|!\n", qPrintable(e.attribute("name")));
+      else
+         printf("QcjDataXML::getFieldGroupings():skipping unnamed definition\n");
+      n = n.nextSibling();
+   }
+#endif
+   printf("QcjDataXML::getFieldGroupings():Exit\n");
    return(rv);
 }
 
@@ -1227,6 +1303,73 @@ QStringList QcjDataXML::getSortFields(QString name)
       n = n.nextSibling();
    }
 #endif
+   return(rv);
+}
+
+/*!
+      \fn QString QcjDataXML::getSearchXlate()
+      
+      Returns a list of the quick_search fields for the named form that 
+      are in the target group.
+*/
+QString QcjDataXML::getSearchXlate(QString name, QString field)
+{
+   QString rv;
+#ifndef QT4_DESIGNER_PLUGIN
+   printf("QcjDataXML::getSearchXlate():Entry, looking for |%s|, field = |%s|!\n", qPrintable(name), qPrintable(field));
+   QDomElement docElem = def.documentElement();
+
+   QDomNode n = docElem.firstChild();
+   while ( !n.isNull() ) 
+   {
+      QDomElement e = n.toElement(); // try to convert the node to an element.
+      if ( !e.isNull() && e.tagName() == "form" && e.attribute("name") != QString() && e.attribute("name") == name ) 
+      {
+         printf("QcjDataXML::getSearchXlate():Found form definition e |%s|\n", qPrintable(e.attribute("name")));
+         QDomNode n1 = n.firstChild();
+         for ( int idx = 0; !n1.isNull(); idx++ ) 
+         {
+            QDomElement e1 = n1.toElement(); // try to convert the node to an element.
+            printf("QcjDataXML::getSearchXlate():Testing for dataName attribute in element of |%s|\n", qPrintable(e1.tagName()));
+//            if ( !e1.isNull() && e1.tagName() == "field" && e.attribute("dataName") != QString() )
+            if ( !e1.isNull() && e1.tagName() == "quick_search")
+            {
+               QDomNode n2 = n1.firstChild();
+               for ( int idx = 0; !n2.isNull(); idx++ ) 
+               {
+                  QDomElement e2 = n2.toElement(); // try to convert the node to an element.
+                  printf("QcjDataXML::getSearchXlate():Testing for dataName attribute in element of |%s|\n", qPrintable(e2.tagName()));
+                  if ( !e2.isNull() && e2.tagName() == "field")
+                  {
+                     printf("QcjDataXML::getSearchXlate(): Found form definition e2 |%s|!\n", qPrintable(e2.tagName()));
+                     if ( e2.attribute("dataName") == field)
+                     {
+                        printf("QcjDataXML::getSearchXlate(): Found field |%s|, xlate = |%s|\n", qPrintable(field), qPrintable(e2.attribute("xlate")));
+                        fflush(stdout);
+                        rv = e2.attribute("xlate");
+                     }
+                  }
+                  n2 = n2.nextSibling();
+               }
+               printf("QcjDataXML::getSearchXlate():n2 = %d!\n", n2.isNull());
+               fflush(stdout);
+            }
+            printf("QcjDataXML::getSearchXlate():Moving to next datafield\n");
+            fflush(stdout);
+            n1 = n1.nextSibling();
+            printf("QcjDataXML::getSearchXlate():n1 = %d!\n", n1.isNull());
+            fflush(stdout);
+         }
+         break;
+      }
+      else if ( e.attribute("name") != QString()) 
+         printf("QcjDataXML::getSearchXlate():skipping form definition |%s|!\n", qPrintable(e.attribute("name")));
+      else
+         printf("QcjDataXML::getSearchXlate():skipping unnamed definition\n");
+      n = n.nextSibling();
+   }
+#endif
+   printf("QcjDataXML::getSearchXlate():Exit\n");
    return(rv);
 }
 
@@ -1868,6 +2011,67 @@ QString QcjDataXML::getConfigurationHelp(QString config)
    return(rv);
 }
 
+QString QcjDataXML::getFieldXlate(QString name, QString field)
+{
+   QString rv;
+   
+#ifndef QT4_DESIGNER_PLUGIN
+//   printf("QcjDataXML::getFieldXlate():Entry, looking for |%s|\n", qPrintable(name));
+   QDomElement docElem = def.documentElement();
+
+   QDomNode n = docElem.firstChild();
+   while ( !n.isNull() ) 
+   {
+      QDomElement e = n.toElement(); // try to convert the node to an element.
+      if ( !e.isNull() && e.tagName() == "form" && e.attribute("name") != QString() && e.attribute("name") == name ) 
+      {
+//         printf("QcjDataXML::getFieldXlate():Found form definition e |%s|\n", qPrintable(e.attribute("name")));
+         QDomNode n1 = n.firstChild();
+         for ( int idx = 0; !n1.isNull(); idx++ ) 
+         {
+            QDomElement e1 = n1.toElement(); // try to convert the node to an element.
+//            printf("QcjDataXML::getFieldXlate():Testing for dataName attribute in element of |%s|\n", qPrintable(e1.tagName()));
+//            if ( !e1.isNull() && e1.tagName() == "field" && e.attribute("dataName") != NULL )
+            if ( !e1.isNull() && e1.tagName() == "field" )
+            {
+//               printf("QcjDataXML::getFieldXlate():Found form definition e1 |%s|!\n", qPrintable(e1.tagName()));
+               fflush(stdout);
+               if ( e1.attribute("dataName") != QString() ) 
+               {
+//                  printf("QcjDataXML::getFieldXlate():Attribute dataName = |%s|\n", qPrintable(e1.attribute("dataName")));
+                  fflush(stdout);
+                  if (e1.attribute("dataName") == field) 
+                  {
+                     if ( e1.attribute("xlate") != QString() ) 
+                     {
+//                        printf("QcjDataXML::getFieldXlate():Attribute label = |%s|\n", qPrintable(e1.attribute("label")));
+                        fflush(stdout);
+                        rv = e1.attribute("xlate");
+                        break;
+                     }
+                  }
+               }
+            }
+//            printf("QcjDataXML::getFieldXlate():Moving to next datafield\n");
+            fflush(stdout);
+            n1 = n1.nextSibling();
+//            printf("QcjDataXML::getFieldXlate():n1 = %d!\n", n1.isNull());
+            fflush(stdout);
+         }
+         break;
+      }
+//      else if ( e.attribute("name") != QString()) 
+//         printf("QcjDataXML::getFieldXlate():skipping form definition |%s|!\n", qPrintable(e.attribute("name")));
+//      else
+//         printf("QcjDataXML::getFieldXlate():skipping unnamed definition\n");
+      n = n.nextSibling();
+      fflush(stdout);
+   }
+//   printf("QcjDataXML::getFieldXlate():exit(%s)\n", qPrintable(rv));
+#endif
+   return(rv);
+}
+
 /*!
       \fn QString QcjDataXML::getHelpBlock(QString blockName)
 
@@ -1955,6 +2159,10 @@ QMap<QString, QVariant> QcjDataXML::getResourceMap(QString blockName)
       {
          printf("QcjDataXML::getResourceMap():Found resource\n");
          fflush(stdout);
+         if (e.hasAttribute("group"))
+         {
+            rv.insert("group", e.attribute("group"));
+         }
          QDomNode prop = n.firstChild();
          while ( ! prop.isNull() ) 
          {

@@ -286,6 +286,38 @@ private:
    QString m_pname;
 };
 
+class QcjPhoneEdit : public QLineEdit
+{
+   Q_OBJECT
+   Q_PROPERTY( QString phone READ text WRITE setText );
+   Q_PROPERTY( QString pname READ getPName WRITE setPName );
+
+public:
+   QcjPhoneEdit ( QWidget * parent);
+   QcjPhoneEdit ( const QString & contents, QWidget * parent);
+   QString text() const;
+   static QString formatPhoneNumber(QString f);
+   void setPName(QString name)
+   {
+      m_pname = name;
+   };
+
+   QString getPName()
+   {
+      if ( m_pname == QString::null ) 
+         m_pname = "phone";
+      return(m_pname);
+   };
+
+public slots:
+   void setText(const QString);
+
+private:
+   QString m_pname;
+   static QRegularExpression phoneRE;
+   static QString phoneFormat;
+};
+
 
 class QcjMoneyEdit : public QLineEdit
 {
@@ -324,9 +356,14 @@ class QcjTextBlockEdit : public QTextEdit
    Q_PROPERTY( QString pname READ getPName WRITE setPName );
 
 public:
-   QcjTextBlockEdit ( QWidget * parent) : QTextEdit(parent) { };
+   QcjTextBlockEdit ( QWidget * parent) : QTextEdit(parent)
+   {
+      setTabChangesFocus(true);
+   };
+
    QcjTextBlockEdit ( const QString & contents, QWidget * parent) : QTextEdit(parent) 
    { 
+      setTabChangesFocus(true);
       setPlainText(contents);
    };
 

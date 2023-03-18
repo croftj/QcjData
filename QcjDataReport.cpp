@@ -345,6 +345,7 @@ void QcjDataReport::previewReport()
    }
    else 
    {
+      printf("QcjDataReport::previewReport(): Font string: %s\n", qPrintable(ui.textBrowser->font().toString()));
       printf("QcjDataReport::previewReport(): Got report = \n|%s|\n", qPrintable(reportStr));
       fflush(stdout);
       if ( ui.plainTextCheckbox->isChecked() ) 

@@ -156,6 +156,7 @@ void QcjDataSqlTable::activateCurrentRecord()
 {
    recordActivated(pModel->index(current_row, 0));
 }
+
 /*!
       \nint QcjDataSqlTable::findRow(QMap<QString, QString> clause, int from, bool caseSensitive)
 
@@ -408,6 +409,7 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
    else
    {
       printf("QcjDataSqlTable::refresh(): no count record available\n");
+      resizeColumnsToContents();
       return(true);
    }
 
@@ -480,6 +482,7 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
    printf("QcjDataSqlTable::refresh(): executing sql statement |%s|\n", qPrintable(sql));
    fflush(stdout);
    pQuery->exec(sql);
+   resizeColumnsToContents();
    printf("QcjDataSqlTable::refresh(): query complete\n");
    fflush(stdout);
    if ( rows > 0 )
@@ -514,6 +517,7 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
       printf("QcjDataSqlTable::refresh(): Exit w/ error: %s\n", qPrintable(errString));
       fflush(stdout);
       QApplication::restoreOverrideCursor();
+      resizeColumnsToContents();
       return(false);
    }
 
@@ -556,6 +560,7 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
    printf("QcjDataSqlTable::refresh(): Exit\n");
    fflush(stdout);
    QApplication::restoreOverrideCursor();
+   resizeColumnsToContents();
    return(true);
 }
 

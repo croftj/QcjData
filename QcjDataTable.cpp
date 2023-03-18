@@ -71,7 +71,7 @@ QcjDataTable::QcjDataTable(QWidget *pParent) :
 #ifndef QT4_DESIGNER_PLUGIN
    printf("QcjDataTable::QcjDataTable(): Enter\n");
 //   sqlCursor = NULL;
-   insertMode  = false;
+   m_insertMode  = false;
 //   connect(this, SIGNAL(beforeInsert(QSqlRecord *)), this, SLOT(nextIdent(QSqlRecord *)));
    connect((const QObject*)(horizontalHeader()), SIGNAL(sectionClicked(int)), this, SLOT(sortBy(int)));
    printf("QcjDataTable::QcjDataTable(): Exit\n");
@@ -81,11 +81,11 @@ QcjDataTable::QcjDataTable(QWidget *pParent) :
 #endif
 }
 
-void QcjDataTable::setDatabase(QSqlDatabase *pdb, bool _autoRefresh)
+void QcjDataTable::setDatabase(QSqlDatabase *pdb, bool autoRefresh)
 {
 #ifndef QT4_DESIGNER_PLUGIN
    myDb = new QSqlDatabase(*pdb);
-   setDatabase(_autoRefresh);
+   setDatabase(autoRefresh);
 #endif
 }
 
@@ -103,16 +103,16 @@ void QcjDataTable::setDatabase(QSqlDatabase *pdb, bool _autoRefresh)
        those operations are performed, otherwise those operations will
        refresh the table automatically.
 */ 
-void QcjDataTable::setDatabase(bool _autoRefresh)
+void QcjDataTable::setDatabase(bool autoRefresh)
 {
 #ifndef QT4_DESIGNER_PLUGIN
-    printf("QcjDataTable::setDatabase(): xmldef = %s\n", qPrintable(xmldef));
+    printf("QcjDataTable::setDatabase(): m_xmldef = %s\n", qPrintable(m_xmldef));
     fflush(stdout);
-    dbTable = pFormDef->getTable(xmldef);
-    printf("QcjDataTable::setDatabase(): dbTable = |%s|\n", qPrintable(dbTable));
+    m_dbTable = pFormDef->getTable(m_xmldef);
+    printf("QcjDataTable::setDatabase(): m_dbTable = |%s|\n", qPrintable(m_dbTable));
     fflush(stdout);
 
-    autoRefresh = _autoRefresh;
+    m_autoRefresh = autoRefresh;
 
     if ( myDb == 0 ) 
       myDb = new QSqlDatabase(*pDb);
@@ -130,14 +130,14 @@ void QcjDataTable::setDatabase(bool _autoRefresh)
     }
     printf("QcjDataTable::setDatabase(): Setting up database elements\n");
     fflush(stdout);
-    setTableName(dbTable);
+    setTableName(m_dbTable);
     printf("QcjDataTable::setDatabase(): Calling setFields\n");
     fflush(stdout);
-    setFields(pFormDef->getFields(xmldef, 0));
+    setFields(pFormDef->getFields(m_xmldef, 0));
     printf("QcjDataTable::setDatabase(): Calling sortBy\n");
     fflush(stdout);
-    sortBy(pFormDef->getSortFields(xmldef));
-    if ( autoRefresh ) 
+    sortBy(pFormDef->getSortFields(m_xmldef));
+    if ( m_autoRefresh ) 
     {
        printf("QcjDataTable::setDatabase(): Refreshing table\n");
        fflush(stdout);
@@ -148,32 +148,82 @@ void QcjDataTable::setDatabase(bool _autoRefresh)
     fflush(stdout);
 #endif
 }
-/*
-QcjDataTable::QcjDataTable(const QString &table, int rows, QWidget *pParent, const char *pName) :
-          Q3DataTable(pParent, pName)
+
+/*!
+   \fn void QcjDataTable::setFilter(QList<QLineEdit*> fields)
+
+   Sets the where clause to use for filtering the contens of the
+   table and calls <em>refresh()</em>. The parameter
+   <em>fields</em> is expected to be a list of QLineEdit widgets
+   that have the dynamic property 'search_group' set to specify
+   which group of table columns whould be searched for the value.
+
+   Caveats: If a widget w/o the required property is passed in, it 
+   will skipped. Each search term will be surounded with '%' chars
+   to allow searched on partial strings.
+*/
+void QcjDataTable::setFilter(QList<QLineEdit*> fields)
 {
-   dbTable = table;
-   sqlCursor = new Q3SqlCursor(dbTable);
-   sqlCursor->setMode(Q3SqlCursor::ReadOnly);
-   setSqlCursor(sqlCursor);
-   insertMode  = false;
-   connect(horizontalHeader(), SIGNAL(clicked(int)), this, SLOT(sortBy(int)));
-   connect(this, SIGNAL(beforeInsert(QSqlRecord *)), this, SLOT(nextIdent(QSqlRecord *)));
+   QString where;
+   QString wdt_text;
+   QMap<QString, QStringList> groupNames;
+   foreach (QWidget* wdt, fields)
+   {
+      /*******************************************************/
+      /* Start by getting the text from the widget, whatever */
+      /* the type                                            */
+      /*******************************************************/
+      if ( wdt->inherits("QLineEdit")  ) 
+      {
+         wdt_text = static_cast<QLineEdit*>(wdt)->text();         
+      }
+      else if ( wdt->inherits("QTextEdit")  ) 
+      {
+         wdt_text = static_cast<QTextEdit*>(wdt)->toPlainText();         
+      }
+      else if ( wdt->inherits("QDoubleSpinBox")  ) 
+      {
+         wdt_text = static_cast<QDoubleSpinBox*>(wdt)->cleanText();         
+      }
+      else if ( wdt->inherits("QSpinBox")  ) 
+      {
+         wdt_text = static_cast<QSpinBox*>(wdt)->cleanText();         
+      }
+      else if ( wdt->inherits("QComboBox")  ) 
+      {
+         wdt_text = static_cast<QComboBox*>(wdt)->itemData(static_cast<QComboBox*>(wdt)->currentIndex()).toString();         
+      }
+
+      if (wdt->property("search_group").isValid())
+      {
+         QString group_name = wdt->property("search_group").toString();
+         QStringList field_names = pFormDef->getFieldGrouping(m_xmldef, group_name);
+         if ( ! groupNames.contains(group_name))
+         {
+            groupNames.insert(group_name, field_names);
+         }
+         foreach(QString fn, field_names)
+         {
+            if (where.length() > 0)
+            {
+               where += " or ";
+            }
+            QString xlate = pFormDef->getSearchXlate(m_xmldef, fn);
+            if ( ! xlate.isEmpty() && ! wdt_text.isEmpty())
+            {
+               where += fn + " = regexp_replace('" + wdt_text + "', " + xlate + ") or ";
+            }
+            where += fn + " like '%" + wdt_text + "%'";
+         }
+      }
+   }
+   setFilter(where);
 }
 
-QcjDataTable::QcjDataTable(const QcjDataFields *fields, const QString &table, int rows, QWidget *pParent, const char *pName) :
-          Q3DataTable(pParent, pName)
+void QcjDataTable::setFilter(QString filter)
 {
-   dbTable = table;
-   sqlCursor = new Q3SqlCursor(dbTable);
-   sqlCursor->setMode(Q3SqlCursor::ReadOnly);
-   setSqlCursor(sqlCursor);
-   setFields(fields);
-   insertMode  = false;
-   connect(horizontalHeader(), SIGNAL(clicked(int)), this, SLOT(sortBy(int)));
-   connect(this, SIGNAL(beforeInsert(QSqlRecord *)), this, SLOT(nextIdent(QSqlRecord *)));
+   QcjDataSqlTable::setFilter(filter);
 }
-*/
 
 /*!
       \fn void QcjDataTable::writeXmlDef(QString str)
@@ -188,7 +238,7 @@ void QcjDataTable::writeXmlDef(QString str)
 {
     printf("QcjDataTable::writeXmlDef(): Enter: str = %s\n", qPrintable(str));
     fflush(stdout);
-    xmldef = str;
+    m_xmldef = str;
     printf("QcjDataTable::writeXmlDef(): Exit\n");
     fflush(stdout);
 }
@@ -239,7 +289,7 @@ void QcjDataTable::setFields(std::vector<struct QcjDataFields> fds)
 {
 #ifndef QT4_DESIGNER_PLUGIN
    printf("QcjDataTable::setFields():2: Enter\n");
-   printf("QcjDataTable::setFields(): xmldef = |%s|\n", qPrintable(xmldef));
+   printf("QcjDataTable::setFields(): m_xmldef = |%s|\n", qPrintable(m_xmldef));
    fflush(stdout);
    fields = fds;
    struct QcjDataFields *field_ptr = new struct QcjDataFields[fields.size() + 1];
@@ -286,8 +336,8 @@ void QcjDataTable::_setFields(const QcjDataFields *fields)
       }
       printf("QcjDataTable::_setFields(): New field |%s|\n", qPrintable(fields->dataName));
       fflush(stdout);
-      fieldNames[col] = fields->dataName;
-      fieldTypes[QString(fields->dataName)] = fields->propName;
+      m_fieldNames[col] = fields->dataName;
+      m_fieldTypes[QString(fields->dataName)] = fields->propName;
       addColumn(dataName, fields->label);
       QFont f = font();
       QFontMetrics fm(f);
@@ -302,7 +352,7 @@ void QcjDataTable::_setFields(const QcjDataFields *fields)
       }
       fields++;
    }
-   if ( autoRefresh ) 
+   if ( m_autoRefresh ) 
    {
       refresh();
       printf("QcjDataTable::_setFields(): Selecting row 0\n");
@@ -333,13 +383,13 @@ void QcjDataTable::sortBy(QStringList sl)
 #ifndef QT4_DESIGNER_PLUGIN
    printf("QcjDataTable::sortBy():Sorting by stringlist\n");
    QStringList::Iterator it;
-   sort = sl;
-   for (it = sort.begin(); it != sort.end(); it++) 
+   m_sort = sl;
+   for (it = m_sort.begin(); it != m_sort.end(); it++) 
    {
       printf("QcjDataTable::sortBy():Sorting by field: |%s|\n", qPrintable(*it));
    }
-   setSort(sort);
-   if ( autoRefresh ) 
+   setSort(m_sort);
+   if ( m_autoRefresh ) 
       refresh();
 #endif
 }
@@ -383,17 +433,17 @@ void QcjDataTable::sortBy(const QString parmfield)
    printf("QcjDataTable::sortBy():newfield = %s\n", qPrintable(newfield));
    printf("QcjDataTable::sortBy():neworder = %s\n", qPrintable(neworder));
 
-   if ( sort.count() > 0 ) 
+   if ( m_sort.count() > 0 ) 
    {
-      printf("QcjDataTable::sortBy():sort[0] = %s\n", qPrintable(sort[0]));
-      if ( sort[0].contains(re) ) 
+      printf("QcjDataTable::sortBy():m_sort[0] = %s\n", qPrintable(m_sort[0]));
+      if ( m_sort[0].contains(re) ) 
       {
          field = re.cap(1);
          order = re.cap(2);
       }
       else 
       {
-         field = sort[0];
+         field = m_sort[0];
          order = "asc";
       }
       printf("QcjDataTable::sortBy():field = %s\n", qPrintable(field));
@@ -405,8 +455,8 @@ void QcjDataTable::sortBy(const QString parmfield)
             order = "desc";
          else
             order = "asc";
-         sort[0] = field + " " + order;
-         printf("QcjDataTable::sortBy():sort[0] = %s\n", qPrintable(sort[0]));
+         m_sort[0] = field + " " + order;
+         printf("QcjDataTable::sortBy():m_sort[0] = %s\n", qPrintable(m_sort[0]));
          field = "";
       }
       else 
@@ -418,18 +468,18 @@ void QcjDataTable::sortBy(const QString parmfield)
    printf("QcjDataTable::sortBy():field = %s\n", qPrintable(field));
    if ( field != "" ) 
    {
-      while ( sort.count() >= 3 ) 
+      while ( m_sort.count() >= 3 ) 
       {
-         printf("QcjDataTable::sortBy():Removing item %d from sort\n", sort.count());
-         sort.pop_back();
+         printf("QcjDataTable::sortBy():Removing item %d from m_sort\n", m_sort.count());
+         m_sort.pop_back();
          fflush(stdout);
       }
       printf("QcjDataTable::sortBy():Prepending field |%s|\n", qPrintable(field));
       fflush(stdout);
-      sort.prepend(field);
+      m_sort.prepend(field);
    }
-   setSort(sort);
-   if ( autoRefresh ) 
+   setSort(m_sort);
+   if ( m_autoRefresh ) 
    {
       printf("QcjDataTable::sortBy():refreshing table\n");
       fflush(stdout);
@@ -454,8 +504,8 @@ void QcjDataTable::sortBy(int section)
 {
 #ifndef QT4_DESIGNER_PLUGIN
    printf("QcjDataTable::sortBy():Sorting by section: %d\n", section);
-   sortBy(fieldNames[section]);
-   if ( ! autoRefresh ) 
+   sortBy(m_fieldNames[section]);
+   if ( ! m_autoRefresh ) 
       refresh();
 #endif
 }
@@ -469,10 +519,10 @@ void QcjDataTable::setFieldItem(QSqlField field, QTableWidgetItem *pItem)
    QString name = field.name();
 //   printf("QcjDataTable::setFieldItem():Field name = %s\n", (const char*)name.toLocal8Bit());
 //   fflush(stdout);
-//   printf("QcjDataTable::setFieldItem():Field type = %s\n", (const char*)fieldTypes[name].toLocal8Bit());
+//   printf("QcjDataTable::setFieldItem():Field type = %s\n", (const char*)m_fieldTypes[name].toLocal8Bit());
 //   fflush(stdout);
    QString s = field.value().toString();
-   if (fieldTypes[name] == "money") 
+   if (m_fieldTypes[name] == "money") 
    {
 //      printf("QcjDataTable::setFieldItem():Field value = %s\n", (const char*)s);
       fflush(stdout);

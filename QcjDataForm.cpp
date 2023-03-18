@@ -1209,7 +1209,9 @@ void QcjDataForm::insertRecord()
 
 #ifndef QT4_DESIGNER_PLUGIN
    printf("QcjDataForm::insertRecord():Enter\n");
+   fflush(stdout);
    printf("QcjDataForm::insertRecord(): xmldef = |%s|, drivername = '%s'\n", (const char*)xmldef.toLocal8Bit(), qPrintable(db->driverName()));
+   fflush(stdout);
 
    /***********************************************/
    /*   If  there  is  an insert pending, update  */
@@ -1219,6 +1221,7 @@ void QcjDataForm::insertRecord()
    if ( insertMode == true ) 
    {
       printf("QcjDataForm::insertRecord(): Updating existing insert\n");
+      fflush(stdout);
       updateRecord();
    }
 
@@ -1229,10 +1232,15 @@ void QcjDataForm::insertRecord()
    if ( ! inTransaction ) 
    {
       printf("QcjDataForm::insertRecord(): Starting transaction since none started\n");
+      fflush(stdout);
       beginTransaction();
    }
+   printf("QcjDataForm::insertRecord(): Here 1\n");
+   fflush(stdout);
 
    indexname = pFormDef->getIndexField(xmldef);
+   printf("QcjDataForm::insertRecord(): indexname = %s\n", qPrintable(indexname));
+   fflush(stdout);
    /***********************************************/
    /*   If  no  index  generation was defined in  */
    /*   the form definition                       */
@@ -1680,6 +1688,8 @@ void QcjDataForm::insertRecord(QMap<QString, QString> &fields)
    /*   index.                                    */
    /***********************************************/
    q.bindValue(":idxname", idx);
+   printf("QcjDataForm::insertRecord(): Binding val: |%s| to field: |:indexname|\n", qPrintable(idx));
+   fflush(stdout);
 
 
    /***********************************************/
@@ -1689,7 +1699,7 @@ void QcjDataForm::insertRecord(QMap<QString, QString> &fields)
    it = fields.begin();
    while (it != fields.end()) 
    {
-      printf("QcjDataForm::insert(): Binding val: |%s| to field: |%s|\n", qPrintable(it.value()), qPrintable(it.key()));
+      printf("QcjDataForm::insertRecord(): Binding val: |%s| to field: |%s|\n", qPrintable(it.value()), qPrintable(it.key()));
       fflush(stdout);
       q.bindValue(QString(":") + it.key(), it.value());
       ++it;
@@ -1706,7 +1716,7 @@ void QcjDataForm::insertRecord(QMap<QString, QString> &fields)
       {
          if ( it.value().size() > 0 ) 
          {
-            printf("QcjDataForm::insert(): Binding val: |%s| to field: |%s|\n", qPrintable(it.value()), qPrintable(it.key()));
+            printf("QcjDataForm::insertRecord(): Binding val: |%s| to field: |%s|\n", qPrintable(it.value()), qPrintable(it.key()));
             fflush(stdout);
             q.bindValue(QString(":") + it.key(), getDefaultFieldValue(it.value()));
          }
@@ -2006,6 +2016,14 @@ QVariant QcjDataForm::getFieldValue(QString name)
                QString str;
                str = ((QcjMoneyEdit*)fields[x].widget)->text();
                printf("QcjDataForm::getFieldValue():is a QcjMoneyEdit, |%s|\n", (const char*)str.toLocal8Bit());
+               fflush(stdout);
+               return(QVariant(str));
+            }
+            else if ( ::isA(fields[x].widget, "QcjPhoneEdit") ) 
+            {
+               QString str;
+               str = ((QcjPhoneEdit*)fields[x].widget)->text();
+               printf("QcjDataForm::getFieldValue():is a QcjPhoneEdit, |%s|\n", (const char*)str.toLocal8Bit());
                fflush(stdout);
                return(QVariant(str));
             }

@@ -84,6 +84,7 @@ public:
    bool validate();
 
 signals:
+   void actionActivated(Qcj::Action);
    void clearForm();
    void deleteRecord();
    void insertRecord();
@@ -98,9 +99,11 @@ public slots:
 
 protected slots:
    void haveActivatedAction(bool);
+   void haveCancelAction(bool = false);
    void haveClearAction(bool = false);
    void haveDelAction(bool = false);
    void haveDownAction(bool = false);
+   void haveEditAction(bool = false);
    void haveNewAction(bool = false);
    void haveSaveAction(bool = false);
    void haveSearchAction(bool = false);
@@ -112,9 +115,11 @@ protected slots:
 private:
    bool                    enabled[Qcj::Actions];
    QAbstractButton         *buttons[Qcj::Actions];
+   QAction                 *cancelAction;
    QAction                 *activatedAction;
    QAction                 *clearAction;
    QAction                 *delAction;
+   QAction                 *editAction;
    QAction                 *newAction;
    QAction                 *downAction;
    QAction                 *saveAction;

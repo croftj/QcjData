@@ -39,6 +39,12 @@ QcjDataFrame::QcjDataFrame(QWidget *pParent) :
    connect(activatedAction, SIGNAL(triggered(bool)), this, SLOT(haveActivatedAction(bool)));
    addAction(activatedAction);
 
+   cancelAction = new QAction(this);
+   cancelAction->setShortcut(Qt::CTRL + Qt::Key_Escape);
+   cancelAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+   connect(cancelAction, SIGNAL(triggered(bool)), this, SLOT(haveCancelAction(bool)));
+   addAction(cancelAction);
+
    clearAction = new QAction(this);
    clearAction->setShortcut(Qt::Key_F10);
    clearAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -57,6 +63,13 @@ QcjDataFrame::QcjDataFrame(QWidget *pParent) :
    downAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
    connect(downAction, SIGNAL(triggered(bool)), this, SLOT(haveDownAction(bool)));
    addAction(downAction);
+
+   editAction = new QAction(this);
+//   editAction->setShortcut(QKeySequence::MoveToPreviousLine);
+   editAction->setShortcut(QKeySequence::Open);
+   editAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+   connect(editAction, SIGNAL(triggered(bool)), this, SLOT(haveEditAction(bool)));
+   addAction(editAction);
 
    newAction = new QAction(this);
    newAction->setShortcut(QKeySequence::New);
@@ -104,6 +117,11 @@ void QcjDataFrame::connectButton(Qcj::Action act, QAbstractButton *btn)
    fflush(stdout);
    switch (act) 
    {
+      case Qcj::CancelAction:
+         connect(btn, SIGNAL(clicked()), this, SLOT(haveCancelAction()));
+         buttons[act] = btn;
+         break;
+
       case Qcj::ClearAction:
          connect(btn, SIGNAL(clicked()), this, SLOT(haveClearAction()));
          buttons[act] = btn;
@@ -116,6 +134,11 @@ void QcjDataFrame::connectButton(Qcj::Action act, QAbstractButton *btn)
       
       case Qcj::DownAction:
          connect(btn, SIGNAL(clicked()), this, SLOT(haveDownAction()));
+         buttons[act] = btn;
+         break;
+      
+      case Qcj::EditAction:
+         connect(btn, SIGNAL(clicked()), this, SLOT(haveEditAction()));
          buttons[act] = btn;
          break;
       
@@ -142,6 +165,7 @@ void QcjDataFrame::connectButton(Qcj::Action act, QAbstractButton *btn)
       default:
          break;
    }
+
    printf("QcjDataFrame::connectButton(): Exit\n");
    fflush(stdout);
 #endif
@@ -160,9 +184,20 @@ void QcjDataFrame::haveActivatedAction(bool)
          pTable->activateCurrentRecord();
       }
    }
+   printf("QcjDataFrame::haveActivatedAction(): Exit\n");
+   fflush(stdout);
+#endif
+}
+
+void QcjDataFrame::haveCancelAction(bool)
+{
+#ifndef QT4_DESIGNER_PLUGIN
+   printf("QcjDataFrame::haveClearAction(): Enter\n");
+   fflush(stdout);
    printf("QcjDataFrame::haveClearAction(): Exit\n");
    fflush(stdout);
 #endif
+   emit actionActivated(Qcj::CancelAction);
 }
 
 void QcjDataFrame::haveClearAction(bool)
@@ -188,6 +223,7 @@ void QcjDataFrame::haveClearAction(bool)
    printf("QcjDataFrame::haveClearAction(): Exit\n");
    fflush(stdout);
 #endif
+   emit actionActivated(Qcj::ClearAction);
 }
 
 void QcjDataFrame::haveDelAction(bool)
@@ -214,6 +250,7 @@ void QcjDataFrame::haveDelAction(bool)
       else if ( validate() ) 
          emit deleteRecord();
    }
+   emit actionActivated(Qcj::DelAction);
 #endif
 }
 
@@ -236,6 +273,17 @@ void QcjDataFrame::haveDownAction(bool)
       printf("QcjDataFrame::haveDownAction(): Exit\n");
       fflush(stdout);
    }
+#endif
+}
+
+/********************************************************************/
+/* This slot does not do anything accept signal that the action was */
+/* activated.                                                       */
+/********************************************************************/
+void QcjDataFrame::haveEditAction(bool)
+{
+#ifndef QT4_DESIGNER_PLUGIN
+   emit actionActivated(Qcj::EditAction);
 #endif
 }
 
@@ -267,6 +315,7 @@ void QcjDataFrame::haveNewAction(bool)
    }
    else if ( validate() ) 
       emit insertRecord();
+   emit actionActivated(Qcj::NewAction);
    printf("QcjDataFrame::haveNewAction(): Exit\n");
    fflush(stdout);
 #endif
@@ -298,6 +347,7 @@ void QcjDataFrame::haveSaveAction(bool)
       printf("QcjDataFrame::haveSaveAction(): Exit\n");
       fflush(stdout);
    }
+   emit actionActivated(Qcj::SaveAction);
 #endif
 }
 
@@ -325,6 +375,7 @@ void QcjDataFrame::haveSearchAction(bool)
       printf("QcjDataFrame::haveSearchAction(): Exit\n");
       fflush(stdout);
    }
+   emit actionActivated(Qcj::SearchAction);
 #endif
 }
 
@@ -347,6 +398,7 @@ void QcjDataFrame::haveUpAction(bool)
       emit prevRow();
       printf("QcjDataFrame::haveUpAction(): Exit\n");
       fflush(stdout);
+      emit actionActivated(Qcj::UpAction);
    }
 #endif
 }

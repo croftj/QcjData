@@ -62,12 +62,14 @@ public:
 protected:
    void mousePressEvent(QGraphicsSceneMouseEvent *ev);
    void mouseReleaseEvent(QGraphicsSceneMouseEvent *ev);
+   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *ev);
 
 protected slots:
    void clearPressed();
 
 signals:
    void clicked(QGraphicsItem*);
+   void doubleClicked(QGraphicsItem*);
 
 private:
    QGraphicsItem  *lastPressed;
@@ -99,6 +101,7 @@ public:
 
 signals:
    void rowSelected(QSqlRecord *rec);
+   void doubleClicked(QSqlRecord *rec);
 
 public slots:
    void refresh();
@@ -106,6 +109,7 @@ public slots:
 
 protected slots:
    void itemClicked(QGraphicsItem*);
+   void itemDoubleClicked(QGraphicsItem*);
 
 protected:
    void _setFields(const QcjDataFields *fields);

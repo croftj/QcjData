@@ -23,6 +23,8 @@
 #include <QBuffer>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
 #include "QcjDataHelpers.h"
 #include "QcjDataStatics.h"
 
@@ -31,6 +33,96 @@
 #ifndef NO_PHOTO_SELECT
 #include "QcjPhotoSelect.h"
 #endif
+
+QRegularExpression QcjPhoneEdit::phoneRE;
+QString QcjPhoneEdit::phoneFormat;
+
+QcjPhoneEdit::QcjPhoneEdit(QWidget *parent) : QLineEdit (parent) 
+{ 
+   printf("Moneyedit::QcjPhoneEdit(): here()\n"); 
+   fflush(stdout); 
+   if (phoneRE.pattern() == QString())
+   {
+      phoneRE.setPattern(pConfig->value("PhoneParse", "(\\d{3})(\\d{3})(\\d{4})").toString());
+   }
+   phoneFormat = pConfig->value("PhoneFormat", "(%1) %2-%3" ).toString();
+   printf("QcjPhoneEdit(): pattern: %s\n", qPrintable(phoneRE.pattern()));
+   printf("QcjPhoneEdit(): format: %s\n", qPrintable(phoneFormat));
+}  
+
+QcjPhoneEdit::QcjPhoneEdit(const QString &contents, QWidget *parent) : QLineEdit(contents, parent) 
+{ 
+   printf("QcjPhoneEdit::QcjPhoneEdit(): here()\n"); 
+   fflush(stdout); 
+}
+
+QString QcjPhoneEdit::text() const
+{
+   QString s = QLineEdit::text();
+   QString rv;
+
+#ifndef QT4_DESIGNER_PLUGIN
+   printf("QcjPhoneEdit::text(): started with |%s|\n", (const char*)s.toLocal8Bit());
+   fflush(stdout);
+
+   s.replace(QRegExp("[() -.]"), "");
+   QRegularExpressionMatch match = phoneRE.match(s);
+   for (int x = 1; x < match.lastCapturedIndex() + 1; x++)
+   {
+      if (false && rv.length() > 0)
+      {
+         rv += ' ';
+      }
+      rv += match.captured(x);
+   }
+   if (rv.length() == 0)
+   {
+      rv = s;
+   }
+//   s.replace(QRegExp("[\\$,]"), "");
+   printf("QcjPhoneEdit::text(): returned |%s|\n", (const char*)s.toLocal8Bit());
+   fflush(stdout);
+#endif
+   return(rv);
+}
+
+void QcjPhoneEdit::setText(const QString f) 
+{
+   QString str = f;
+   printf("QcjPhoneEdit::SetText(): enter\n");
+   fflush(stdout);
+   str.replace(QRegExp("[() -.]"), "");
+
+//   str.replace(QRegExp("[\\$,]"), "");
+   QLineEdit::setText(formatPhoneNumber(str));
+   printf("QcjPhoneEdit::SetText(): set to |%s|\n", qPrintable(QLineEdit::text()));
+   fflush(stdout);
+}
+
+QString QcjPhoneEdit::formatPhoneNumber(QString str)
+{
+   QString rv(phoneFormat);
+#ifndef QT4_DESIGNER_PLUGIN
+   printf("QcjPhoneEdit::formatPhoneNumber(): str = %s\n", qPrintable(str));
+   str.replace(QRegExp("[() -.]"), "");
+   QRegularExpressionMatch match = phoneRE.match(str);
+   if (match.lastCapturedIndex() > 0)
+   {
+      for (int x = 1; x < match.lastCapturedIndex() + 1; x++)
+      {
+         rv = rv.arg(match.captured(x));
+      }
+   }
+   else
+   {
+      rv = str;
+   }
+   fflush(stdout);
+   printf("QcjPhoneEdit::formatCurrency(): exit(%s)\n", qPrintable(rv));
+   fflush(stdout);
+#endif
+   return(rv);
+}
 
 QcjMoneyEdit::QcjMoneyEdit(QWidget *parent) : QLineEdit (parent) 
 { 

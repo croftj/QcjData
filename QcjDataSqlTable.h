@@ -57,6 +57,7 @@ public:
    void setSort(QStringList sortList);
    void setTableName(QString name);
    QStringList sort();
+   void activateCurrentRecord();
 //   virtual void setFieldItem(QSqlField xf, QTableWidgetItem *i);
 
 public slots:

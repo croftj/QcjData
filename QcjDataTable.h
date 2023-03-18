@@ -44,11 +44,7 @@
 #include <stdio.h>
 
 
-#ifndef QT4_DESIGNER_PLUGIN
 class QcjDataTable : public QcjDataSqlTable
-#else
-class QcjDataTable : public QFrame
-#endif
 {
    Q_OBJECT
    Q_PROPERTY (QString xml_definition READ readXmlDef WRITE writeXmlDef)
@@ -60,9 +56,11 @@ public:
 //            QWidget *pParent = 0, const char *pName = 0);
    ~QcjDataTable() {};
 
-   QString readXmlDef() const { return(xmldef); };
-   void setDatabase(bool _autoRefresh = true);
-   void setDatabase(QSqlDatabase *pdb, bool _autoRefresh = true);
+   QString readXmlDef() const { return(m_xmldef); };
+   void setDatabase(bool _m_autoRefresh = true);
+   void setDatabase(QSqlDatabase *pdb, bool _m_autoRefresh = true);
+   void setFilter(QList<QLineEdit*> fields);
+   void setFilter(QString clause);
    void seek(int index);
    void writeXmlDef(QString s);
 
@@ -116,12 +114,12 @@ private:
    std::vector<struct QcjDataFields> fields;
 //   Q3SqlCursor                *sqlCursor;
 #endif
-   QString                    dbTable;
-   QStringList                sort;
-   QMap<int, QString>         fieldNames;
-   QMap<QString, QString>     fieldTypes;
-   QString                    xmldef;
-   bool                       insertMode;
-   bool                       autoRefresh;
+   QString                    m_dbTable;
+   QStringList                m_sort;
+   QMap<int, QString>         m_fieldNames;
+   QMap<QString, QString>     m_fieldTypes;
+   QString                    m_xmldef;
+   bool                       m_insertMode;
+   bool                       m_autoRefresh;
 };
 #endif

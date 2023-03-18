@@ -57,6 +57,21 @@ void QcjPhotoScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *ev)
    fflush(stdout);
 }
 
+void QcjPhotoScene::mouseDoubleClickedEvent(QGraphicsSceneMouseEvent *ev)
+{
+   printf("QcjPhotoFrame::mouseDoubleClickEvent(): Enter\n");
+   printf("QcjPhotoFrame::mouseDoubleClickEvent(): lastPressed = %ld, item = %ld\n", (unsigned long)lastPressed, (unsigned long)itemAt(ev->buttonDownScenePos(ev->button())));
+   if ( lastPressed == itemAt(ev->buttonDownScenePos(ev->button())) ) 
+   {
+      printf("QcjPhotoFrame::mouseDoubleClickEvent(): emitting signal!\n");
+      emit doubleClicked(lastPressed);
+      lastPressed = NULL;
+      pressedTimer.stop();
+   }
+   printf("QcjPhotoFrame::mouseDoubleClickEvent(): Exit\n");
+   fflush(stdout);
+}
+
 void QcjPhotoScene::clearPressed()
 {
    printf("QcjPhotoFrame::clearPressed(): Enter\n");
@@ -169,6 +184,7 @@ void QcjPhotoFrame::refresh()
 
    currentScene = new QcjPhotoScene(this);
    connect(currentScene, SIGNAL(clicked(QGraphicsItem*)), this, SLOT(itemClicked(QGraphicsItem*)));
+   connect(currentScene, SIGNAL(doubleClicked(QGraphicsItem*)), this, SLOT(itemDoubleClicked(QGraphicsItem*)));
 
    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
    /***********************************************/
@@ -190,7 +206,7 @@ void QcjPhotoFrame::refresh()
    /***********************************************/
    /*   Build up the fields to sort by            */
    /***********************************************/
-   QStringList snames = pFormDef->getFieldNames(xmldef);
+   QStringList snames = pFormDef->getSortFields(xmldef);
    QString sort = "";
    QStringListIterator it2(snames);
    while (it2.hasNext()) 
@@ -216,11 +232,12 @@ void QcjPhotoFrame::refresh()
    pQuery = new QSqlQuery(sql);
    while (pQuery->next()) 
    {
-      printf("QcjPhotoFrame::refresh(): Have dog photo record\n");
+      printf("QcjPhotoFrame::refresh(): Have photo record\n");
       QList<QGraphicsItem*> itemList;
       QGraphicsItem *item;
       double vertColOfs = vertOfs;
       double minWidth = 0.0;
+      QString tool_tip;
       for (int x = 0; x < (int)fieldDefs.size() - 1; x++) 
       {
          QRectF rect;
@@ -228,6 +245,7 @@ void QcjPhotoFrame::refresh()
          QString type = pFormDef->getFieldType(xmldef, pfd->dataName);
          QString name = pfd->dataName;
          QString label = pfd->label;
+         
          printf("QcjPhotoFrame::refresh(): working on field %d, dbname = |%s|, type = |%s|\n",
             x, qPrintable(name), qPrintable(type));
 
@@ -235,6 +253,10 @@ void QcjPhotoFrame::refresh()
             minWidth = (double)(pfd->minWidth);
             printf("QcjPhotoFrame::refresh(): minWidth %f\n", minWidth);
 
+         if ( type.toLower() == "tooltip" ) 
+         {
+            tool_tip = pQuery->record().value(name).toString();
+         }
          if ( type.toLower() != "image" ) 
          {
             QString text = pQuery->record().value(name).toString();
@@ -264,14 +286,29 @@ void QcjPhotoFrame::refresh()
                continue;
             }
          }
-         item->setFlags(QGraphicsItem::ItemIsSelectable);
-         itemList << item;
+         if (type != "tooltip")
+         {
+            item->setFlags(QGraphicsItem::ItemIsSelectable);
+            itemList << item;
+         }
 
          printf("QcjPhotoFrame::refresh(): Moving picture to point %f, %f\n", horzOfs, vertColOfs);
          item->setPos(horzOfs, vertColOfs);
          vertColOfs += rect.height() + 3;
          printf("QcjPhotoFrame::refresh(): item width = %f, item height = %f, Adjusted vertColOfs to %f\n", rect.width(), rect.height(), vertColOfs);
       }
+
+      /************************************************************/
+      /* Set the tool tip for each item in the record if defined. */
+      /************************************************************/
+      if ( ! tool_tip.isEmpty())
+      {
+         foreach (item, itemList)
+         {
+            item->setToolTip(tool_tip);
+         }
+      }
+
       photoItemLists << itemList;
 
       if ( vertColOfs > maxColVert ) 
@@ -374,6 +411,52 @@ void QcjPhotoFrame::itemClicked(QGraphicsItem *item)
    currentScene->update();
    QApplication::restoreOverrideCursor();
    printf("QcjPhotoFrame::itemClicked(): exit\n");
+   fflush(stdout);
+}
+
+void QcjPhotoFrame::itemDoubleClicked(QGraphicsItem *item)
+{
+   printf("QcjPhotoFrame::itemDoubleClicked(): Enter item = %ld\n", (unsigned long)item);
+   fflush(stdout);
+   if ( currentScene == NULL || pQuery == NULL ) 
+      return;
+   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+   if ( pQuery->first() )
+   {
+      QVectorIterator<QList<QGraphicsItem*> > it(photoItemLists);
+      int row = 0;
+      while (it.hasNext()) 
+      {
+         printf("QcjPhotoFrame::itemDoubleClicked(): Testing for item in db row %d\n", row);
+         fflush(stdout);
+         QListIterator<QGraphicsItem*> it1(it.next());
+         while (it1.hasNext()) 
+         {
+            QGraphicsItem *ritem = it1.next();
+            printf("QcjPhotoFrame::itemDoubleClicked(): Testing ritem %ld against item %ld\n", (unsigned long)ritem, (unsigned long)item);
+            fflush(stdout);
+            if ( ritem == item ) 
+            {
+               printf("QcjPhotoFrame::itemDoubleClicked(): have match\n");
+               fflush(stdout);
+               currentScene->clearSelection();
+               it1.toFront();
+               while (it1.hasNext()) 
+                  it1.next()->setSelected(true);
+               rec = pQuery->record();
+               emit doubleClicked(&rec);
+               it.toBack();
+               break;
+            }
+         }
+         row++;
+         if ( ! pQuery->next() ) 
+            break;
+      }
+   }
+   currentScene->update();
+   QApplication::restoreOverrideCursor();
+   printf("QcjPhotoFrame::itemDoubleClicked(): exit\n");
    fflush(stdout);
 }
 
