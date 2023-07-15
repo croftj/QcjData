@@ -79,6 +79,7 @@ public:
    QStringList             getSortFields(QString name);
    QString                 getSearchXlate(QString name, QString field);
    QString                 getTable(QString name);
+   QMap<QString, QString>  getTableNames(QString name);
    int                     getTopMargin(QString name);
    int                     getVertSpacing(QString name);
    QString                 getWhereClause(QString name, QSqlRecord *rec, QSqlDatabase *db);

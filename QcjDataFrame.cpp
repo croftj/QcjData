@@ -308,6 +308,7 @@ void QcjDataFrame::haveNewAction(bool)
                pTable->refresh();
                pTable->findRow(pForm->getIndexMap());
             }
+            printf("QcjDataFrame::haveNewAction(): Emitting insertRecord signal\n");
             emit insertRecord();
          }
       }
@@ -315,6 +316,7 @@ void QcjDataFrame::haveNewAction(bool)
    }
    else if ( validate() ) 
       emit insertRecord();
+   printf("QcjDataFrame::haveNewAction(): Emitting NewAction signal\n");
    emit actionActivated(Qcj::NewAction);
    printf("QcjDataFrame::haveNewAction(): Exit\n");
    fflush(stdout);

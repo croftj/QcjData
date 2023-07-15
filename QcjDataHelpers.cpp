@@ -21,10 +21,12 @@
 **
 *********************************************************************************/
 #include <QBuffer>
+#include <QDebug>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
+#include <QStringList>
 #include "QcjDataHelpers.h"
 #include "QcjDataStatics.h"
 
@@ -34,12 +36,34 @@
 #include "QcjPhotoSelect.h"
 #endif
 
+namespace
+{
+   QString parseInitString(QString init)
+   {
+      QString rv;
+
+      QStringList sl = init.split(':');
+      if (sl.count() == 1)
+      {
+         rv = sl[0];
+      }
+      else
+      {
+         if (sl[0] == "config")
+         {
+            rv = pConfig->value(sl[1]).toString();
+         }
+      }
+      return(rv);
+   }
+}
+
 QRegularExpression QcjPhoneEdit::phoneRE;
 QString QcjPhoneEdit::phoneFormat;
 
 QcjPhoneEdit::QcjPhoneEdit(QWidget *parent) : QLineEdit (parent) 
 { 
-   printf("Moneyedit::QcjPhoneEdit(): here()\n"); 
+   printf("QcjPhoneEdit::QcjPhoneEdit(): here()\n"); 
    fflush(stdout); 
    if (phoneRE.pattern() == QString())
    {
@@ -126,7 +150,11 @@ QString QcjPhoneEdit::formatPhoneNumber(QString str)
 
 QcjMoneyEdit::QcjMoneyEdit(QWidget *parent) : QLineEdit (parent) 
 { 
-   printf("Moneyedit::QcjMoneyEdit(): here()\n"); 
+   qDebug() << "creating validator";
+   QRegExpValidator *v = new QRegExpValidator(QRegExp("\\$?[0-9,]*\\.?[0-9]{0,2}"), this);
+   setValidator(v);
+   setAlignment(Qt::AlignRight);
+   connect(this, SIGNAL(editingFinished()), this, SLOT(formatText()));
    fflush(stdout); 
 }
 
@@ -134,6 +162,14 @@ QcjMoneyEdit::QcjMoneyEdit(const QString &contents, QWidget *parent) : QLineEdit
 { 
    printf("Moneyedit::QcjMoneyEdit(): here()\n"); 
    fflush(stdout); 
+}
+
+void QcjMoneyEdit::formatText()
+{
+   QString txt = text();
+   qDebug() << "Enter: text =" << txt;
+   QLineEdit::setText(formatCurrency(txt));
+   qDebug() << "exit";
 }
 
 QString QcjMoneyEdit::text() const
@@ -292,15 +328,30 @@ void QcjStringSelect::setText(QString s)
 #endif
 }
 
-void QcjStringSelect::initialize(QString s)
+void QcjStringSelect::initialize(QString selections)
 {
-   printf("QcjStringSelect::initialize(): s = |%s|\n", (const char*)s.toLocal8Bit());
+   if ( selections != QString() ) 
+   {
+      selections = parseInitString(selections);
+      QStringList namesList = selections.split( "," );
+      addItems( namesList );
+   }
+}
+
+void QcjStringSelect::initialize(QcjDataFields *field_def)
+{
+   printf("QcjStringSelect::initialize(): init = |%s|\n", (const char*)field_def->init.toLocal8Bit());
+   printf("QcjStringSelect::initialize(): defvalue = |%s|\n", (const char*)field_def->defvalue.toLocal8Bit());
 #ifndef QT4_DESIGNER_PLUGIN
    clear();
-   if ( s != QString() ) 
+   QString selections;
+   if ( (selections = field_def->init) != QString() ) 
    {
-      QStringList namesList = s.split( "," );
-      addItems( namesList );
+      initialize(selections);
+   }
+   if (field_def->defvalue != QString())
+   {
+      setCurrentText(field_def->defvalue);
    }
 #endif
 }

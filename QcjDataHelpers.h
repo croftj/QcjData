@@ -70,6 +70,7 @@ struct QcjDataFields
    QString     init;
    QString     defvalue;
    QWidget     *widget;
+   QString     fieldType;
    QString     propName;
    QString     options;
    QString     format;
@@ -102,13 +103,14 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "strsel";
       return(m_pname);
    };
 
 public slots:
-   void initialize(QString s);
+   void initialize(QcjDataFields *field_def);
+   void initialize(QString selections);
 
 private:
    QString m_pname;
@@ -132,7 +134,7 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "sqlmodel";
       return(m_pname);
    };
@@ -161,7 +163,7 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "yesno";
       return(m_pname);
    };
@@ -191,7 +193,7 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "truefalse";
       return(m_pname);
    };
@@ -236,7 +238,7 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "checkboxtf";
       return(m_pname);
    };
@@ -278,7 +280,7 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "checkboxyn";
       return(m_pname);
    };
@@ -304,7 +306,7 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "phone";
       return(m_pname);
    };
@@ -337,12 +339,13 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "money";
       return(m_pname);
    };
 
 public slots:
+   void formatText();
    void setText(const QString);
 
 private:
@@ -375,7 +378,7 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "text";
       return(m_pname);
    };
@@ -431,7 +434,7 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "date";
       return(m_pname);
    };
@@ -490,7 +493,7 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "time";
       return(m_pname);
    };
@@ -516,7 +519,7 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "timestamp";
       return(m_pname);
    };
@@ -549,7 +552,7 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "value";
       return(m_pname);
    };
@@ -582,7 +585,7 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "value";
       return(m_pname);
    };
@@ -615,7 +618,7 @@ public:
 
    QString getPName()
    {
-      if ( m_pname == QString::null ) 
+      if ( m_pname == QString() ) 
          m_pname = "photo";
       return(m_pname);
    };

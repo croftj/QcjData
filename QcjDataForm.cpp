@@ -30,6 +30,7 @@
 //#include <q3listbox.h>
 #include <qlineedit.h>
 #include <qmessagebox.h>
+#include <QDebug>
 #include <QRegExp>
 //#include <q3sqlcursor.h>
 #include <QBuffer>
@@ -77,7 +78,7 @@ static bool isA(QObject *obj, const char *type);
 QcjDataForm::QcjDataForm(QWidget *pParent) :
           QFrame(pParent)
 {
-   printf("QcjDataForm::QcjDataForm(): Enter\n");
+   printf("QcjDataForm::QcjDataForm(): Enter, this: %d\n", this);
 #ifndef QT4_DESIGNER_PLUGIN
    printf("QcjDataForm::QcjDataForm(): dbTable = |%s|\n", (const char*)dbTable.toLocal8Bit());
    fflush(stdout);
@@ -975,10 +976,15 @@ void QcjDataForm::refresh()
 
       sqlModel->setFilter(strWhere);
       if ( ! sqlModel->select() )
-         QMessageBox::warning(NULL, "Error!", "Error selecting row\n" + sqlModel->lastError().databaseText() + "\n" + 
+      {
+         qDebug() << "Error selecting row:" << sqlModel->lastError().driverText()
+                  << sqlModel->query().executedQuery();
+         qDebug() << "Database name: " << sqlModel->database().databaseName();
+         qDebug() << "Table name: " << sqlModel->tableName();
+         QMessageBox::warning(NULL, "Error!", "*** Error selecting row\n" + sqlModel->lastError().databaseText() + "\n" + 
                               sqlModel->lastError().driverText() + "\n" +
                               sqlModel->query().executedQuery(), "Okay");
-
+      }
       sqlRecord = sqlModel->record(QCJ_FIRSTRECORD);
       sqlMapper.setCurrentIndex(QCJ_FIRSTRECORD);
 
@@ -1070,7 +1076,11 @@ void QcjDataForm::updateRecord()
          {
             if ( sqlModel->lastError().databaseText().length() > 0 ) 
             {
-               QMessageBox::warning(NULL, "Error!", "Error updating record: \n" + sqlModel->lastError().databaseText() + "\n" + 
+               qDebug() << "Error updating row:" << sqlModel->lastError().driverText()
+                        << sqlModel->query().executedQuery();
+               qDebug() << "Database name: " << sqlModel->database().databaseName();
+               qDebug() << "Table name: " << sqlModel->tableName();
+               QMessageBox::warning(NULL, "Error!", "*** Error updating record: \n" + sqlModel->lastError().databaseText() + "\n" + 
                                     sqlModel->lastError().driverText() + "\n" +
                                     sqlModel->query().executedQuery(), "Okay");
                rollbackTransaction();
@@ -1360,7 +1370,7 @@ void QcjDataForm::insertRecord()
          rollbackTransaction();         
       }
    }
-   printf("QcjDataForm::insertRecord():sql = '%s'\n", (const char*)sql.toLocal8Bit());
+   printf("QcjDataForm::insertRecord(): inserting record: sql = '%s'\n", (const char*)sql.toLocal8Bit());
    fflush(stdout);
 
    /***********************************************/
@@ -1404,6 +1414,7 @@ void QcjDataForm::insertRecord()
             return;
          }
       }
+      qDebug() << "idx =" << idx << ", indexname = " << indexname;
 
       /***********************************************/
       /*   Otherwise,  refresh the form and fill in  */
@@ -1442,7 +1453,7 @@ void QcjDataForm::insertRecord(QMap<QString, QString> &fields)
    QString idxname;
 
 #ifndef QT4_DESIGNER_PLUGIN
-   printf("QcjDataForm::insertRecord(QMap):Enter\n");
+   printf("QcjDataForm::insertRecord(QMap):Enter, this: %d\n", this);
    printf("QcjDataForm::insertRecord(): xmldef = |%s|\n", (const char*)xmldef.toLocal8Bit());
 
    /***********************************************/

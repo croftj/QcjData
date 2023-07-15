@@ -275,6 +275,12 @@ std::vector<struct QcjDataFields> QcjDataXML::getFields(QString name, QWidget *p
                   fflush(stdout);
                   p->search = e1.attribute("search");
                }
+               if ( e1.attribute("type") != QString() ) 
+               {
+                  printf("QcjDataXML::getFields():Attribute label = |%s|\n", qPrintable(e1.attribute("type")));
+                  fflush(stdout);
+                  p->fieldType = e1.attribute("type");
+               }
 
 
                if ( parent != NULL ) 
@@ -345,7 +351,8 @@ std::vector<struct QcjDataFields> QcjDataXML::getFields(QString name, QWidget *p
                      printf("QcjDataXML::getFields():Creating QcjStringSelect\n");
                      fflush(stdout);
                      p->init = e1.attribute("init");
-                     p->widget = new QcjStringSelect(QString::null, parent);
+                     p->widget = new QcjStringSelect(parent);
+                     dynamic_cast<QcjStringSelect*>(p->widget)->initialize(p);
                      p->propName = "strsel";
                   }
 
@@ -506,13 +513,6 @@ std::vector<struct QcjDataFields> QcjDataXML::getFields(QString name, QWidget *p
                      printf("QcjDataXML::getFields():making widget\n");
                      fflush(stdout);
                      p->widget = new QcjMoneyEdit(parent);
-                     printf("QcjDataXML::getFields():creating validator\n");
-                     fflush(stdout);
-                     QRegExpValidator *v = new QRegExpValidator(QRegExp("\\$?[0-9,]*\\.?[0-9]{0,2}"), p->widget);
-                     printf("QcjDataXML::getFields():setting validator\n");
-                     fflush(stdout);
-                     ((QcjMoneyEdit*)p->widget)->setValidator(v);
-                     ((QcjMoneyEdit*)p->widget)->setAlignment(Qt::AlignRight);
                      printf("QcjDataXML::getFields():setting property\n");
                      fflush(stdout);
                      p->propName = "money";
@@ -629,6 +629,63 @@ QString QcjDataXML::getTable(QString name)
 #endif
    printf("QcjDataXML::getTable():Exit\n");
    fflush(stdout);
+   return(rv);
+}
+
+/*!
+   \fn QMap<QString, QString> QcjDataXML::getTableNames(QString name)
+
+   Returns a map with the dataName and label for each field of a table.
+*/
+QMap<QString, QString> QcjDataXML::getTableNames(QString name)
+{
+   QMap<QString, QString> rv;
+
+#ifndef QT4_DESIGNER_PLUGIN
+   qDebug() << __FUNCTION__ << "(): Entry, looking for " << name;
+   QDomElement docElem = def.documentElement();
+
+   QDomNode n = docElem.firstChild();
+   while ( !n.isNull() ) 
+   {
+      QDomElement e = n.toElement(); // try to convert the node to an element.
+      if ( !e.isNull() && e.tagName() == "form" && e.attribute("name") != QString() && e.attribute("name") == name ) 
+      {
+         printf("QcjDataXML::getFieldNames():Found form definition e |%s|\n", qPrintable(e.attribute("name")));
+         QDomNode n1 = n.firstChild();
+         for ( int idx = 0; !n1.isNull(); idx++ ) 
+         {
+            QDomElement e1 = n1.toElement(); // try to convert the node to an element.
+            printf("QcjDataXML::getFieldNames():Testing for dataName attribute in element of |%s|\n", qPrintable(e1.tagName()));
+//            if ( !e1.isNull() && e1.tagName() == "field" && e.attribute("dataName") != QString() )
+            if ( !e1.isNull() && e1.tagName() == "field" )
+            {
+               printf("QcjDataXML::getFieldNames(): Found form definition e1 |%s|!\n", qPrintable(e1.tagName()));
+               if ( e1.attribute("dataName") != QString() ) 
+               {
+                  printf("QcjDataXML::getFieldNames(): Attribute dataName = |%s|\n", qPrintable(e1.attribute("dataName")));
+                  fflush(stdout);
+                  QString data_name = e1.attribute("dataName");
+                  QString label = e1.attribute("label");
+                  rv.insert(data_name, label);
+               }
+            }
+            printf("QcjDataXML::getFieldNames():Moving to next datafield\n");
+            fflush(stdout);
+            n1 = n1.nextSibling();
+            printf("QcjDataXML::getFieldNames():n1 = %d!\n", n1.isNull());
+            fflush(stdout);
+         }
+         break;
+      }
+      else if ( e.attribute("name") != QString()) 
+         printf("QcjDataXML::getFieldNames():skipping form definition |%s|!\n", qPrintable(e.attribute("name")));
+      else
+         printf("QcjDataXML::getFieldNames():skipping unnamed definition\n");
+      n = n.nextSibling();
+   }
+#endif
+   qDebug() << "Exiting rv = " << rv;
    return(rv);
 }
 
