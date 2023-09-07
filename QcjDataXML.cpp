@@ -125,16 +125,18 @@ std::vector<struct QcjDataFields> QcjDataXML::getFields(QString name, QWidget *p
    std::vector<struct QcjDataFields> rv;
 #ifndef QT4_DESIGNER_PLUGIN
    struct QcjDataFields *p;
-//   printf("QcjDataXML::getFields():Entry, looking for |%s|, parent = 0x%lx!\n", qPrintable(name), (long)parent);
+   qDebug() << "Entry, looking for" << name;
    QDomElement docElem = def.documentElement();
 
    QDomNode n = docElem.firstChild();
    while ( !n.isNull() ) 
    {
       QDomElement e = n.toElement(); // try to convert the node to an element.
+      qDebug() << "have element type = " << e.tagName() << ", name = " << e.attribute("name");
       if ( !e.isNull() && e.tagName() == "form" && e.attribute("name") != QString() && e.attribute("name") == name ) 
       {
-         QString focusName = e.attribute("focus");
+         qDebug() << "Have match!";
+QString focusName = e.attribute("focus");
          QString keyField = e.attribute("key_field");
          QString valueField = e.attribute("value_field");
 //         printf("QcjDataXML::getFields():Found form definition e |%s|\n", qPrintable(e.attribute("name"));
@@ -175,113 +177,94 @@ std::vector<struct QcjDataFields> QcjDataXML::getFields(QString name, QWidget *p
                }
                if ( e1.attribute("label") != QString() ) 
                {
-//                  printf("QcjDataXML::getFields():Attribute label = |%s|\n", qPrintable(e1.attribute("label")));
-                  fflush(stdout);
+                  qDebug() << "attribute label = " << e1.attribute("label");
                   p->label = e1.attribute("label");
                }
                if ( e1.attribute("row") != QString() ) 
                {
-//                  printf("QcjDataXML::getFields():Attribute row = |%s|\n", qPrintable(e1.attribute("row")));
-                  fflush(stdout);
+                  qDebug() << "attribute row = " << e1.attribute("row");
                   p->row = e1.attribute("row").toInt();
                }
                if ( e1.attribute("col") != QString() ) 
                {
-//                  printf("QcjDataXML::getFields():Attribute col = |%s|\n", qPrintable(e1.attribute("col")));
-                  fflush(stdout);
+                  qDebug() << "attribute col = " << e1.attribute("col");
                   p->col = e1.attribute("col").toInt();
                }
                if ( e1.attribute("rowspan") != QString() ) 
                {
-//                  printf("QcjDataXML::getFields():Attribute rowspan = |%s|\n", qPrintable(e1.attribute("rowspan")));
-                  fflush(stdout);
+                  qDebug() << "attribute rowspan = " << e1.attribute("rowspan");
                   p->rowSpan = e1.attribute("rowspan").toInt();
                }
                if ( e1.attribute("colspan") != QString() ) 
                {
-//                  printf("QcjDataXML::getFields():Attribute colspan = |%s|\n", qPrintable(e1.attribute("colspan")));
-                  fflush(stdout);
+                  qDebug() << "attribute colspan = " << e1.attribute("colspan");
                   p->colSpan = e1.attribute("colspan").toInt();
                }
                if ( e1.attribute("min_width") != QString() ) 
                {
-//                  printf("QcjDataXML::getFields():Attribute min_width = |%s|\n", qPrintable(e1.attribute("min_width")));
-                  fflush(stdout);
+                  qDebug() << "attribute min_width = " << e1.attribute("min_width");
                   p->minWidth = e1.attribute("min_width").toInt();
                }
                if ( e1.attribute("max_width") != QString() ) 
                {
-//                  printf("QcjDataXML::getFields():Attribute max_width = |%s|\n", qPrintable(e1.attribute("max_width")));
-                  fflush(stdout);
+                  qDebug() << "attribute max_width = " << e1.attribute("max_width");
                   p->maxWidth = e1.attribute("max_width").toInt();
                }
                if ( e1.attribute("read_only") != QString() ) 
                {
-//                  printf("QcjDataXML::getFields():Attribute read_only = |%s|\n", qPrintable(e1.attribute("read_only")));
-                  fflush(stdout);
+                  qDebug() << "attribute read_only = " << e1.attribute("read_only");
                   p->ro = e1.attribute("read_only").toInt();
                }
                if ( e1.attribute("options") != QString() ) 
                {
-//                  printf("QcjDataXML::getFields():Attribute label = |%s|\n", qPrintable(e1.attribute("label")));
-                  fflush(stdout);
+                  qDebug() << "attribute options = " << e1.attribute("options");
                   p->options = e1.attribute("options");
                }
                if ( e1.attribute("format") != QString() ) 
                {
-//                  printf("QcjDataXML::getFields():Attribute label = |%s|\n", qPrintable(e1.attribute("label")));
-                  fflush(stdout);
+                  qDebug() << "attribute format = " << e1.attribute("format");
                   p->format = e1.attribute("format");
                }
                if ( e1.attribute("align") != QString() ) 
                {
-//                  printf("QcjDataXML::getFields():Attribute label = |%s|\n", qPrintable(e1.attribute("label")));
-                  fflush(stdout);
+                  qDebug() << "attribute align = " << e1.attribute("align");
                   p->align = e1.attribute("align");
                }
                if ( e1.attribute("color") != QString() ) 
                {
-//                  printf("QcjDataXML::getFields():Attribute label = |%s|\n", qPrintable(e1.attribute("label")));
-                  fflush(stdout);
+                  qDebug() << "attribute color = " << e1.attribute("color");
                   p->color = e1.attribute("color");
                }
                if ( e1.attribute("bgcolor") != QString() ) 
                {
-                  printf("QcjDataXML::getFields():Attribute label = |%s|\n", qPrintable(e1.attribute("label")));
-                  fflush(stdout);
+                  qDebug() << "attribute bgcolor = " << e1.attribute("bgcolor");
                   p->bgcolor = e1.attribute("bgcolor");
                }
                if ( e1.attribute("width") != QString() ) 
                {
-                  printf("QcjDataXML::getFields():Attribute label = |%s|\n", qPrintable(e1.attribute("label")));
-                  fflush(stdout);
+                  qDebug() << "attribute width = " << e1.attribute("width");
                   p->width = e1.attribute("width");
                }
                if ( e1.attribute("height") != QString() ) 
                {
-                  printf("QcjDataXML::getFields():Attribute label = |%s|\n", qPrintable(e1.attribute("label")));
-                  fflush(stdout);
+                  qDebug() << "attribute height = " << e1.attribute("height");
                   p->height = e1.attribute("height");
                }
                if ( e1.attribute("default") != QString() ) 
                {
-                  printf("QcjDataXML::getFields():Attribute default = |%s|\n", qPrintable(e1.attribute("default")));
-                  fflush(stdout);
+                  qDebug() << "attribute default = " << e1.attribute("default");
                   p->defvalue = e1.attribute("default");
                }
                if ( e1.attribute("search") != QString() ) 
                {
-                  printf("QcjDataXML::getFields():Attribute label = |%s|\n", qPrintable(e1.attribute("label")));
-                  fflush(stdout);
+                  qDebug() << "attribute search = " << e1.attribute("search");
                   p->search = e1.attribute("search");
                }
                if ( e1.attribute("type") != QString() ) 
                {
-                  printf("QcjDataXML::getFields():Attribute label = |%s|\n", qPrintable(e1.attribute("type")));
-                  fflush(stdout);
+                  qDebug() << "attribute type = " << e1.attribute("type");
                   p->fieldType = e1.attribute("type");
                }
-
 
                if ( parent != NULL ) 
                {
@@ -599,6 +582,29 @@ std::vector<struct QcjDataFields> QcjDataXML::getFields(QString name, QWidget *p
 }
 
 /*!
+      \fn QcjDataFieldMap QcjDataXml::getFieldsMap(QString xmldef, QWidget *parent)
+
+       Calls getFields to return a vector of field definitions if found.
+       It will then convert the vector of fields definitions into a QcjDataFieldMap
+       with the key being the field name.
+       
+       Returns a QcjDataFieldMap of the field defintions.
+*/ 
+QcjDataFieldMap QcjDataXML::getFieldsMap(QString config, QWidget *parent)
+{
+   QcjDataFieldMap rv;
+   QcjDataFieldStdVector fds = pFormDef->getFields(config, nullptr);
+
+   qDebug() << "fds count: " << fds.size();
+   for (unsigned int idx = 0; idx < fds.size(); idx++)
+   {
+      QcjDataFields field_def = fds.at(idx);
+      rv.insert(field_def.dataName, field_def);
+   }
+   return(rv);
+}
+
+/*!
       \fn QString QcjDataXML::getTable(QString name)
 
        Returns  the name of the table for the definition named by the parameter <em>name</em>
@@ -697,7 +703,7 @@ QMap<QString, QString> QcjDataXML::getTableNames(QString name)
 */ 
 QString QcjDataXML::getNewIndex(QString name)
 {
-   QString rv = QString::null;
+   QString rv = QString();
 
 #ifndef QT4_DESIGNER_PLUGIN
    printf("QcjDataXML::getNewIndex():Entry, looking for |%s|!\n", qPrintable(name));
@@ -1200,6 +1206,46 @@ bool QcjDataXML::confirmDelete(QString name, QcjDataForm *form)
    }
 #endif
    return(rv);
+}
+
+QVariant QcjDataXML::getFieldDefault(const QcjDataFields &field_def)
+{
+   QString defval = field_def.defvalue;
+
+   if (defval.isEmpty())
+   {
+      if (defval.startsWith("config:") || defval.startsWith("sqlquery:"))
+      {
+         QStringList sl = defval.split(":");
+         if (sl[0] == "config")
+         {
+            defval = pFormDef->getConfigurationDefault(sl[1]);
+         }
+         else if (sl[0] == "sqlquery")
+         {
+            QString sql = sl[1];
+            printf("QcjDataForm::getDefaultFieldValue():sqlquery sql = |%s|\n", qPrintable(sql));
+            fflush(stdout);
+            QSqlQuery *query = new QSqlQuery(sql);
+            if (query->next()) 
+            {
+               if ( (query->value(0)) == QVariant::Invalid ) 
+               {
+                  defval = query->value(0).toString();
+               }
+            }
+         }
+      }
+      if (field_def.fieldType == "integer")
+      {
+         defval = "0";
+      }
+      if (field_def.fieldType == "money" || field_def.fieldType == "double")
+      {
+         defval = "0.00";
+      }
+   }
+   return(stringToVariant(field_def, defval));
 }
 
 /*!
@@ -2260,11 +2306,11 @@ QMap<QString, QVariant> QcjDataXML::getResourceMap(QString blockName)
 }
 
 /*!
-   \fn QStringList QcjDataXML::getResourceNames(QString groupName = QString::null)
+   \fn QStringList QcjDataXML::getResourceNames(QString groupName = QString())
 
    Returns a list of resource names in the requested group. 
    
-   If the group is QString::null then it will return a list of all resource names 
+   If the group is QString() then it will return a list of all resource names 
    found.
 */
 QStringList QcjDataXML::getResourceNames(QString group)
@@ -2281,7 +2327,7 @@ QStringList QcjDataXML::getResourceNames(QString group)
       printf("QcjDataXML::getResourceNames():Have node, tag is |%s|, group is |%s|\n", qPrintable(e.tagName()), qPrintable(e.attribute("group")));
       fflush(stdout);
       if ( !e.isNull() && e.tagName() == "resource" && 
-           ( group == QString::null || 
+           ( group == QString() || 
              ( e.hasAttribute("group") && 
                e.attribute("group") == group ) )
          )
@@ -2333,3 +2379,191 @@ bool QcjDataXML::resourceHasProperties(QString blockName)
    return(false);
 }
 
+QVariant QcjDataXML::stringToVariant(const QcjDataFields &field_def, const QString &value)
+{
+   QVariant rv;
+   QString type = field_def.fieldType.toLower();
+
+   /*********/
+   /* Bools */
+   /*********/
+   if (type == "bool" || type == "yesno")
+   {
+      if (value.toLower() == "t" || value.toLower() == "true" ||
+          value.toLower() == "y" || value.toLower() == "yes")
+         return(QVariant("Y"));
+      else
+         return(QVariant("N"));
+   }
+
+   /****************/
+   /* Real Numbers */
+   /****************/
+   if (type == "double" || type == "money")
+      return(QVariant(value.toDouble()));
+
+
+   /************/
+   /* Integers */
+   /************/
+   if (type == "integer")
+      return(QVariant(value.toInt()));
+
+   /*********/
+   /* Dates */
+   /*********/
+   if (type == "date")
+      return(QVariant(value));
+
+   /**************************************/
+   /* Binary Data (no string equivalent) */
+   /**************************************/
+   if (type == "image" || type == "photo")
+      return(QVariant());
+   
+   /***************/
+   /* String data */
+   /***************/
+   return(QVariant(value));
+}
+
+/*!
+ *    \fn xlateRecordToForm
+ *
+ *    This function will return a VariantHash of the passed in recordof values
+ *    with the key set to the dataName for each field found in the input hash 
+ *    with the label of the field'
+*/
+QcjLib::VariantHash QcjDataXML::xlateRecordToForm(const QString &config, const QSqlRecord &rec) const
+{
+   QVariantHash rv;
+
+   qDebug() << "enter: config = " << config;
+   QcjDataFieldStdVector fds = pFormDef->getFields(config, nullptr);
+
+   qDebug() << "fds count: " << fds.size();
+   for (unsigned int idx = 0; idx < fds.size(); idx++)
+   {
+      QcjDataFields field_def = fds.at(idx);
+      qDebug() << "field_def[" << idx << "]: label: " << field_def.label
+                                      << " field name: " << field_def.dataName;
+      if (rec.contains(field_def.dataName))
+      {
+         QVariant value = rec.value(field_def.dataName);
+         qDebug() << "Adding value for " << field_def.dataName
+//                  << ") of " << rec.value(field_def.label)
+                  << " to form element: " << field_def.label;
+         rv.insert(field_def.label, value);
+      }
+   }
+
+   /**************************************************************************/
+   /* Add any fields in rec that were not defined in the field definitions.  */
+   /**************************************************************************/
+   for (int idx = 0; idx < rec.count(); idx++)
+   {
+      QString name = rec.fieldName(idx);
+      if ( ! rv.contains(name))
+      {
+         qDebug() << "Adding extra field: " << name;
+         rv.insert(name, rec.value(name));
+      }
+   }
+
+   return(rv);
+}
+
+/*!
+ *    \fn xlateFormFromFields
+ *
+ *    This function will return a VariantHash of the passed in Hash of fields
+ *    with the key set to the dataName for each field found in the input hash 
+ *    with the label of the field'
+*/
+QcjLib::VariantHash QcjDataXML::xlateFormToFields(const QString &config, const QcjLib::VariantHash &item) const
+{
+   QVariantHash rv;
+   qDebug() << "enter: config = " << config;
+   qDebug() << "item keys:" << item.keys();
+   std::vector<struct QcjDataFields> fds = pFormDef->getFields(config, nullptr);
+
+   qDebug() << "fds count: " << fds.size();
+   for (unsigned int idx = 0; idx < fds.size(); idx++)
+   {
+      QcjDataFields field_def = fds.at(idx);
+      qDebug() << "field_def[" << idx << "]: label: " << field_def.label
+                                      << " field name: " << field_def.dataName;
+      if (item.contains(field_def.label))
+      {
+         QString value;
+         if (field_def.fieldType == "photo")
+         {
+            value = QString(item.value(field_def.label).toByteArray().toBase64().data());
+         }
+         else if (field_def.fieldType == "money")
+         {
+            value = item.value(field_def.label).toString().remove("$");
+#if 0
+            static QRegularExpression re("\\D*(\\d*\\.\\d{,2})\\D*");
+            QRegularExpressionMatch match = re.match(item.value(field_def.label).toString());
+            if (match.hasMatch())
+            {
+               value = match.captured(1);
+            }
+            else
+            {
+               value = "0.00";
+            }
+#endif
+         }
+         else if (field_def.fieldType != "yesno")
+         {
+            QVariant val = item.value(field_def.label);
+            if (val.type() == QVariant::StringList)
+            {
+               value = val.toStringList().join(",");
+            }
+            else
+            {
+               value = val.toString();
+            }
+            QString fmt = field_def.format;
+            char pad = ' ';
+            if ( !  fmt.isEmpty())
+            {
+               if (fmt.startsWith("9"))
+               {
+                  pad = '0';
+               }
+               value = value.rightJustified(fmt.length(), pad);
+            }
+         }
+         else
+         {
+            value = item.value(field_def.label).toString();
+         }
+
+         if (value.isEmpty())
+         {
+            value = pFormDef->getFieldDefault(field_def).toString();
+         }
+         qDebug() << "Adding value(" << field_def.label
+//                  << ") of " << item.value(field_def.label)
+                  << "to field: " << field_def.dataName;
+         rv.insert(field_def.dataName, value);
+      }
+   }
+
+   /**************************************************************************/
+   /* Add any fields in item that were not defined in the field definitions. */
+   /**************************************************************************/
+   foreach (QString name, item.keys())
+   {
+      if ( ! rv.contains(name))
+      {
+         rv.insert(name, item.value(name));
+      }
+   }
+
+   return(rv);
+}

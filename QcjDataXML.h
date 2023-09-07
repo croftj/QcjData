@@ -31,21 +31,23 @@
 #include <QSqlDatabase>
 #include <QSqlRecord>
 #include "QcjDataForm.h"
+#include "QcjLib/Types.h"
 
 class QcjDataXML 
 {
 public:
    QcjDataXML(QString);
-   bool                             confirmDelete(QString name, QcjDataForm *form);
-   std::vector<struct QcjDataFields>   getFields(QString name, QWidget *parent);
-   int                              getCols(QString name);
-   QString        getConfigurationDefault(QString name);
-   QStringList    getConfigurationDetails(QString config, QString name);
-   QString        getConfigurationHelp(QString config);
-   QStringList    getConfigurationItemNames(QString config);
-   QString        getConfigurationName(int id);
-   QStringList    getConfigurationNames();
-   QString        getConfigurationTitle(QString config);
+   QcjDataFieldStdVector   getFields(QString name, QWidget *parent);
+   QcjDataFieldMap         getFieldsMap(QString name, QWidget *parent);
+   bool                    confirmDelete(QString name, QcjDataForm *form);
+   int                     getCols(QString name);
+   QString                 getConfigurationDefault(QString name);
+   QStringList             getConfigurationDetails(QString config, QString name);
+   QString                 getConfigurationHelp(QString config);
+   QStringList             getConfigurationItemNames(QString config);
+   QString                 getConfigurationName(int id);
+   QStringList             getConfigurationNames();
+   QString                 getConfigurationTitle(QString config);
 
    /*!
           \fn QDomDocument *getDomDocument() 
@@ -57,6 +59,7 @@ public:
    {
       return(&def);  
    };
+   QVariant                getFieldDefault(const QcjDataFields &field_def);
    QString                 getFieldLabel(QString name, QString field);
    QString                 getFieldLabelColor(QString name);
    QString                 getFieldLabelBgColor(QString name);
@@ -73,7 +76,7 @@ public:
    QString                 getNewIndex(QString name);
    QString                 getRegExpXlate(QString name, QString field);
    QVariant                getResource(QString blockName);
-   QMap<QString, QVariant> getResourceMap(QString blockName);
+   QcjLib::VariantMap      getResourceMap(QString blockName);
    QStringList             getResourceNames(QString group = QString());
    int                     getRows(QString name);
    QStringList             getSortFields(QString name);
@@ -86,6 +89,9 @@ public:
    bool                    isAutoCommit(QString name);
    bool                    resourceHasProperties(QString blockName);
    void                    setConfigurationMenuId(QString config, int id);
+   QcjLib::VariantHash     xlateFormToFields(const QString &config, const QcjLib::VariantHash &item) const;
+   QcjLib::VariantHash     xlateRecordToForm(const QString &config, const QSqlRecord &rec) const;
+   QVariant                stringToVariant(const QcjDataFields &field_def, const QString &value);
    void                    setDatabase(QSqlDatabase *pdb)
                            {
                               db = pdb;
