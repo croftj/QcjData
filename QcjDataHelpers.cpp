@@ -21,6 +21,7 @@
 **
 *********************************************************************************/
 #include <QBuffer>
+#include <QCryptographicHash>
 #include <QDebug>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -661,18 +662,35 @@ void QcjTextBlockEdit::setText(QString s)
 }
 
 #ifndef NO_PHOTO_SELECT
-QByteArray QcjPhotoEntry::get() const
+QString QcjPhotoEntry::md5sum() const
 {
-   printf("QcjPhotoEntry::get(): Enter/Exit, ba size = %d\n", ba.size());
-   fflush(stdout);
-   return(ba);
+   QString sum;
+   sum = QString(QCryptographicHash::hash(m_ba, QCryptographicHash::Md5).toHex().constData());
+   return(sum);
 }
 
-void QcjPhotoEntry::set(QByteArray _ba)
+bool QcjPhotoEntry::match(QByteArray ba) const
 {
-   printf("QcjPhotoEntry::set(): Enter, pic size = %d\n", _ba.size());
+   QString sum1;
+   QString sum2;
+   sum1 = QString(QCryptographicHash::hash(m_ba, QCryptographicHash::Md5).constData());
+   sum2 = QString(QCryptographicHash::hash(ba, QCryptographicHash::Md5).constData());
+   return(sum1 == sum2);
+}
+
+QByteArray QcjPhotoEntry::get() const
+{
+   printf("QcjPhotoEntry::get(): Enter/Exit, ba size = %d\n", m_ba.size());
    fflush(stdout);
-   ba = _ba;
+   qDebug() << "md5sum: " << md5sum();
+   return(m_ba);
+}
+
+void QcjPhotoEntry::set(QByteArray ba)
+{
+   printf("QcjPhotoEntry::set(): Enter, pic size = %d\n", ba.size());
+   fflush(stdout);
+   m_ba = ba;
    if ( ba.size() == 0 ) 
    {
       setText("<html>Double click</html>");
@@ -680,16 +698,18 @@ void QcjPhotoEntry::set(QByteArray _ba)
    else 
    {
       QPixmap pm;
-      pm.loadFromData(ba);
-      printf("QcjPhotoEntry::set(): Have margin of %d\n", margin());
-      printf("QcjPhotoEntry::set(): Scaling to height of %d\n", height() - margin() - 10);
-   //   pm = pm.scaledToWidth(maximumWidth());
-      pm = pm.scaledToHeight(height() - margin() - 10);
-      setScaledContents(true);
+      pm.loadFromData(m_ba);
+      pm = pm.scaledToWidth(m_width);
       setPixmap(pm);
    }
+   qDebug() << "md5sum: " << md5sum();
    printf("QcjPhotoEntry::set(): Exit\n");
    fflush(stdout);
+}
+
+void QcjPhotoEntry::setWidth(int width)
+{
+   m_width = width;
 }
 
 void QcjPhotoEntry::mouseDoubleClickEvent(QMouseEvent*) 
@@ -699,10 +719,10 @@ void QcjPhotoEntry::mouseDoubleClickEvent(QMouseEvent*)
    this->setFocus();
    QcjPhotoSelect dlg(pConfig->value("PhotoFolder", ".").toString(), this);
    dlg.restoreState(pConfig);
-   if ( ba.size() > 0 ) 
+   if ( m_ba.size() > 0 ) 
    {
       QPixmap pm;
-      pm.loadFromData(ba);
+      pm.loadFromData(m_ba);
       dlg.setPixmap(pm);
    }
    if ( dlg.exec() == QDialog::Accepted ) 
@@ -714,22 +734,17 @@ void QcjPhotoEntry::mouseDoubleClickEvent(QMouseEvent*)
       printf("QcjPhotoEntry::mouseDoubleClickEvent(): have path of |%s|, suffix |%s|\n", qPrintable(path), qPrintable(fi.suffix()));
       pConfig->setValue("PhotoFolder", path);
       QPixmap pm = dlg.pixmap();
-      ba.clear();
-      QBuffer buf(&ba);
+      m_ba.clear();
+      QBuffer buf(&m_ba);
       if ( pm.save(&buf, qPrintable(fi.suffix())) )
       {
-         set(ba);
-   ////      printf("QcjPhotoEntry::mouseDoubleClickEvent(): Scaling to width = %d\n", maximumWidth());
-   ////      pm = pm.scaledToWidth(maximumWidth());
-   //      pm = pm.scaledToHeight(height());
-   //      setScaledContents(false);
-   //      setPixmap(pm);
-         printf("QcjPhotoEntry::mouseDoubleClickEvent(): ba size = %d\n", ba.size());
+         set(m_ba);
+         printf("QcjPhotoEntry::mouseDoubleClickEvent(): m_ba size = %d\n", m_ba.size());
          printf("QcjPhotoEntry::mouseDoubleClickEvent(): Emitting filename\n");
          fflush(stdout);
          emit filename(fi.fileName());
          emit editingFinished();
-         printf("QcjPhotoEntry::mouseDoubleClickEvent(): ba size = %d\n", ba.size());
+         printf("QcjPhotoEntry::mouseDoubleClickEvent(): m_ba size = %d\n", m_ba.size());
          fflush(stdout);
          dlg.saveState(pConfig);
       }

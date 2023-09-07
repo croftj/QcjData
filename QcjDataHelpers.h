@@ -54,7 +54,7 @@
        classes to hold the information needed to represent the data in
        the database for the particular form or table widget.
 */ 
-struct QcjDataFields 
+typedef struct QcjDataFields 
 {
    QString     dataName;
    QString     label;
@@ -82,8 +82,11 @@ struct QcjDataFields
    QString     search;
    QValidator  *validator;
    bool        focusWidget;
-};
+} QcjDataFieldDef;
 
+typedef QList<QcjDataFieldDef> QcjDataFieldList;
+typedef QHash<QString, QcjDataFieldDef> QcjDataFieldMap;
+typedef std::vector<QcjDataFieldDef> QcjDataFieldStdVector;
 
 class QcjStringSelect : public QComboBox 
 {
@@ -608,8 +611,11 @@ public:
       m_pname = "photo";
    };
 
-   QByteArray get() const;
-   void set(QByteArray);
+   bool        match(QByteArray ba) const;
+   QString     md5sum() const;
+   QByteArray  get() const;
+   void        set(QByteArray);
+   void        setWidth(int width);
 
    void setPName(QString name)
    {
@@ -631,8 +637,9 @@ protected:
    void mouseDoubleClickEvent (QMouseEvent *evt);
 
 private:
-   QByteArray     ba;
+   QByteArray     m_ba;
    QString        m_pname;
+   int            m_width;
 };
 #endif
 
