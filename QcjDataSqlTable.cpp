@@ -27,6 +27,7 @@
 #include "QcjData/QcjDataLogin.h"
 #include "QcjData/QcjDataSqlTable.h"
 #include "QcjData/QcjDataStatics.h"
+#include "QcjLib/SqlTableModel.h"
 
 /*!
        \class QcjDataSqlTable
@@ -413,13 +414,20 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
       return(true);
    }
 
-
    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
    if ( pQuery == NULL ) 
    {
       printf("QcjDataSqlTable::refresh(): Query is null\n");
       pQuery = new QSqlQuery(*myDb);
-      pModel = new QSqlQueryModel(this);
+      if (true || m_delegates)
+      {
+         pModel = new QcjLib::SqlTableModel(this, *pDb, (m_delegates == false) ? true : false,
+                                          readXmlDef());
+      }
+      else
+      {
+         pModel = new QSqlTableModel(this);
+      }
       QTableView::setModel(pModel);
       if ( rows > 0 ) 
       {

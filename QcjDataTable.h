@@ -48,6 +48,7 @@ class QcjDataTable : public QcjDataSqlTable
 {
    Q_OBJECT
    Q_PROPERTY (QString xml_definition READ readXmlDef WRITE writeXmlDef)
+   Q_PROPERTY (bool delegates READ readDelegates WRITE writeDelegates)
    
 public:
    QcjDataTable(QWidget *pParent = 0);
@@ -57,12 +58,14 @@ public:
    ~QcjDataTable() {};
 
    QString readXmlDef() const { return(m_xmldef); };
+   bool readDelegates() const { return(m_delegates); };
    void setDatabase(bool _m_autoRefresh = true);
    void setDatabase(QSqlDatabase *pdb, bool _m_autoRefresh = true);
    void setFilter(QList<QLineEdit*> fields);
    void setFilter(QString clause);
    void seek(int index);
    void writeXmlDef(QString s);
+   void writeDelegates(bool flag);
 
 public slots:   
    /*!

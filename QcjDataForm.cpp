@@ -2374,7 +2374,6 @@ QString QcjDataForm::getDefaultFieldValue(QString defstring)
       else if ( type == "sqlquery" ) 
       {
          QString sql = name;
-         QString init;
          printf("QcjDataForm::getDefaultFieldValue():sqlquery sql = |%s|\n", qPrintable(sql));
          fflush(stdout);
          QSqlQuery *query = new QSqlQuery(sql);

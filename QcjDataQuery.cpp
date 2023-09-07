@@ -1,8 +1,16 @@
 #include "QcjDataQuery.h"
 
 #include "QcjDataStatics.h"
+#include "QcjLib/Exceptions.h"
+#include "QcjLib/Types.h"
 #include <QDebug>
+#include <QSqlDriver>
+#include <QSqlError>
+#include <QSqlField>
+#include <QSqlRecord>
 #include <QStringList>
+
+using namespace QcjLib;
 
 namespace QcjDataQuery
 {
@@ -41,4 +49,139 @@ namespace QcjDataQuery
          query.bindValue(":" + field, field_map.value(field));
       }
    }
-};
+
+   void updateRecord(QSqlTableModel &model, int row, const QcjLib::VariantHash &fields)
+   {
+      QSqlRecord rec(model.record());
+      qDebug() << "rec = " << rec;
+
+      for (int idx = 0; idx < rec.count(); idx++)
+      {
+         qDebug().noquote() << "rec field: " << rec.fieldName(idx) << "idx: " << idx;
+         if (fields.contains(rec.fieldName(idx)))
+         {
+            if (fields.value(rec.fieldName(idx)).type() == QVariant::StringList)
+            {
+               rec.setValue(idx, fields.value(rec.fieldName(idx)).toStringList().join(","));
+            }
+            else
+            {
+               rec.setValue(idx, fields.value(rec.fieldName(idx)));
+            }
+         }
+      }
+      qDebug().noquote() << "sql = " << pDb->driver()->sqlStatement(QSqlDriver::UpdateStatement,
+                                                          model.tableName(),
+                                                          rec,
+                                                          false);
+      if ( ! model.setRecord(-1, rec))
+      {
+         QString msg = model.database().lastError().text();
+         throw QcjLib::SqlException(msg);
+      }
+   }
+
+   void insertRecord(QSqlTableModel &model, const VariantHash &fields)
+   {
+      QSqlRecord rec(model.record());
+      qDebug() << "rec = " << rec;
+
+      for (int idx = 0; idx < rec.count(); idx++)
+      {
+         qDebug().noquote() << "rec field: " << rec.fieldName(idx) << "idx: " << idx;
+         if (fields.contains(rec.fieldName(idx)))
+         {
+            if (fields.value(rec.fieldName(idx)).type() == QVariant::StringList)
+            {
+               rec.setValue(idx, fields.value(rec.fieldName(idx)).toStringList().join(","));
+            }
+            else
+            {
+               rec.setValue(idx, fields.value(rec.fieldName(idx)));
+            }
+         }
+         else if (rec.fieldName(idx) == "ident")
+         {
+            qDebug() << "have ident field, idx = " << idx;
+            QString def_value;
+            if (rec.field(idx).defaultValue() != QVariant())
+            {
+               def_value = rec.field(idx).defaultValue().toString();
+            }
+            else
+            {
+               qDebug() << "Building index query manually";
+               def_value = QString("nextval('") + model.tableName() + "_"
+                         + rec.fieldName(idx) + "_seq'::regclass)";
+            }
+            qDebug() << "def_value = " << def_value;
+            QString sql = "select " + def_value;
+            qDebug().noquote() << "ident query sql: " << sql;
+            QSqlQuery q1(sql);
+            if ( q1.isActive() )
+            {
+               if ( q1.next() ) 
+               {
+                  qDebug() << "ident (idx = " << idx << ") value: " << q1.value(0).toString();
+                  rec.setValue(idx, q1.value(0).toString());
+               }
+            }
+         }
+         else if (rec.field(idx).defaultValue().isValid())
+         {
+            QVariant defval = rec.field(idx).defaultValue();
+            rec.setValue(idx, defval);
+         }
+      }
+      qDebug().noquote() << "sql = " << pDb->driver()->sqlStatement(QSqlDriver::InsertStatement,
+                                                          model.tableName(),
+                                                          rec,
+                                                          false);
+      if ( ! model.insertRecord(-1, rec))
+      {
+         QString msg = model.database().lastError().text();
+         throw QcjLib::SqlException(msg);
+      }
+   }
+
+   int getLastInsertIndex(const QString &xmldef)
+   {
+      int idx = 0;
+      QString dbTable = pFormDef->getTable(xmldef);
+      QString indexname = pFormDef->getIndexField(xmldef);
+
+      if ( pDb->driverName() == "QPSQL" ||
+           pDb->driverName() == "QMYSQL" || 
+           pDb->driverName() == "QSQLITE") 
+      {
+         QString sql;
+
+         if ( pDb->driverName() == "QPSQL" )
+            sql = "select currval('" + dbTable + "_" + indexname + "_seq" + "')";
+         else if ( pDb->driverName() == "QMYSQL" )
+            sql = "select LAST_INSERT_ID() from " + dbTable + " limit 1";
+         else
+            sql = "select last_insert_rowid() from " + dbTable + " limit 1";
+
+         qDebug() << "sql = " << sql;
+         QSqlQuery q2;
+         q2.prepare(sql);
+         if ( q2.exec() )
+         {
+            if ( q2.next() ) 
+            {
+               idx = q2.record().field(0).value().toInt();
+            }
+         }
+         else 
+         {
+            qWarning() << "Error fetching last insert id for table " << dbTable 
+                       << ", error: " << q2.lastError().text();
+            QString msg = q2.lastError().text();
+            throw QcjLib::SqlException(msg);
+         }
+      }
+      qDebug() << "idx =" << idx << ", indexname = " << indexname;
+      return(idx);   
+   }
+}

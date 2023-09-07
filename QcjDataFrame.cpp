@@ -176,13 +176,11 @@ void QcjDataFrame::haveActivatedAction(bool)
 #ifndef QT4_DESIGNER_PLUGIN
    printf("QcjDataFrame::haveActivatedAction(): Enter\n");
    fflush(stdout);
-   if ( enabled[Qcj::DownAction] ) 
+   printf("QcjDataFrame::haveDownAction(): Action Enabled\n");
+   if ( pTable != 0 ) 
    {
-      printf("QcjDataFrame::haveDownAction(): Action Enabled\n");
-      if ( pTable != 0 ) 
-      {
-         pTable->activateCurrentRecord();
-      }
+      pTable->activateCurrentRecord();
+      emit actionActivated(Qcj::ActivatedAction);
    }
    printf("QcjDataFrame::haveActivatedAction(): Exit\n");
    fflush(stdout);
@@ -499,6 +497,23 @@ void QcjDataFrame::haveRowSelected(QSqlRecord *rec)
    }
    setState(Qcj::Updated);
    printf("QcjDataFrame::haveRowSelected(): Exit\n");
+   fflush(stdout);
+#endif
+}
+
+void QcjDataFrame::haveRowActivated(QSqlRecord *rec)
+{
+#ifndef QT4_DESIGNER_PLUGIN
+   printf("QcjDataFrame::haveRowActivated(): Enter, pForm = %ld\n", (unsigned long)pForm);
+   fflush(stdout);
+   if ( pForm != 0 ) 
+   {
+      printf("QcjDataFrame::haveRowActivated(): Refreshing form\n");
+      pForm->refresh(rec);
+   }
+   setState(Qcj::Updated);
+   emit actionActivated(Qcj::ActivatedAction);
+   printf("QcjDataFrame::haveRowActivated(): Exit\n");
    fflush(stdout);
 #endif
 }

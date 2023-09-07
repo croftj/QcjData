@@ -58,6 +58,7 @@ public:
       {
          pTable->setFocusPolicy(Qt::NoFocus);
          connect(pTable, SIGNAL(rowSelected(QSqlRecord*)), this, SLOT(haveRowSelected(QSqlRecord*)));
+         connect(pTable, SIGNAL(rowActivated(QSqlRecord*)), this, SLOT(haveRowActivated(QSqlRecord*)));
          if ( pForm != 0 ) 
             connect(pTable, SIGNAL(emptyTable()), pForm, SLOT(clearForm()));
       }
@@ -110,6 +111,7 @@ protected slots:
    void haveUpAction(bool = false);
 
    void haveRowSelected(QSqlRecord*);
+   void haveRowActivated(QSqlRecord *rec);
    void haveUpdated();
 
 private:

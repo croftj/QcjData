@@ -57,7 +57,7 @@ public:
    void setSort(QStringList sortList);
    void setTableName(QString name);
    QStringList sort();
-   void activateCurrentRecord();
+   virtual QString readXmlDef() const = 0;
 //   virtual void setFieldItem(QSqlField xf, QTableWidgetItem *i);
 
 public slots:
@@ -71,6 +71,7 @@ public slots:
    void nextRow();
    void previousRow();
 
+   void activateCurrentRecord();
 /*
    void recordSelected(QTableWidgetItem *, QTableWidgetItem *);
 */
@@ -98,6 +99,7 @@ signals:
    
 protected:
    QSqlDatabase   *myDb;
+   bool           m_delegates;
 
 private:
    void seekRow(int new_row);

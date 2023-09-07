@@ -30,6 +30,7 @@
 #include <qsqldriver.h>
 #include <qsqlrecord.h>
 //Added by qt3to4:
+#include <QDebug>
 #include <QKeyEvent>
 #include <QSqlQuery>
 #include <stdio.h>
@@ -72,6 +73,7 @@ QcjDataTable::QcjDataTable(QWidget *pParent) :
    printf("QcjDataTable::QcjDataTable(): Enter\n");
 //   sqlCursor = NULL;
    m_insertMode  = false;
+   m_delegates = false;
 //   connect(this, SIGNAL(beforeInsert(QSqlRecord *)), this, SLOT(nextIdent(QSqlRecord *)));
    connect((const QObject*)(horizontalHeader()), SIGNAL(sectionClicked(int)), this, SLOT(sortBy(int)));
    printf("QcjDataTable::QcjDataTable(): Exit\n");
@@ -241,6 +243,21 @@ void QcjDataTable::writeXmlDef(QString str)
     m_xmldef = str;
     printf("QcjDataTable::writeXmlDef(): Exit\n");
     fflush(stdout);
+}
+
+/*!
+      \fn void QcjDataTable::writeDelegates(bool flag)
+
+       Saves the name of the XML definition to use for this table.
+       
+       This function should not be called directly by the user.
+       
+       \sa setDatabade()
+*/ 
+void QcjDataTable::writeDelegates(bool flag)
+{
+    qDebug() << "flag = " << flag;
+    m_delegates = flag;
 }
 
 /*!

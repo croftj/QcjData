@@ -21,6 +21,7 @@
 **
 *********************************************************************************/
 
+# include <QCameraInfo>
 # include <QDialog>
 # include <QDir>
 # include <QDirModel>
@@ -47,10 +48,11 @@ QcjPhotoSelect::QcjPhotoSelect(QString defPath, QWidget *parent, Qt::WindowFlags
 //      QDirModel *dm = new QDirModel;
    ui.treeView->setModel(dm);
 //      ui.treeView->setRootIndex(dm->index(QDir::cleanPath(defPath)));
-   ui.treeView->setRootIndex(dm->index("/"));
+//   ui.treeView->setRootIndex(dm->index("/"));
    ui.treeView->setCurrentIndex(dm->index(defPath));
    ui.treeView->setExpanded(dm->index(defPath), true);
    ui.treeView->setColumnWidth(0, 256);
+   ui.treeView->resizeColumnToContents(0);
 
    connect(ui.treeView, SIGNAL(activated(const QModelIndex &)), 
             this, SLOT(haveActivated(const QModelIndex &)));
@@ -61,6 +63,11 @@ QcjPhotoSelect::QcjPhotoSelect(QString defPath, QWidget *parent, Qt::WindowFlags
    ui.graphicsView->setScene(&scene);
    ui.graphicsView->show();
    ui.okBtn->setEnabled(false);
+
+   const QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
+   for (const QCameraInfo &cameraInfo : cameras) {
+      qDebug() << "Found camera: " << cameraInfo.deviceName() << ", descr: " << cameraInfo.description();
+   }
    printf("QcjPhotoSelect::QcjPhotoSelect(): Exit\n");
 }
 

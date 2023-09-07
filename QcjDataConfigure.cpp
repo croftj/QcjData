@@ -267,10 +267,15 @@ void QcjDataConfigure::save()
             pConfig->setValue(name, ((QcjDoubleEntry*)obj)->text());
          else if ( type.toLower() == "integer" ) 
             pConfig->setValue(name, ((QcjIntegerEntry*)obj)->text());
-         else if ( type.toLower() == "yesno" ) 
-            pConfig->setValue(name, ((QcjYesNoEntry*)obj)->text());
          else if ( type.toLower() == "file" || type.toLower() == "directory" )
             pConfig->setValue(name, ((QcjFileEntry*)obj)->text());
+         else if ( type.toLower() == "yesno" ) 
+         {
+            if (((QcjYesNoEntry*)obj)->text() == "Yes")
+               pConfig->setValue(name, "Y");
+            else
+               pConfig->setValue(name, "N");
+         }
       }
       pConfig->sync();
       
