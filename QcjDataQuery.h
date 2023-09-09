@@ -14,6 +14,7 @@ namespace QcjDataQuery
    void insertRecord(QSqlTableModel &model, const QcjLib::VariantHash &fields);
    void updateRecord(QSqlTableModel &model, int row, const QcjLib::VariantHash &fields);
    int getLastInsertIndex(const QString &xmldef);
+   QVariantHash getPrintableData(const QcjLib::VariantHash &fields);
 }
 
 #endif

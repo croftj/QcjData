@@ -3,6 +3,7 @@
 #include "QcjDataStatics.h"
 #include "QcjLib/Exceptions.h"
 #include "QcjLib/Types.h"
+#include <QCryptographicHash>
 #include <QDebug>
 #include <QSqlDriver>
 #include <QSqlError>
@@ -183,5 +184,22 @@ namespace QcjDataQuery
       }
       qDebug() << "idx =" << idx << ", indexname = " << indexname;
       return(idx);   
+   }
+
+   QVariantHash getPrintableData(const VariantHash &fields)
+   {
+      QVariantHash rv;
+      foreach (QString fn, fields.keys())
+      {
+         qDebug() << "fn = " << fn;
+         QVariant val = fields.value(fn);
+         if (val.type() == QMetaType::QByteArray)
+         {
+            val = QVariant(QCryptographicHash::hash(val.toByteArray(), QCryptographicHash::Md5).toHex());
+         }
+         qDebug() << "Adding " << fn << " = " << val;
+         rv.insert(fn, val);
+      }
+      return(rv);
    }
 }
