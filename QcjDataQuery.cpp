@@ -3,6 +3,7 @@
 #include "QcjDataStatics.h"
 #include "QcjLib/Exceptions.h"
 #include "QcjLib/Types.h"
+#include "QcjLib/WidgetUtils.h"
 #include <QCryptographicHash>
 #include <QDebug>
 #include <QSqlDriver>
@@ -201,5 +202,41 @@ namespace QcjDataQuery
          rv.insert(fn, val);
       }
       return(rv);
+   }
+
+   void QuickLaborDialog::setFormValue(const QString &fieldName, const QVariant &value, 
+                                       QWidget *parent)
+   {
+      qDebug() << "Searching for widget for field: " << fieldName;
+      QWidget *wdt = findChildByFieldName(parent, fieldName);
+      if (wdt != nullptr)
+      {
+         if (isA(wdt, "QcjLib::ButtonBoxFrame"))
+         {
+            qDebug() << "Found ButtonBoxFrame";
+            QStringList allChecked = value.toString().split(",");
+            dynamic_cast<QcjLib::ButtonBoxFrame*>(wdt)->checkButtons(allChecked);
+         }
+         else if (isA(wdt, "QCheckBox"))
+         {
+            qDebug() << "Found CheckBox";
+            dynamic_cast<QCheckBox*>(wdt)->setChecked(value.toBool());
+         }
+         else if ( isA(wdt, "QcjPhotoEntry") ) 
+         {
+            qDebug() << "Found " << wdt->objectName();
+            double imageScale = pConfig->value("ImageAdjust", QVariant(100)).toDouble() / 100;
+            int width = 512 * imageScale;
+            qDebug() << "Scaled image width:" << width;
+            wdt->setFixedWidth(width);
+            WidgetUtils::setWidgetValue(wdt, value);
+         }
+         else
+         {
+            qDebug() << "Found " << wdt->objectName();
+            WidgetUtils::setWidgetValue(wdt, value);
+         }
+         wdt->adjustSize();
+      }
    }
 }
