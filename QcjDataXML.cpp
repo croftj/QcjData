@@ -657,37 +657,37 @@ QMap<QString, QString> QcjDataXML::getTableNames(QString name)
       QDomElement e = n.toElement(); // try to convert the node to an element.
       if ( !e.isNull() && e.tagName() == "form" && e.attribute("name") != QString() && e.attribute("name") == name ) 
       {
-         printf("QcjDataXML::getFieldNames():Found form definition e |%s|\n", qPrintable(e.attribute("name")));
+         printf("QcjDataXML::getTableNames():Found form definition e |%s|\n", qPrintable(e.attribute("name")));
          QDomNode n1 = n.firstChild();
          for ( int idx = 0; !n1.isNull(); idx++ ) 
          {
             QDomElement e1 = n1.toElement(); // try to convert the node to an element.
-            printf("QcjDataXML::getFieldNames():Testing for dataName attribute in element of |%s|\n", qPrintable(e1.tagName()));
+            printf("QcjDataXML::getTableNames():Testing for dataName attribute in element of |%s|\n", qPrintable(e1.tagName()));
 //            if ( !e1.isNull() && e1.tagName() == "field" && e.attribute("dataName") != QString() )
             if ( !e1.isNull() && e1.tagName() == "field" )
             {
-               printf("QcjDataXML::getFieldNames(): Found form definition e1 |%s|!\n", qPrintable(e1.tagName()));
+               printf("QcjDataXML::getTableNames(): Found form definition e1 |%s|!\n", qPrintable(e1.tagName()));
                if ( e1.attribute("dataName") != QString() ) 
                {
-                  printf("QcjDataXML::getFieldNames(): Attribute dataName = |%s|\n", qPrintable(e1.attribute("dataName")));
+                  printf("QcjDataXML::getTableNames(): Attribute dataName = |%s|\n", qPrintable(e1.attribute("dataName")));
                   fflush(stdout);
                   QString data_name = e1.attribute("dataName");
                   QString label = e1.attribute("label");
                   rv.insert(data_name, label);
                }
             }
-            printf("QcjDataXML::getFieldNames():Moving to next datafield\n");
+            printf("QcjDataXML::getTableNames():Moving to next datafield\n");
             fflush(stdout);
             n1 = n1.nextSibling();
-            printf("QcjDataXML::getFieldNames():n1 = %d!\n", n1.isNull());
+            printf("QcjDataXML::getTableNames():n1 = %d!\n", n1.isNull());
             fflush(stdout);
          }
          break;
       }
       else if ( e.attribute("name") != QString()) 
-         printf("QcjDataXML::getFieldNames():skipping form definition |%s|!\n", qPrintable(e.attribute("name")));
+         printf("QcjDataXML::getTableNames():skipping form definition |%s|!\n", qPrintable(e.attribute("name")));
       else
-         printf("QcjDataXML::getFieldNames():skipping unnamed definition\n");
+         printf("QcjDataXML::getTableNames():skipping unnamed definition\n");
       n = n.nextSibling();
    }
 #endif
@@ -2430,7 +2430,7 @@ QVariant QcjDataXML::stringToVariant(const QcjDataFields &field_def, const QStri
 /*!
  *    \fn xlateRecordToForm
  *
- *    This function will return a VariantHash of the passed in recordof values
+ *    This function will return a VariantHash of the passed in record of values
  *    with the key set to the dataName for each field found in the input hash 
  *    with the label of the field'
 */

@@ -1,6 +1,7 @@
 #include "QcjDataQuery.h"
 
 #include "QcjDataStatics.h"
+#include "QcjLib/ButtonBoxFrame.h"
 #include "QcjLib/Exceptions.h"
 #include "QcjLib/Types.h"
 #include "QcjLib/WidgetUtils.h"
@@ -13,6 +14,7 @@
 #include <QStringList>
 
 using namespace QcjLib;
+using namespace WidgetUtils;
 
 namespace QcjDataQuery
 {
@@ -39,6 +41,29 @@ namespace QcjDataQuery
       rv = rv.replace("%table%", table);
       rv = rv.replace("%fields%", insertFields.join(","));
       rv = rv.replace("%bindings%", insertBindings.join(","));
+      return(rv);
+   }
+
+   QString updateQuery(const QString &xmldef, const QStringList &fields)
+   {
+      qDebug() << "fields: " << fields;
+      QString rv = "update %table% set %bindings%";
+      QString table = pFormDef->getTable(xmldef);
+      QStringList bindings;
+      QString indexField = pFormDef->getIndexField(xmldef);
+      QStringList table_fields = pFormDef->getFieldNames(xmldef);
+
+      foreach (QString field, fields)
+      {
+         qDebug() << field << " in fieldMap?";
+         if (field != indexField && table_fields.contains(field))
+         {
+            qDebug() << "adding field";
+            bindings << field << " = :" + field;
+         }
+      }
+      rv = rv.replace("%table%", table);
+      rv = rv.replace("%bindings%", bindings.join(","));
       return(rv);
    }
 
@@ -194,7 +219,7 @@ namespace QcjDataQuery
       {
          qDebug() << "fn = " << fn;
          QVariant val = fields.value(fn);
-         if (val.type() == QMetaType::QByteArray)
+         if (static_cast<QMetaType::Type>(val.type()) == QMetaType::QByteArray)
          {
             val = QVariant(QCryptographicHash::hash(val.toByteArray(), QCryptographicHash::Md5).toHex());
          }
@@ -204,7 +229,7 @@ namespace QcjDataQuery
       return(rv);
    }
 
-   void QuickLaborDialog::setFormValue(const QString &fieldName, const QVariant &value, 
+   void setFormValue(const QString &fieldName, const QVariant &value, 
                                        QWidget *parent)
    {
       qDebug() << "Searching for widget for field: " << fieldName;
