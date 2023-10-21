@@ -58,12 +58,13 @@ namespace QcjDataQuery
          qDebug() << field << " in fieldMap?";
          if (field != indexField && table_fields.contains(field))
          {
-            qDebug() << "adding field";
-            bindings << field << " = :" + field;
+            QString field_def = field + " = :" + field;
+            qDebug() << "adding field:" << field_def;
+            bindings << field_def;
          }
       }
       rv = rv.replace("%table%", table);
-      rv = rv.replace("%bindings%", bindings.join(","));
+      rv = rv.replace("%bindings%", bindings.join(", "));
       return(rv);
    }
 
