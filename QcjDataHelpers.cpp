@@ -35,6 +35,7 @@
 
 #ifndef NO_PHOTO_SELECT
 #include "QcjPhotoSelect.h"
+#include "QcjLib/CameraCaptureDialog.h"
 #endif
 
 namespace
@@ -717,6 +718,7 @@ void QcjPhotoEntry::mouseDoubleClickEvent(QMouseEvent*)
    printf("QcjPhotoEntry::mouseDoubleClickEvent(): Enter\n");
    fflush(stdout);
    this->setFocus();
+   QcjLib::CameraCaptureDialog photoDlg(this);
    QcjPhotoSelect dlg(pConfig->value("PhotoFolder", ".").toString(), this);
    dlg.restoreState(pConfig);
    if ( m_ba.size() > 0 ) 

@@ -80,6 +80,11 @@ typedef struct QcjDataFields
    QString     width;
    QString     height;
    QString     search;
+   QString     minValue;
+   QString     maxValue;
+   QString     stepValue;
+   QString     decimals;
+   QString     suffix;
    QValidator  *validator;
    bool        focusWidget;
 } QcjDataFieldDef;

@@ -196,9 +196,11 @@ void QcjDataTable::setFilter(QList<QLineEdit*> fields)
          wdt_text = static_cast<QComboBox*>(wdt)->itemData(static_cast<QComboBox*>(wdt)->currentIndex()).toString();         
       }
 
+      qDebug() << "wdt_text = " << wdt_text;
       if (wdt->property("search_group").isValid())
       {
          QString group_name = wdt->property("search_group").toString();
+         qDebug() << "group_name = " << group_name;
          QStringList field_names = pFormDef->getFieldGrouping(m_xmldef, group_name);
          if ( ! groupNames.contains(group_name))
          {
@@ -215,10 +217,11 @@ void QcjDataTable::setFilter(QList<QLineEdit*> fields)
             {
                where += fn + " = regexp_replace('" + wdt_text + "', " + xlate + ") or ";
             }
-            where += fn + " like '%" + wdt_text + "%'";
+            where += QString("cast(%1 as text) like '%%2%'").arg(fn).arg(wdt_text);
          }
       }
    }
+   qDebug() << "where = " << where;
    setFilter(where);
 }
 

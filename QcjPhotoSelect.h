@@ -41,7 +41,7 @@ class QcjPhotoSelect : public QDialog
    Q_OBJECT
 
 public:
-   QcjPhotoSelect(QString defPath = ".", QWidget *parent = 0, Qt::WindowFlags f = 0);
+   QcjPhotoSelect(QString defPath = ".", QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
    QPixmap pixmap();
    QString fileName();
    int exec();

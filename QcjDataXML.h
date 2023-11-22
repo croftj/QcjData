@@ -37,6 +37,7 @@ class QcjDataXML
 {
 public:
    QcjDataXML(QString);
+   QcjDataFieldDef         getFieldDef(QString xml_def, QString field_name) const;
    QcjDataFieldStdVector   getFields(QString name, QWidget *parent);
    QcjDataFieldMap         getFieldsMap(QString name, QWidget *parent);
    bool                    confirmDelete(QString name, QcjDataForm *form);

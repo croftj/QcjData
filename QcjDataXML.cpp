@@ -91,7 +91,7 @@ QcjDataXML::QcjDataXML(QString dfn)
    if ( !file.open( QIODevice::ReadOnly ) )
    {
       
-//      printf("QcjDataXML::QcjDataXML(): Could not open file\n");
+   //      printf("QcjDataXML::QcjDataXML(): Could not open file\n");
       return;
    }
    if ( !def.setContent( &file, &err, &line, &col ) ) {
@@ -107,6 +107,130 @@ QcjDataXML::QcjDataXML(QString dfn)
    if ( pLocale == 0 ) 
       pLocale = new QLocale();
 #endif
+}
+
+/*!
+      \fn QcjDataFieldDef QcjDataXML::getFieldDefinition(QString xml_def, QString field_name)
+
+       Iterates  through  the  xml  definition  searching for the form
+       section  named by the parameter <em>name</em>. Once the section
+       is  named, appropriate widgets will be created in the case of a
+       form  and  a  vector of field definitions will be generated for
+       use by the calling object.
+       
+       The generated vector will be returned to the caller.
+*/ 
+QcjDataFieldDef QcjDataXML::getFieldDef(QString xml_def, QString field_name) const
+{
+   QcjDataFieldDef field_def;
+#ifndef QT4_DESIGNER_PLUGIN
+   qDebug() << "Entry, looking for" << field_name;
+   QDomElement docElem = def.documentElement();
+
+   QDomNode n = docElem.firstChild();
+   while ( !n.isNull() ) 
+   {
+      QDomElement e = n.toElement(); // try to convert the node to an element.
+//      qDebug() << "have element type = " << e.tagName() << ", name = " << e.attribute("name");
+      if ( !e.isNull() && e.tagName() == "form" && e.attribute("name") != QString() && e.attribute("name") == xml_def ) 
+      {
+         qDebug() << "Have found form!";
+         QString focusName = e.attribute("focus");
+         QString keyField = e.attribute("key_field");
+         QString valueField = e.attribute("value_field");
+         QDomNode n1 = n.firstChild();
+         for ( int idx = 0; !n1.isNull(); idx++ ) 
+         {
+            QDomElement e1 = n1.toElement(); // try to convert the node to an element.
+            qDebug() <<  "searching for field labeled: " << e1.attribute("label");
+            if ( !e1.isNull() && e1.tagName() == "field" && e1.attribute("label") == field_name)
+            {
+               field_def.focusWidget = false;
+               field_def.valueName = valueField;
+               field_def.dataName = keyField;
+               field_def.validator = nullptr;
+
+               qDebug() << "attribute dataName = " << e1.attribute("dataName");
+               field_def.dataName = e1.attribute("dataName");
+               if ( field_def.dataName == focusName ) 
+                  field_def.focusWidget = true;
+               else
+                  field_def.focusWidget = false;
+
+               qDebug() << "attribute key = " << e1.attribute("key");
+               field_def.key = e1.attribute("key");
+               if ( field_def.key == focusName ) 
+                  field_def.focusWidget = true;
+               else
+                  field_def.focusWidget = false;
+
+               qDebug() << "attribute label = " << e1.attribute("label");
+               field_def.label = e1.attribute("label");
+
+               qDebug() << "attribute row = " << e1.attribute("row");
+               field_def.row = e1.attribute("row").toInt();
+
+               qDebug() << "attribute col = " << e1.attribute("col");
+               field_def.col = e1.attribute("col").toInt();
+
+               qDebug() << "attribute rowspan = " << e1.attribute("rowspan");
+               field_def.rowSpan = e1.attribute("rowspan").toInt();
+
+               qDebug() << "attribute colspan = " << e1.attribute("colspan");
+               field_def.colSpan = e1.attribute("colspan").toInt();
+
+               qDebug() << "attribute min_width = " << e1.attribute("min_width");
+               field_def.minWidth = e1.attribute("min_width").toInt();
+
+               qDebug() << "attribute max_width = " << e1.attribute("max_width");
+               field_def.maxWidth = e1.attribute("max_width").toInt();
+
+               qDebug() << "attribute read_only = " << e1.attribute("read_only");
+               field_def.ro = e1.attribute("read_only").toInt();
+
+               qDebug() << "attribute options = " << e1.attribute("options");
+               field_def.options = e1.attribute("options");
+
+               qDebug() << "attribute format = " << e1.attribute("format");
+               field_def.format = e1.attribute("format");
+
+               qDebug() << "attribute align = " << e1.attribute("align");
+               field_def.align = e1.attribute("align");
+
+               qDebug() << "attribute color = " << e1.attribute("color");
+               field_def.color = e1.attribute("color");
+
+               qDebug() << "attribute bgcolor = " << e1.attribute("bgcolor");
+               field_def.bgcolor = e1.attribute("bgcolor");
+
+               qDebug() << "attribute width = " << e1.attribute("width");
+               field_def.width = e1.attribute("width");
+
+               qDebug() << "attribute height = " << e1.attribute("height");
+               field_def.height = e1.attribute("height");
+
+               qDebug() << "attribute init = " << e1.attribute("init");
+               field_def.init = e1.attribute("init");
+
+               qDebug() << "attribute default = " << e1.attribute("default");
+               field_def.defvalue = e1.attribute("default");
+
+               qDebug() << "attribute search = " << e1.attribute("search");
+               field_def.search = e1.attribute("search");
+
+               qDebug() << "attribute type = " << e1.attribute("type");
+               field_def.fieldType = e1.attribute("type");
+
+               // No further need to go on!
+               break;
+            }
+            n1 = n1.nextSibling();
+         }
+      }
+      n = n.nextSibling();
+   }
+#endif
+   return(field_def);
 }
 
 /*!
@@ -132,10 +256,10 @@ std::vector<struct QcjDataFields> QcjDataXML::getFields(QString name, QWidget *p
    while ( !n.isNull() ) 
    {
       QDomElement e = n.toElement(); // try to convert the node to an element.
-      qDebug() << "have element type = " << e.tagName() << ", name = " << e.attribute("name");
+//      qDebug() << "have element type = " << e.tagName() << ", name = " << e.attribute("name");
       if ( !e.isNull() && e.tagName() == "form" && e.attribute("name") != QString() && e.attribute("name") == name ) 
       {
-         qDebug() << "Have match!";
+//         qDebug() << "Have match!";
 QString focusName = e.attribute("focus");
          QString keyField = e.attribute("key_field");
          QString valueField = e.attribute("value_field");
@@ -264,6 +388,35 @@ QString focusName = e.attribute("focus");
                {
                   qDebug() << "attribute type = " << e1.attribute("type");
                   p->fieldType = e1.attribute("type");
+               }
+               if ( e1.hasAttribute("min") )
+               {
+                  qDebug() << "attribute min = " << e1.attribute("min");
+                  p->minValue = e1.attribute("min");
+               }
+
+               if ( e1.hasAttribute("max") )
+               {
+                  qDebug() << "attribute max = " << e1.attribute("max");
+                  p->maxValue = e1.attribute("max");
+               }
+
+               if ( e1.hasAttribute("decimals") )
+               {
+                  qDebug() << "attribute decimals = " << e1.attribute("decimals");
+                  p->maxValue = e1.attribute("decimals");
+               }
+
+               if ( e1.hasAttribute("step") )
+               {
+                  qDebug() << "attribute step = " << e1.attribute("step");
+                  p->maxValue = e1.attribute("step");
+               }
+
+               if ( e1.hasAttribute("suffix") )
+               {
+                  qDebug() << "attribute suffix = " << e1.attribute("suffix");
+                  p->suffix = e1.attribute("suffix");
                }
 
                if ( parent != NULL ) 
