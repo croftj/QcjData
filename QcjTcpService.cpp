@@ -1,6 +1,6 @@
 /*********************************************************************************
 **
-**   $Id: //depot/WorkInProgress/photogrotto/photogrotto.cpp#6 $
+**   $Id$
 **   Copyright (c) 2007 Joe Croft joe@croftj.net
 **   
 **   This file is part of Photogrotto
