@@ -448,7 +448,7 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
 
    for (it = fields.begin(); it != fields.end(); ++it ) 
    {
-      printf("QcjDataSqlTable::refresh(): Adding field |%s|\n", (const char*)(*it).toLocal8Bit());
+      printf("QcjDataSqlTable::refresh(): Adding field |%s| to query\n", (const char*)(*it).toLocal8Bit());
       if ( field_str != QString::null ) 
          field_str += ", ";
       field_str += (*it);
@@ -480,13 +480,6 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
 
 //   pQuery = new QSqlQuery(sql, db);
    pModel->clear();
-   for (col = 0, it = labels.begin(); it != labels.end(); ++it, col++ ) 
-   {
-      printf("QcjDataSqlTable::refresh(): Setting label for col %d to |%s|\n", col, (const char*)(*it).toLocal8Bit());
-      fflush(stdout);
-      pModel->setHeaderData(col, Qt::Horizontal, QVariant((*it)));
-   }
-
    printf("QcjDataSqlTable::refresh(): executing sql statement |%s|\n", qPrintable(sql));
    fflush(stdout);
    pQuery->exec(sql);
@@ -502,6 +495,13 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
       fflush(stdout);
       for (int col = 0; rows < 200 && col < pQuery->record().count(); col++) 
          resizeColumnToContents(col);
+
+      for (col = 0, it = labels.begin(); it != labels.end(); ++it, col++ ) 
+      {
+         printf("QcjDataSqlTable::refresh(): Setting label for col %d to |%s|\n", col, (const char*)(*it).toLocal8Bit());
+         fflush(stdout);
+         pModel->setHeaderData(col, Qt::Horizontal, QVariant((*it)));
+      }
 
       printf("QcjDataSqlTable::refresh(): select the first row, current_row = %d\n", current_row);
       fflush(stdout);
