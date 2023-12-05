@@ -91,7 +91,7 @@ public:
    bool                    resourceHasProperties(QString blockName);
    void                    setConfigurationMenuId(QString config, int id);
    QcjLib::VariantHash     xlateFormToFields(const QString &config, const QcjLib::VariantHash &item) const;
-   QcjLib::VariantHash     xlateRecordToForm(const QString &config, const QSqlRecord &rec) const;
+   QcjLib::VariantHash     xlateRecordToForm(const QString &config, const QSqlRecord &rec, bool labels = true) const;
    QVariant                stringToVariant(const QcjDataFields &field_def, const QString &value);
    void                    setDatabase(QSqlDatabase *pdb)
                            {

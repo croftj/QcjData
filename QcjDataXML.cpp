@@ -279,6 +279,7 @@ QString focusName = e.attribute("focus");
                p->valueName = valueField;
                p->dataName = keyField;
                p->validator = NULL;
+               p->ro = false;
                if ( e1.attribute("dataName") != QString() ) 
                {
 //                  printf("QcjDataXML::getFields():Attribute dataName = |%s|\n", qPrintable(e1.attribute("dataName")));
@@ -2587,7 +2588,7 @@ QVariant QcjDataXML::stringToVariant(const QcjDataFields &field_def, const QStri
  *    with the key set to the dataName for each field found in the input hash 
  *    with the label of the field'
 */
-QcjLib::VariantHash QcjDataXML::xlateRecordToForm(const QString &config, const QSqlRecord &rec) const
+QcjLib::VariantHash QcjDataXML::xlateRecordToForm(const QString &config, const QSqlRecord &rec, bool labels) const
 {
    QVariantHash rv;
 
@@ -2603,10 +2604,18 @@ QcjLib::VariantHash QcjDataXML::xlateRecordToForm(const QString &config, const Q
       if (rec.contains(field_def.dataName))
       {
          QVariant value = rec.value(field_def.dataName);
-         qDebug() << "Adding value for " << field_def.dataName
-//                  << ") of " << rec.value(field_def.label)
-                  << " to form element: " << field_def.label;
-         rv.insert(field_def.label, value);
+         if (labels)
+         {
+            qDebug() << "Adding value: " << value << " for " << field_def.dataName
+                     << " to form element (label): " << field_def.label;
+            rv.insert(field_def.label, value);
+         }
+         else
+         {
+            qDebug() << "Adding value: " << value << " for " << field_def.dataName
+                     << " to form element (field): " << field_def.dataName;
+            rv.insert(field_def.dataName, value);
+         }
       }
    }
 

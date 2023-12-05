@@ -378,7 +378,7 @@ QSqlQuery *QcjDataReportDocument::execDataSource(QString name)
                haveError = true;
                return(NULL);
             }
-            printf("QcjDataReportDocument::execDataSource(): setting |%s| (0x%lx) for default data source \n", qPrintable(name), (unsigned long)q);
+            qDebug() << "Data source " << name << ", found " << q->size() << "records";
             dataSources[name] = q;
             defaultDataSource = q;
             if ( q->at() == QSql::BeforeFirstRow )

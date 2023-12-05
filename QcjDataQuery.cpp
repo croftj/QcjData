@@ -80,21 +80,25 @@ namespace QcjDataQuery
 
    void updateRecord(QSqlTableModel &model, int row, const QcjLib::VariantHash &fields)
    {
-      QSqlRecord rec(model.record());
-      qDebug() << "rec = " << rec;
+      QSqlRecord rec;
+      rec = model.record(row);
+      qDebug() << "row = " << row << ", rec = " << rec;
 
       for (int idx = 0; idx < rec.count(); idx++)
       {
-         qDebug().noquote() << "rec field: " << rec.fieldName(idx) << "idx: " << idx;
          if (fields.contains(rec.fieldName(idx)))
          {
             if (fields.value(rec.fieldName(idx)).type() == QVariant::StringList)
             {
                rec.setValue(idx, fields.value(rec.fieldName(idx)).toStringList().join(","));
+               qDebug().noquote() << "rec field: " << rec.fieldName(idx) << "idx: " << idx
+                  << ", value: " << fields.value(rec.fieldName(idx)).toStringList().join(",");
             }
             else
             {
                rec.setValue(idx, fields.value(rec.fieldName(idx)));
+               qDebug().noquote() << "rec field: " << rec.fieldName(idx) << "idx: " << idx
+                  << ", value: " << fields.value(rec.fieldName(idx));
             }
          }
       }
@@ -102,7 +106,7 @@ namespace QcjDataQuery
                                                           model.tableName(),
                                                           rec,
                                                           false);
-      if ( ! model.setRecord(-1, rec))
+      if ( ! model.setRecord(row, rec))
       {
          QString msg = model.database().lastError().text();
          throw QcjLib::SqlException(msg);
@@ -160,6 +164,12 @@ namespace QcjDataQuery
             QVariant defval = rec.field(idx).defaultValue();
             rec.setValue(idx, defval);
          }
+         else
+         {
+            qDebug() << "removing field: " << rec.fieldName(idx);
+            rec.remove(idx);
+            idx--;
+         }
       }
       qDebug().noquote() << "sql = " << pDb->driver()->sqlStatement(QSqlDriver::InsertStatement,
                                                           model.tableName(),
@@ -168,6 +178,7 @@ namespace QcjDataQuery
       if ( ! model.insertRecord(-1, rec))
       {
          QString msg = model.database().lastError().text();
+         qDebug() << "insetRecord() returned error: " << msg; 
          throw QcjLib::SqlException(msg);
       }
    }
@@ -192,21 +203,14 @@ namespace QcjDataQuery
             sql = "select last_insert_rowid() from " + dbTable + " limit 1";
 
          qDebug() << "sql = " << sql;
-         QSqlQuery q2;
+         QSqlQuery q2(*pDb);
          q2.prepare(sql);
-         if ( q2.exec() )
+         if (q2.exec())
          {
             if ( q2.next() ) 
             {
                idx = q2.record().field(0).value().toInt();
             }
-         }
-         else 
-         {
-            qWarning() << "Error fetching last insert id for table " << dbTable 
-                       << ", error: " << q2.lastError().text();
-            QString msg = q2.lastError().text();
-            throw QcjLib::SqlException(msg);
          }
       }
       qDebug() << "idx =" << idx << ", indexname = " << indexname;
@@ -246,7 +250,8 @@ namespace QcjDataQuery
          else if (isA(wdt, "QCheckBox"))
          {
             qDebug() << "Found CheckBox";
-            dynamic_cast<QCheckBox*>(wdt)->setChecked(value.toBool());
+            bool checked = (value.toString() == "Y") ? true : false;
+            dynamic_cast<QCheckBox*>(wdt)->setChecked(checked);
          }
          else if ( isA(wdt, "QcjPhotoEntry") ) 
          {
