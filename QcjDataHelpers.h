@@ -69,7 +69,6 @@ typedef struct QcjDataFields
    bool        ro;
    QString     init;
    QString     defvalue;
-   QWidget     *widget;
    QString     fieldType;
    QString     propName;
    QString     options;
@@ -85,8 +84,9 @@ typedef struct QcjDataFields
    QString     stepValue;
    QString     decimals;
    QString     suffix;
-   QValidator  *validator;
    bool        focusWidget;
+   QValidator  *validator;
+   QWidget     *widget;
 } QcjDataFieldDef;
 
 typedef QList<QcjDataFieldDef> QcjDataFieldList;

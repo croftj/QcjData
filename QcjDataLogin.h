@@ -23,7 +23,8 @@
 # ifndef DATALOGIN_H
 #define  DATALOGIN_H
 
-# include <QString>
+#include <QSqlDatabase>
+#include <QString>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -45,12 +46,17 @@ class QcjDataLogin : public QDialog
 public:
    QcjDataLogin(QWidget *p = 0);
    void initialize();
+   QSqlDatabase database(QString connection_name);
 
 public slots:
    void Login();
    void quitApp();
 
 private:
+   QString        m_host;
+   QString        m_port;
+   QString        m_user;
+   QString        m_dbName;
    QString        dbType;
    Ui::QcjDataLogin  ui;
 };

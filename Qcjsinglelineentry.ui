@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>
 *********************************************************************************
 **
@@ -24,44 +24,50 @@
 **
 *********************************************************************************
 </comment>
- <exportmacro></exportmacro>
  <class>QcjSingleLineEntry</class>
- <widget class="QWidget" name="QcjSingleLineEntry" >
-  <property name="geometry" >
+ <widget class="QWidget" name="QcjSingleLineEntry">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>322</width>
-    <height>27</height>
+    <height>73</height>
    </rect>
   </property>
-  <property name="sizePolicy" >
-   <sizepolicy>
-    <hsizetype>5</hsizetype>
-    <vsizetype>4</vsizetype>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>QcjSingleLineEntry</string>
   </property>
-  <layout class="QHBoxLayout" >
-   <property name="margin" >
+  <layout class="QHBoxLayout">
+   <property name="spacing">
     <number>0</number>
    </property>
-   <property name="spacing" >
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item>
-    <widget class="QLineEdit" name="lineEdit" />
+    <widget class="QLineEdit" name="lineEdit"/>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <includes>
-  <include location="local" >qstring.h</include>
+  <include location="local">qstring.h</include>
  </includes>
  <resources/>
  <connections/>

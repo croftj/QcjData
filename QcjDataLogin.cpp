@@ -23,8 +23,8 @@
 
 #include <qmessagebox.h>
 #include <qsettings.h>
+#include <QDebug>
 #include <QSqlDriver>
-#include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
 #include "QcjData/QcjDataLogin.h"
@@ -56,6 +56,10 @@ void QcjDataLogin::Login()
       pConfig->setValue("/DBName", ui.DBEdit->text()); 
       pConfig->setValue("/DBType", dbType); 
    }
+   m_host = ui.HostEdit->text();
+   m_port = ui.PortEdit->text(); 
+   m_user = ui.UserEdit->text(); 
+   m_dbName = ui.DBEdit->text(); 
    printf("QcjDataLogin::Login(): Setting parms\n");
    fflush(stdout);
 //   db = QSqlDatabase::addDatabase("QOCI");
@@ -154,6 +158,37 @@ void QcjDataLogin::initialize()
    printf("QcjDataLogin::initialize(): dbType set to |%s|\n", (const char*)dbType.toLocal8Bit());
    fflush(stdout);
 #endif
+}
+
+QSqlDatabase QcjDataLogin::database(QString connection_name)
+{
+   QSqlDatabase db_handle;
+
+   if (connection_name == QString())
+   {
+      connection_name = "main";
+   }
+   qDebug() << "Adding database for connection " << connection_name;
+   db_handle = QSqlDatabase::addDatabase(dbType, connection_name);
+   db_handle.setUserName(ui.UserEdit->text());
+   db_handle.setPassword(ui.PasswordEdit->text());
+   db_handle.setDatabaseName(ui.DBEdit->text());
+   if ( ui.PortEdit->isEnabled() ) 
+   {
+      db_handle.setPort(ui.PortEdit->text().toInt());
+   }
+   if ( ui.HostEdit->isEnabled() ) 
+   {
+      db_handle.setHostName(ui.HostEdit->text());
+   }
+   if (!db.open()) 
+   {
+      QString msg = QString("Cannot open database. Error %1")
+                        .arg(db_handle.lastError().text());
+      int resp =  QMessageBox::warning(NULL, "Error!", msg, "Exit");
+      quitApp();
+   }
+   return(db_handle);
 }
 
 void QcjDataLogin::quitApp()

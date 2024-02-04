@@ -75,6 +75,7 @@ void QcjDataConfigure::initialize( QString config )
       help = "These values of the items to the right will be saved to be used now and in the future.";
    }
    ui.helpEdit->setText(help);
+   qDebug() << "help: " << help;
 
    setWindowTitle(pFormDef->getConfigurationTitle(config));
    QStringList fields = pFormDef->getConfigurationItemNames(config);

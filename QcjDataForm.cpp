@@ -2301,6 +2301,7 @@ QString QcjDataForm::findXML(QStringList app_path, QString app_name)
    home = getenv("HOME");
 
    QString configs = home + "/." + app_name + ".xml;";
+   configs += home + "/" + app_name + "/" + app_name + ".xml;";
    configs += "./" + app_name + ".xml;";
    configs += home + "/.xml/" + app_name + ".xml;";
    configs += "/opt/" + app_name + "/default_forms.xml;";

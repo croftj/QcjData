@@ -36,6 +36,7 @@
 //#include <values.h>
 #include "QcjDataXML.h"
 #include "QcjDataStatics.h"
+#include "QcjLib/WidgetUtils.h"
 
 #ifndef MININT
 #define MININT ((-2^32)+1)
@@ -260,7 +261,7 @@ std::vector<struct QcjDataFields> QcjDataXML::getFields(QString name, QWidget *p
       if ( !e.isNull() && e.tagName() == "form" && e.attribute("name") != QString() && e.attribute("name") == name ) 
       {
 //         qDebug() << "Have match!";
-QString focusName = e.attribute("focus");
+         QString focusName = e.attribute("focus");
          QString keyField = e.attribute("key_field");
          QString valueField = e.attribute("value_field");
 //         printf("QcjDataXML::getFields():Found form definition e |%s|\n", qPrintable(e.attribute("name"));
@@ -273,8 +274,8 @@ QString focusName = e.attribute("focus");
             if ( !e1.isNull() && e1.tagName() == "field" )
             {
 //               printf("QcjDataXML::getFields():Found form definition e1 |%s|!\n", qPrintable(e1.tagName()));
-//               printf("QcjDataXML::getFields():Creating QcjDataField for |%s|!\n", qPrintable(e1.attribute("dataName")));
-               p = new struct QcjDataFields;
+               printf("QcjDataXML::getFields():Creating QcjDataField for |%s|!\n", qPrintable(e1.attribute("dataName")));
+               p = new QcjDataFieldDef;
                p->focusWidget = false;
                p->valueName = valueField;
                p->dataName = keyField;
@@ -282,8 +283,7 @@ QString focusName = e.attribute("focus");
                p->ro = false;
                if ( e1.attribute("dataName") != QString() ) 
                {
-//                  printf("QcjDataXML::getFields():Attribute dataName = |%s|\n", qPrintable(e1.attribute("dataName")));
-                  fflush(stdout);
+                  qDebug() << "attribute dataName = " << e1.attribute("dataName");
                   p->dataName = e1.attribute("dataName");
                   if ( p->dataName == focusName ) 
                      p->focusWidget = true;
@@ -380,6 +380,11 @@ QString focusName = e.attribute("focus");
                   qDebug() << "attribute default = " << e1.attribute("default");
                   p->defvalue = e1.attribute("default");
                }
+               if ( e1.attribute("init") != QString() ) 
+               {
+                  qDebug() << "attribute init = " << e1.attribute("init");
+                  p->init = e1.attribute("init");
+               }
                if ( e1.attribute("search") != QString() ) 
                {
                   qDebug() << "attribute search = " << e1.attribute("search");
@@ -400,18 +405,19 @@ QString focusName = e.attribute("focus");
                {
                   qDebug() << "attribute max = " << e1.attribute("max");
                   p->maxValue = e1.attribute("max");
+                  qDebug() << "attribute max = " << p->maxValue;
                }
 
                if ( e1.hasAttribute("decimals") )
                {
                   qDebug() << "attribute decimals = " << e1.attribute("decimals");
-                  p->maxValue = e1.attribute("decimals");
+                  p->decimals = e1.attribute("decimals");
                }
 
                if ( e1.hasAttribute("step") )
                {
                   qDebug() << "attribute step = " << e1.attribute("step");
-                  p->maxValue = e1.attribute("step");
+                  p->stepValue = e1.attribute("step");
                }
 
                if ( e1.hasAttribute("suffix") )
@@ -462,24 +468,6 @@ QString focusName = e.attribute("focus");
                      printf("QcjDataXML::getFields():Creating QTextEdit\n");
                      fflush(stdout);
                      p->widget = new QcjTextBlockEdit(parent);
-# if 0
-                     if ( p->options == "plaintext" ) 
-                     {
-                        ((QTextEdit *)p->widget)->setTextFormat(Qt::PlainText);
-                     }
-                     else if (p->options == "richtext")
-                     {
-                        ((QTextEdit *)p->widget)->setTextFormat(Qt::RichText);
-                     }
-                     else if (p->options == "autotext")
-                     {
-                        ((QTextEdit *)p->widget)->setTextFormat(Qt::AutoText);
-                     }
-                     else if (p->options == "logtext")
-                     {
-                        ((QTextEdit *)p->widget)->setTextFormat(Qt::LogText);
-                     }
-# endif
                      p->propName = "text";
                   }
 
@@ -520,22 +508,6 @@ QString focusName = e.attribute("focus");
                      if ( e1.hasAttribute("suffix") )
                         ((QcjSpinBox*)p->widget)->setSuffix(e1.attribute("suffix"));
                      p->propName = "value";
-
-//
-//                     QIntValidator *v = new QIntValidator(p->widget);
-//                     if ( e1.hasAttribute("min") )
-//                        v->setBottom(e1.attribute("min").toInt());
-//
-//                     if ( e1.hasAttribute("max") )
-//                        v->setTop(e1.attribute("max").toInt());
-//
-//                     ((QLineEdit*)p->widget)->setValidator(v);
-//                     if ( e1.hasAttribute("mask") )
-//                     {
-//                        printf("QcjDataXML::getFields():Setting mask to |%s|\n", qPrintable(e1.attribute("mask")));
-//                        ((QLineEdit*)p->widget)->setInputMask(e1.attribute("mask"));
-//                     }
-//                     p->propName = "text";
                   }
 
                   else if (type == "double")
@@ -574,36 +546,6 @@ QString focusName = e.attribute("focus");
             
                      ((QcjDoubleSpinBox*)p->widget)->setValue(0.0);
                      p->propName = "value";
-
-/*
-                     p->widget = new QLineEdit(parent);
-                     QDoubleValidator *v = new QDoubleValidator(p->widget);
-
-                     if ( e1.hasAttribute("mask") )
-                     {
-                        printf("QcjDataXML::getFields():Setting mask to |%s|\n", qPrintable(e1.attribute("mask")));
-                        ((QLineEdit*)p->widget)->setInputMask(e1.attribute("mask"));
-                     }
-                     if ( e1.hasAttribute("min") )
-                     {
-                        printf("QcjDataXML::getFields():Setting bottom to |%f|\n", e1.attribute("min").toDouble());
-                        v->setBottom(e1.attribute("min").toDouble());
-                     }
-
-                     if ( e1.hasAttribute("max") )
-                     {
-                        printf("QcjDataXML::getFields():Setting top to |%f|\n", e1.attribute("max").toDouble());
-                        v->setTop(e1.attribute("max").toDouble());
-                     }
-
-                     if ( e1.hasAttribute("decimals") )
-                     {
-                        printf("QcjDataXML::getFields():Setting decimals to |%d|\n", e1.attribute("decimals").toInt());
-                        v->setDecimals(e1.attribute("decimals").toInt());
-                     }
-                     ((QLineEdit*)p->widget)->setValidator(v);
-                     p->propName = "text";
-*/
                   }
 
                   else if (type == "yesno")
@@ -1006,7 +948,7 @@ QString QcjDataXML::getIndexField(QString name)
       }
       else 
       {
-         rv = getTable(name) + "_ident_seq";
+         rv = "ident"; // getTable(name) + "_ident_seq";
       }
    }
 
@@ -1041,7 +983,7 @@ QString QcjDataXML::getWhereClause(QString name, QSqlRecord *rec, QSqlDatabase *
       }
       else 
       {
-         index = getTable(name) + "_ident_seq";
+         index = getTable(name);
       }
    }
    printf("QcjDataXML::getWhereClause():index = |%s|\n", qPrintable(index));
@@ -2229,6 +2171,7 @@ QString QcjDataXML::getConfigurationHelp(QString config)
 #ifndef QT4_DESIGNER_PLUGIN
    QDomElement docElem = def.documentElement();
 
+   rv = "<dl>";
    QDomNode n = docElem.firstChild();
    while ( !n.isNull() ) 
    {
@@ -2241,6 +2184,7 @@ QString QcjDataXML::getConfigurationHelp(QString config)
             QDomElement e1 = n1.toElement(); // try to convert the node to an element.
             if ( !e1.isNull() && e1.tagName() == "entry" )
             {
+               QString tag = e1.attribute("label");
                printf("QcjDataXML::getConfigurationDefault():found entry, name = |%s|\n", qPrintable(e1.attribute("name")));
                QDomNode n2 = n1.firstChild();
                for ( int idx = 0; !n2.isNull(); idx++ ) 
@@ -2252,8 +2196,9 @@ QString QcjDataXML::getConfigurationHelp(QString config)
                      QDomNode cdata = n2.firstChild();
                      if ( cdata.isText() ) 
                      {
+                        rv += "<dt><b>" + tag + "</b></dt><dd>";
                         rv += cdata.nodeValue();
-                        rv += "<p>\n";
+                        rv += "</dd>\n";
                      }
                   }
                   n2 = n2.nextSibling();
@@ -2264,6 +2209,7 @@ QString QcjDataXML::getConfigurationHelp(QString config)
       }
       n = n.nextSibling();
    }
+   rv += "</dl>";
 #endif
    return(rv);
 }

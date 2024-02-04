@@ -52,6 +52,7 @@ public:
    };
    QString filter();
    int findRow(QMap<QString, QString> clause, int from, bool caseSensitive = true);
+   int rowCount() const;
    void selectRow(int row);
    void setFilter(QString clause);
    void setSort(QStringList sortList);
@@ -79,7 +80,7 @@ public slots:
 signals:
    /*!
          \fn void rowActivated(QSqlRecord *);
-          Emitted every time a record is double clicked. 
+          Emitted every time a record is highligted
    */ 
    void rowActivated(QSqlRecord *);
 

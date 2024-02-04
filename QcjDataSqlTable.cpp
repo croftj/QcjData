@@ -297,7 +297,7 @@ void QcjDataSqlTable::selectRow(int new_row)
       }
    }
 */
-//   refresh();
+   refresh();
    printf("QcjDataSqlTable::selectRow(): table refreshed\n");
    fflush(stdout);
 /*
@@ -692,6 +692,11 @@ void QcjDataSqlTable::recordSelected(const QModelIndex &current, const QModelInd
    emit rowSelected(&rec);
    printf("QcjDataSqlTable::recordSelected():Exit\n");
    fflush(stdout);
+}
+
+int QcjDataSqlTable::rowCount() const
+{
+   return(pModel->rowCount());
 }
 
 /*!
