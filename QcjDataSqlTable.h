@@ -101,6 +101,7 @@ signals:
 protected:
    QSqlDatabase   *myDb;
    bool           m_delegates;
+   QString        m_xmldef;
 
 private:
    void seekRow(int new_row);

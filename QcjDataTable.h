@@ -121,7 +121,6 @@ private:
    QStringList                m_sort;
    QMap<int, QString>         m_fieldNames;
    QMap<QString, QString>     m_fieldTypes;
-   QString                    m_xmldef;
    bool                       m_insertMode;
    bool                       m_autoRefresh;
 };

@@ -22,6 +22,7 @@
 *********************************************************************************/
 
 # include <QAbstractButton>
+# include <QDebug>
 # include <QMessageBox>
 
 # include "QcjData/QcjDataFrame.h"
@@ -180,6 +181,7 @@ void QcjDataFrame::haveActivatedAction(bool)
    if ( pTable != 0 ) 
    {
       pTable->activateCurrentRecord();
+      qDebug() << "emitting Activated Action";
       emit actionActivated(Qcj::ActivatedAction);
    }
    printf("QcjDataFrame::haveActivatedAction(): Exit\n");
@@ -195,6 +197,7 @@ void QcjDataFrame::haveCancelAction(bool)
    printf("QcjDataFrame::haveClearAction(): Exit\n");
    fflush(stdout);
 #endif
+   qDebug() << "emitting Cancel Action";
    emit actionActivated(Qcj::CancelAction);
 }
 
@@ -216,11 +219,13 @@ void QcjDataFrame::haveClearAction(bool)
          pForm->clearForm();
       }
       setState(Qcj::Search);
+      qDebug() << "emitting clearForm Action";
       emit clearForm();
    }
    printf("QcjDataFrame::haveClearAction(): Exit\n");
    fflush(stdout);
 #endif
+   qDebug() << "emitting Clear Action";
    emit actionActivated(Qcj::ClearAction);
 }
 
@@ -241,13 +246,18 @@ void QcjDataFrame::haveDelAction(bool)
                   pTable->seek(0);
                   pTable->refresh();
                }
+               qDebug() << "emitting deleteRecord Action";
                emit deleteRecord();
             }
          }
       }
       else if ( validate() ) 
+      {
+         qDebug() << "emitting deleteRecord Action";
          emit deleteRecord();
+      }
    }
+   qDebug() << "emitting Del Action";
    emit actionActivated(Qcj::DelAction);
 #endif
 }
@@ -267,6 +277,7 @@ void QcjDataFrame::haveDownAction(bool)
             pTable->nextRow();
          }
       }
+      qDebug() << "emitting nextRow Action";
       emit nextRow();
       printf("QcjDataFrame::haveDownAction(): Exit\n");
       fflush(stdout);
@@ -281,6 +292,7 @@ void QcjDataFrame::haveDownAction(bool)
 void QcjDataFrame::haveEditAction(bool)
 {
 #ifndef QT4_DESIGNER_PLUGIN
+   qDebug() << "emitting Edit Action";
    emit actionActivated(Qcj::EditAction);
 #endif
 }
@@ -512,6 +524,7 @@ void QcjDataFrame::haveRowActivated(QSqlRecord *rec)
       pForm->refresh(rec);
    }
    setState(Qcj::Updated);
+   qDebug() << "emitting Activated Action, xml: " << pTable->readXmlDef();
    emit actionActivated(Qcj::ActivatedAction);
    printf("QcjDataFrame::haveRowActivated(): Exit\n");
    fflush(stdout);

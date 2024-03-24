@@ -917,8 +917,8 @@ QString QcjDataXML::getInsertQuery(QString name, QString index)
 QString QcjDataXML::getIndexField(QString name)
 {
    QString rv;
+   qDebug() << "Enter, name = " << name;
 #ifndef QT4_DESIGNER_PLUGIN
-//   printf("QcjDataXML::getTable():Entry, looking for |%s|!\n", qPrintable(name));
    QDomElement docElem = def.documentElement();
 
    QDomNode n = docElem.firstChild();
@@ -951,7 +951,7 @@ QString QcjDataXML::getIndexField(QString name)
          rv = "ident"; // getTable(name) + "_ident_seq";
       }
    }
-
+   qDebug() << "Exit, rv = " << rv;
 #endif
    return(rv);
 }
@@ -2541,6 +2541,7 @@ QcjLib::VariantHash QcjDataXML::xlateRecordToForm(const QString &config, const Q
    qDebug() << "enter: config = " << config;
    QcjDataFieldStdVector fds = pFormDef->getFields(config, nullptr);
 
+   qDebug() << "record:" << rec;
    qDebug() << "fds count: " << fds.size();
    for (unsigned int idx = 0; idx < fds.size(); idx++)
    {

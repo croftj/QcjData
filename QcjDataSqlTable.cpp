@@ -21,6 +21,7 @@
 **
 *********************************************************************************/
 #include <QtGui>
+#include <QDebug>
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QSqlError>
@@ -62,6 +63,8 @@ QcjDataSqlTable::QcjDataSqlTable(QWidget *parent) : QTableView(parent)
            this, SLOT(recordActivated(const QModelIndex &)));
 
 /*
+   connect(this, SIGNAL(activated(const QModelIndex &)),
+           this, SLOT(recordActivated(const QModelIndex &)));
    connect(this, SIGNAL(entered(const QModelIndex &)),
            this, SLOT(recordSelected(const QModelIndex &)));
 
@@ -71,16 +74,10 @@ QcjDataSqlTable::QcjDataSqlTable(QWidget *parent) : QTableView(parent)
            this, SLOT(recordSelected(const QModelIndex &)));
 */
 /*
-   connect(this, SIGNAL(clicked(const QModelIndex &)),
+   connect(this, SIGNAL(selected(const QModelIndex &)),
            this, SLOT(recordSelected(const QModelIndex &)));
 */
-
-   connect(this, SIGNAL(activated(const QModelIndex &)),
-           this, SLOT(recordSelected(const QModelIndex &)));
 /*
-
-
-
    connect(this->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
            this, SLOT(recordSelected(const QModelIndex &, const QModelIndex &)));
 
@@ -313,8 +310,7 @@ void QcjDataSqlTable::selectRow(int new_row)
       printf("QcjDataSqlTable::selectRow():Fetching record\n");
       fflush(stdout);
       rec = pQuery->record();
-      printf("QcjDataSqlTable::selectRow():Selecting table widget new_row\n");
-      fflush(stdout);
+      qDebug() << "rec = " << rec;
       current_row = new_row;
 /*
       for (col = 0; col < columnCount(); col++) 
@@ -366,8 +362,7 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
    int rows;
 //   bool error = false;
 
-   printf("QcjDataSqlTable::refresh(): Enter\n");
-   fflush(stdout);
+   qDebug().nospace().noquote() << "(" << m_xmldef << ")" << " Enter";
    printf("QcjDataSqlTable::refresh(): tableName: |%s|, limit = %ld\n", (const char*)tableName.toLocal8Bit(), limit);
    fflush(stdout);
    if ( ! myDb->isOpen() ) 
@@ -431,7 +426,8 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
       QTableView::setModel(pModel);
       if ( rows > 0 ) 
       {
-         printf("QcjDataSqlTable::refresh(): Have %d rows, connecting selectionModel's currentChanged to my recordSelected\n", rows);
+         printf("QcjDataSqlTable::refresh(): Have %d rows\n", rows);
+         qDebug().nospace().noquote() << "(" << m_xmldef << ")" << " Connecting recordSelected slot";
          connect(this->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
                  this, SLOT(recordSelected(const QModelIndex &, const QModelIndex &)));
          haveCurrentChangedConnection = true;
@@ -439,11 +435,12 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
       else
          printf("QcjDataSqlTable::refresh(): Have 0 rows, skipped connecting selectionModel's currentChanged to my recordSelected\n");
    }
-   else if ( ! haveCurrentChangedConnection && rows > 0 )
+   else if ( rows > 0 )
    {
+      qDebug().nospace().noquote() << "(" << m_xmldef << ")" << " Connecting recordSelected slot";
       connect(this->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
                this, SLOT(recordSelected(const QModelIndex &, const QModelIndex &)));
-         haveCurrentChangedConnection = true;
+      haveCurrentChangedConnection = true;
    }
 
    for (it = fields.begin(); it != fields.end(); ++it ) 
@@ -491,6 +488,7 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
       printf("QcjDataSqlTable::refresh(): have data in the table, set the model\n");
       fflush(stdout);
       pModel->setQuery(*pQuery);
+      setModel(pModel);
       printf("QcjDataSqlTable::refresh(): Set the column widths\n");
       fflush(stdout);
       for (int col = 0; rows < 200 && col < pQuery->record().count(); col++) 
@@ -565,10 +563,9 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
          break;
       }
    }
-   printf("QcjDataSqlTable::refresh(): Exit\n");
-   fflush(stdout);
    QApplication::restoreOverrideCursor();
    resizeColumnsToContents();
+   qDebug() << "(" << m_xmldef << ")" << "Exit";
    return(true);
 }
 
@@ -599,16 +596,20 @@ void QcjDataSqlTable::setSort(QStringList sortList)
 */ 
 void QcjDataSqlTable::setFilter(QString clause)
 {
-   printf("QcjDataSqlTable::setFilter(): Enter\n");
-   fflush(stdout);
-   printf("QcjDataSqlTable::setFilter(): this = %ld\n", (long)this);
-   fflush(stdout);
-   whereClause = clause;
-   printf("QcjDataSqlTable::setFilter(): calling refresh\n");
-   fflush(stdout);
-   refresh();
-   printf("QcjDataSqlTable::setFilter(): Exit\n");
-   fflush(stdout);
+   if (tableName != QString())
+   {
+      qDebug() << "Enter, table: " << tableName << ", clause: " << clause;
+      printf("QcjDataSqlTable::setFilter(): Enter\n");
+      fflush(stdout);
+      printf("QcjDataSqlTable::setFilter(): this = %ld\n", (long)this);
+      fflush(stdout);
+      whereClause = clause;
+      printf("QcjDataSqlTable::setFilter(): calling refresh\n");
+      fflush(stdout);
+      refresh();
+      printf("QcjDataSqlTable::setFilter(): Exit\n");
+      fflush(stdout);
+   }
 }
 
 /*!
@@ -640,12 +641,11 @@ QStringList QcjDataSqlTable::sort()
 */ 
 void QcjDataSqlTable::recordSelected(int row)
 {
-   printf("QcjDataSqlTable::recordSelected():Enter: row = %d\n", row);
-   fflush(stdout);
+   qDebug() << "(" << m_xmldef << ")" << "Enter, row = index.row = " << row;
 //   setItemSelected(pNew, false);
    selectRow(row);
-   printf("QcjDataSqlTable::recordSelected():Exit\n");
-   fflush(stdout);
+   emit rowSelected(&rec);
+   qDebug() << "(" << m_xmldef << ")" << "Exit";
 }
 
 /*!
@@ -655,12 +655,11 @@ void QcjDataSqlTable::recordSelected(int row)
 */ 
 void QcjDataSqlTable::recordSelected(const QModelIndex &index)
 {
-   printf("QcjDataSqlTable::recordSelected():Enter: row = %d\n", index.row());
-   fflush(stdout);
+   qDebug() << "(" << m_xmldef << ")" << "Enter, row = index.row = " << index.row();
 //   setItemSelected(pNew, false);
    selectRow(index.row());
-   printf("QcjDataSqlTable::recordSelected():Exit\n");
-   fflush(stdout);
+   emit rowSelected(&rec);
+   qDebug() << "(" << m_xmldef << ")" << "Exit";
 }
 
 /*!
@@ -669,13 +668,12 @@ void QcjDataSqlTable::recordSelected(const QModelIndex &index)
 */ 
 void QcjDataSqlTable::recordActivated(const QModelIndex &index)
 {
-   printf("QcjDataSqlTable::recordActivated():Enter: row = %d\n", index.row());
-   fflush(stdout);
+   qDebug() << "(" << m_xmldef << ")" << "Enter, row = " << index.row();
+   qDebug() << "model count = " << model()->rowCount();
 //   setItemSelected(pNew, false);
-//   seekRow(index.row());
+   seekRow(index.row());
    emit rowActivated(&rec);
-   printf("QcjDataSqlTable::recordActivated():Exit\n");
-   fflush(stdout);
+   qDebug() << "(" << m_xmldef << ")" << "Exit";
 }
 
 /*!
@@ -685,13 +683,15 @@ void QcjDataSqlTable::recordActivated(const QModelIndex &index)
 */ 
 void QcjDataSqlTable::recordSelected(const QModelIndex &current, const QModelIndex &)
 {
-   printf("QcjDataSqlTable::recordSelected():Enter: row = %d\n", current.row());
-   fflush(stdout);
+   qDebug() << "(" << m_xmldef << ")" << "Enter, row = " << current.row();
+   qDebug() << "Enter, row = " << current.row();
+   qDebug() << "model count = " << model()->rowCount();
 //   setItemSelected(pNew, false);
    seekRow(current.row());
+   qDebug() << "Emitting signal for rec: " << rec;
    emit rowSelected(&rec);
-   printf("QcjDataSqlTable::recordSelected():Exit\n");
-   fflush(stdout);
+   qDebug() << "(" << m_xmldef << ")" << "Exit";
+   qDebug() << "Exit";
 }
 
 int QcjDataSqlTable::rowCount() const

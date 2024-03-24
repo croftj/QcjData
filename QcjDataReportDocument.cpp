@@ -67,6 +67,7 @@ QcjDataReportDocument::QcjDataReportDocument(QObject *parent, QString report_fn)
    QDomDocument doc( "report" );
    def = doc;
    fieldFormatRE.setPattern("::(field|config|input):(date|mon|month|dow|dayofweek|string|text|integer|int|money|float|truefalse|yesno):([a-z0-9_.]+):");
+   qDebug() << "Opening report file: " << report_fn;
    QFile file( report_fn );
    if ( !file.open( QIODevice::ReadOnly ) )
    {
@@ -83,6 +84,7 @@ QcjDataReportDocument::QcjDataReportDocument(QObject *parent, QString report_fn)
       return;
    }
 //   printf("QcjDataXML::QcjDataXML(): Exit normaly\n");
+   qDebug() << "Closing report file";
    file.close();
 }
 

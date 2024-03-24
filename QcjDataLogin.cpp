@@ -35,6 +35,7 @@ extern QSettings *pConfig;
 
 
 #define DEFAULT_DB_TYPE QPSQL
+//#define DEFAULT_DB_TYPE QSQLITE
 
 QcjDataLogin::QcjDataLogin(QWidget *p) : QDialog(p)
 {
