@@ -41,7 +41,7 @@ public:
    {
       QMutexLocker lock(&QcjActionMutex);
       myId = ++QcjActionCounter;
-      connect(action, SIGNAL(triggered()), this, SLOT(haveTrigger()));
+      connect(action, SIGNAL(triggered()), this, SLOT(haveTrigger()), Qt::UniqueConnection);
    };
 
    int id()

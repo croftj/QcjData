@@ -61,7 +61,7 @@ public:
    bool readDelegates() const { return(m_delegates); };
    void setDatabase(bool _m_autoRefresh = true);
    void setDatabase(QSqlDatabase *pdb, bool _m_autoRefresh = true);
-   void setFilter(QList<QLineEdit*> fields);
+   void setFilter(QList<QLineEdit*> fields, const QString &filter = QString());
    void setFilter(QString clause);
    void seek(int index);
    void writeXmlDef(QString s);

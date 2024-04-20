@@ -67,7 +67,7 @@ public slots:
    void recordSelected(int row);
    void recordSelected(const QModelIndex &index); 
    void recordSelected(const QModelIndex &current, const QModelIndex &prev);
-   bool refresh(bool quiet = false, long limit = -1);
+   bool refresh(bool no_select_row = false, bool quiet = false, long limit = -1);
 
    void nextRow();
    void previousRow();

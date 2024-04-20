@@ -20,6 +20,7 @@ o**   This file is part of QcjData Class Libraries.
 **   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 **
 *********************************************************************************/
+# include <QDebug>
 # include <QDir>
 # include <QDomDocument>
 # include <QFile>
@@ -65,8 +66,9 @@ QcjDataReport::QcjDataReport(QWidget *parent) : QDialog(parent)
     ui.setupUi(this);
     report = NULL;
     ui.printBtn->setEnabled(false);
-    connect(ui.printBtn, SIGNAL(clicked()), this, SLOT(printReport()));
-    connect(ui.previewBtn, SIGNAL(clicked()), this, SLOT(previewReport()));
+    connect(ui.cancelBtn, SIGNAL(clicked()), this, SLOT(reject()), Qt::UniqueConnection);
+    connect(ui.printBtn, SIGNAL(clicked()), this, SLOT(printReport()), Qt::UniqueConnection);
+    connect(ui.previewBtn, SIGNAL(clicked()), this, SLOT(previewReport()), Qt::UniqueConnection);
 }
 
 /*!
@@ -86,6 +88,7 @@ bool QcjDataReport::setReportFileName(QString fn, QMap<QString, QString> args)
    int row;
 
    printf("QcjDataReport::setReportFileName(): Enter, fn = |%s|\n", qPrintable(fn));
+   qDebug() << "Enter, fn = " << fn << ", args = " << args;
    fflush(stdout);
    if ( report != NULL ) 
       delete report;
@@ -339,6 +342,8 @@ void QcjDataReport::previewReport()
    bool error_occured;
 
    QString reportStr = report->generateReport(inputValues, &error_occured);
+   ui.textBrowser->setCurrentFont(report->getFontDefinition());
+
    if ( error_occured ) 
    {
       QMessageBox::critical(NULL, "Report Execution Error", report->errorString());

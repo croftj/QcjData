@@ -156,7 +156,7 @@ QcjMoneyEdit::QcjMoneyEdit(QWidget *parent) : QLineEdit (parent)
    QRegExpValidator *v = new QRegExpValidator(QRegExp("\\$?[0-9,]*\\.?[0-9]{0,2}"), this);
    setValidator(v);
    setAlignment(Qt::AlignRight);
-   connect(this, SIGNAL(editingFinished()), this, SLOT(formatText()));
+   connect(this, SIGNAL(editingFinished()), this, SLOT(formatText()), Qt::UniqueConnection);
    fflush(stdout); 
 }
 

@@ -37,64 +37,64 @@ QcjDataFrame::QcjDataFrame(QWidget *pParent) :
    activatedAction = new QAction(this);
    activatedAction->setShortcut(Qt::Key_Return);
    activatedAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-   connect(activatedAction, SIGNAL(triggered(bool)), this, SLOT(haveActivatedAction(bool)));
+   connect(activatedAction, SIGNAL(triggered(bool)), this, SLOT(haveActivatedAction(bool)), Qt::UniqueConnection);
    addAction(activatedAction);
 
    cancelAction = new QAction(this);
    cancelAction->setShortcut(Qt::CTRL + Qt::Key_Escape);
    cancelAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-   connect(cancelAction, SIGNAL(triggered(bool)), this, SLOT(haveCancelAction(bool)));
+   connect(cancelAction, SIGNAL(triggered(bool)), this, SLOT(haveCancelAction(bool)), Qt::UniqueConnection);
    addAction(cancelAction);
 
    clearAction = new QAction(this);
    clearAction->setShortcut(Qt::Key_F10);
    clearAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-   connect(clearAction, SIGNAL(triggered(bool)), this, SLOT(haveClearAction(bool)));
+   connect(clearAction, SIGNAL(triggered(bool)), this, SLOT(haveClearAction(bool)), Qt::UniqueConnection);
    addAction(clearAction);
 
    delAction = new QAction(this);
    delAction->setShortcut(QKeySequence::DeleteEndOfWord);
    delAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-   connect(delAction, SIGNAL(triggered(bool)), this, SLOT(haveDelAction(bool)));
+   connect(delAction, SIGNAL(triggered(bool)), this, SLOT(haveDelAction(bool)), Qt::UniqueConnection);
    addAction(delAction);
 
    downAction = new QAction(this);
 //   downAction->setShortcut(QKeySequence::MoveToNextLine);
    downAction->setShortcut(Qt::ALT + Qt::Key_Down);
    downAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-   connect(downAction, SIGNAL(triggered(bool)), this, SLOT(haveDownAction(bool)));
+   connect(downAction, SIGNAL(triggered(bool)), this, SLOT(haveDownAction(bool)), Qt::UniqueConnection);
    addAction(downAction);
 
    editAction = new QAction(this);
 //   editAction->setShortcut(QKeySequence::MoveToPreviousLine);
    editAction->setShortcut(QKeySequence::Open);
    editAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-   connect(editAction, SIGNAL(triggered(bool)), this, SLOT(haveEditAction(bool)));
+   connect(editAction, SIGNAL(triggered(bool)), this, SLOT(haveEditAction(bool)), Qt::UniqueConnection);
    addAction(editAction);
 
    newAction = new QAction(this);
    newAction->setShortcut(QKeySequence::New);
    newAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-   connect(newAction, SIGNAL(triggered(bool)), this, SLOT(haveNewAction(bool)));
+   connect(newAction, SIGNAL(triggered(bool)), this, SLOT(haveNewAction(bool)), Qt::UniqueConnection);
    addAction(newAction);
 
    saveAction = new QAction(this);
    saveAction->setShortcut(QKeySequence::Save);
    saveAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-   connect(saveAction, SIGNAL(triggered(bool)), this, SLOT(haveSaveAction(bool)));
+   connect(saveAction, SIGNAL(triggered(bool)), this, SLOT(haveSaveAction(bool)), Qt::UniqueConnection);
    addAction(saveAction);
 
    searchAction = new QAction(this);
    searchAction->setShortcut(QKeySequence::FindNext);
    searchAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-   connect(searchAction, SIGNAL(triggered(bool)), this, SLOT(haveSearchAction(bool)));
+   connect(searchAction, SIGNAL(triggered(bool)), this, SLOT(haveSearchAction(bool)), Qt::UniqueConnection);
    addAction(searchAction);
 
    upAction = new QAction(this);
 //   upAction->setShortcut(QKeySequence::MoveToPreviousLine);
    upAction->setShortcut(Qt::ALT + Qt::Key_Up);
    upAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-   connect(upAction, SIGNAL(triggered(bool)), this, SLOT(haveUpAction(bool)));
+   connect(upAction, SIGNAL(triggered(bool)), this, SLOT(haveUpAction(bool)), Qt::UniqueConnection);
    addAction(upAction);
 
    for (int x = 0; x < Qcj::Actions; x++) 
@@ -119,47 +119,47 @@ void QcjDataFrame::connectButton(Qcj::Action act, QAbstractButton *btn)
    switch (act) 
    {
       case Qcj::CancelAction:
-         connect(btn, SIGNAL(clicked()), this, SLOT(haveCancelAction()));
+         connect(btn, SIGNAL(clicked()), this, SLOT(haveCancelAction()), Qt::UniqueConnection);
          buttons[act] = btn;
          break;
 
       case Qcj::ClearAction:
-         connect(btn, SIGNAL(clicked()), this, SLOT(haveClearAction()));
+         connect(btn, SIGNAL(clicked()), this, SLOT(haveClearAction()), Qt::UniqueConnection);
          buttons[act] = btn;
          break;
 
       case Qcj::DelAction:
-         connect(btn, SIGNAL(clicked()), this, SLOT(haveDelAction()));
+         connect(btn, SIGNAL(clicked()), this, SLOT(haveDelAction()), Qt::UniqueConnection);
          buttons[act] = btn;
          break;
       
       case Qcj::DownAction:
-         connect(btn, SIGNAL(clicked()), this, SLOT(haveDownAction()));
+         connect(btn, SIGNAL(clicked()), this, SLOT(haveDownAction()), Qt::UniqueConnection);
          buttons[act] = btn;
          break;
       
       case Qcj::EditAction:
-         connect(btn, SIGNAL(clicked()), this, SLOT(haveEditAction()));
+         connect(btn, SIGNAL(clicked()), this, SLOT(haveEditAction()), Qt::UniqueConnection);
          buttons[act] = btn;
          break;
       
       case Qcj::NewAction:
-         connect(btn, SIGNAL(clicked()), this, SLOT(haveNewAction()));
+         connect(btn, SIGNAL(clicked()), this, SLOT(haveNewAction()), Qt::UniqueConnection);
          buttons[act] = btn;
          break;
       
       case Qcj::SaveAction:
-         connect(btn, SIGNAL(clicked()), this, SLOT(haveSaveAction()));
+         connect(btn, SIGNAL(clicked()), this, SLOT(haveSaveAction()), Qt::UniqueConnection);
          buttons[act] = btn;
          break;
       
       case Qcj::SearchAction:
-         connect(btn, SIGNAL(clicked()), this, SLOT(haveSearchAction()));
+         connect(btn, SIGNAL(clicked()), this, SLOT(haveSearchAction()), Qt::UniqueConnection);
          buttons[act] = btn;
          break;
 
       case Qcj::UpAction:
-         connect(btn, SIGNAL(clicked()), this, SLOT(haveUpAction()));
+         connect(btn, SIGNAL(clicked()), this, SLOT(haveUpAction()), Qt::UniqueConnection);
          buttons[act] = btn;
          break;
       

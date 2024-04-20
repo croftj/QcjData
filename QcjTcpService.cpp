@@ -106,8 +106,8 @@ void QcjTcpServer::incomingConnection(qintptr sock)
           control it.
    */ 
    QcjHttpService *p = m_factory->newInstance(sock, m_maxRequests, m_extraMethods, m_ttl);
-   connect(p, SIGNAL(send(QTcpSocket*, QByteArray)), this, SLOT(sendData(QTcpSocket*, QByteArray)));
-   connect(p, SIGNAL(closeSocket(QTcpSocket*)), this, SLOT(haveCloseSocket(QTcpSocket*)));
+   connect(p, SIGNAL(send(QTcpSocket*, QByteArray)), this, SLOT(sendData(QTcpSocket*, QByteArray)), Qt::UniqueConnection);
+   connect(p, SIGNAL(closeSocket(QTcpSocket*)), this, SLOT(haveCloseSocket(QTcpSocket*)), Qt::UniqueConnection);
 
    /*
           Start the thread to handle the requests.

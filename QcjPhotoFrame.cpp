@@ -183,8 +183,8 @@ void QcjPhotoFrame::refresh()
    }
 
    currentScene = new QcjPhotoScene(this);
-   connect(currentScene, SIGNAL(clicked(QGraphicsItem*)), this, SLOT(itemClicked(QGraphicsItem*)));
-   connect(currentScene, SIGNAL(doubleClicked(QGraphicsItem*)), this, SLOT(itemDoubleClicked(QGraphicsItem*)));
+   connect(currentScene, SIGNAL(clicked(QGraphicsItem*)), this, SLOT(itemClicked(QGraphicsItem*)), Qt::UniqueConnection);
+   connect(currentScene, SIGNAL(doubleClicked(QGraphicsItem*)), this, SLOT(itemDoubleClicked(QGraphicsItem*)), Qt::UniqueConnection);
 
    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
    /***********************************************/

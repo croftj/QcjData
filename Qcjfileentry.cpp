@@ -29,7 +29,7 @@ QcjFileEntry::QcjFileEntry(QWidget *p) : QWidget(p)
    printf("QcjFileEntry::QcjFileEntry(): Enter\n");
    type = "file";
    ui.setupUi(this);
-   connect(ui.browseBtn, SIGNAL(clicked()), this, SLOT(browseFiles()));
+   connect(ui.browseBtn, SIGNAL(clicked()), this, SLOT(browseFiles()), Qt::UniqueConnection);
    printf("QcjFileEntry::QcjFileEntry(): Exit\n");
 }
 

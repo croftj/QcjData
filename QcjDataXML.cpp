@@ -146,6 +146,7 @@ QcjDataFieldDef QcjDataXML::getFieldDef(QString xml_def, QString field_name) con
             qDebug() <<  "searching for field labeled: " << e1.attribute("label");
             if ( !e1.isNull() && e1.tagName() == "field" && e1.attribute("label") == field_name)
             {
+               field_def.visible = true;
                field_def.focusWidget = false;
                field_def.valueName = valueField;
                field_def.dataName = keyField;
@@ -188,6 +189,12 @@ QcjDataFieldDef QcjDataXML::getFieldDef(QString xml_def, QString field_name) con
 
                qDebug() << "attribute read_only = " << e1.attribute("read_only");
                field_def.ro = e1.attribute("read_only").toInt();
+
+               if ( e1.attribute("visible") != QString() ) 
+               {
+                  qDebug() << "attribute visible = " << e1.attribute("visible");
+                  field_def.ro = e1.attribute("visible").toInt() != 0;
+               }
 
                qDebug() << "attribute options = " << e1.attribute("options");
                field_def.options = e1.attribute("options");
@@ -276,12 +283,13 @@ std::vector<struct QcjDataFields> QcjDataXML::getFields(QString name, QWidget *p
 //               printf("QcjDataXML::getFields():Found form definition e1 |%s|!\n", qPrintable(e1.tagName()));
                printf("QcjDataXML::getFields():Creating QcjDataField for |%s|!\n", qPrintable(e1.attribute("dataName")));
                p = new QcjDataFieldDef;
+               p->visible = true;
                p->focusWidget = false;
                p->valueName = valueField;
                p->dataName = keyField;
                p->validator = NULL;
                p->ro = false;
-               if ( e1.attribute("dataName") != QString() ) 
+               if ( e1.hasAttribute("dataName") ) 
                {
                   qDebug() << "attribute dataName = " << e1.attribute("dataName");
                   p->dataName = e1.attribute("dataName");
@@ -290,7 +298,7 @@ std::vector<struct QcjDataFields> QcjDataXML::getFields(QString name, QWidget *p
                   else
                      p->focusWidget = false;
                }
-               if ( e1.attribute("key") != QString() ) 
+               if ( e1.hasAttribute("key") ) 
                {
 //                  printf("QcjDataXML::getFields():Attribute dataName = |%s|\n", qPrintable(e1.attribute("dataName")));
                   fflush(stdout);
@@ -300,97 +308,102 @@ std::vector<struct QcjDataFields> QcjDataXML::getFields(QString name, QWidget *p
                   else
                      p->focusWidget = false;
                }
-               if ( e1.attribute("label") != QString() ) 
+               if ( e1.hasAttribute("label") ) 
                {
                   qDebug() << "attribute label = " << e1.attribute("label");
                   p->label = e1.attribute("label");
                }
-               if ( e1.attribute("row") != QString() ) 
+               if ( e1.hasAttribute("row") ) 
                {
                   qDebug() << "attribute row = " << e1.attribute("row");
                   p->row = e1.attribute("row").toInt();
                }
-               if ( e1.attribute("col") != QString() ) 
+               if ( e1.hasAttribute("col") ) 
                {
                   qDebug() << "attribute col = " << e1.attribute("col");
                   p->col = e1.attribute("col").toInt();
                }
-               if ( e1.attribute("rowspan") != QString() ) 
+               if ( e1.hasAttribute("rowspan") ) 
                {
                   qDebug() << "attribute rowspan = " << e1.attribute("rowspan");
                   p->rowSpan = e1.attribute("rowspan").toInt();
                }
-               if ( e1.attribute("colspan") != QString() ) 
+               if ( e1.hasAttribute("colspan") ) 
                {
                   qDebug() << "attribute colspan = " << e1.attribute("colspan");
                   p->colSpan = e1.attribute("colspan").toInt();
                }
-               if ( e1.attribute("min_width") != QString() ) 
+               if ( e1.hasAttribute("min_width") ) 
                {
                   qDebug() << "attribute min_width = " << e1.attribute("min_width");
                   p->minWidth = e1.attribute("min_width").toInt();
                }
-               if ( e1.attribute("max_width") != QString() ) 
+               if ( e1.hasAttribute("max_width") ) 
                {
                   qDebug() << "attribute max_width = " << e1.attribute("max_width");
                   p->maxWidth = e1.attribute("max_width").toInt();
                }
-               if ( e1.attribute("read_only") != QString() ) 
+               if ( e1.hasAttribute("read_only") ) 
                {
                   qDebug() << "attribute read_only = " << e1.attribute("read_only");
                   p->ro = e1.attribute("read_only").toInt();
                }
-               if ( e1.attribute("options") != QString() ) 
+               if ( e1.hasAttribute("visible") ) 
+               {
+                  p->visible = e1.attribute("visible").toInt() != 0;
+                  qDebug() << "attribute visible = " << p->ro;
+               }
+               if ( e1.hasAttribute("options") ) 
                {
                   qDebug() << "attribute options = " << e1.attribute("options");
                   p->options = e1.attribute("options");
                }
-               if ( e1.attribute("format") != QString() ) 
+               if ( e1.hasAttribute("format") ) 
                {
                   qDebug() << "attribute format = " << e1.attribute("format");
                   p->format = e1.attribute("format");
                }
-               if ( e1.attribute("align") != QString() ) 
+               if ( e1.hasAttribute("align") ) 
                {
                   qDebug() << "attribute align = " << e1.attribute("align");
                   p->align = e1.attribute("align");
                }
-               if ( e1.attribute("color") != QString() ) 
+               if ( e1.hasAttribute("color") ) 
                {
                   qDebug() << "attribute color = " << e1.attribute("color");
                   p->color = e1.attribute("color");
                }
-               if ( e1.attribute("bgcolor") != QString() ) 
+               if ( e1.hasAttribute("bgcolor") ) 
                {
                   qDebug() << "attribute bgcolor = " << e1.attribute("bgcolor");
                   p->bgcolor = e1.attribute("bgcolor");
                }
-               if ( e1.attribute("width") != QString() ) 
+               if ( e1.hasAttribute("width") ) 
                {
                   qDebug() << "attribute width = " << e1.attribute("width");
                   p->width = e1.attribute("width");
                }
-               if ( e1.attribute("height") != QString() ) 
+               if ( e1.hasAttribute("height") ) 
                {
                   qDebug() << "attribute height = " << e1.attribute("height");
                   p->height = e1.attribute("height");
                }
-               if ( e1.attribute("default") != QString() ) 
+               if ( e1.hasAttribute("default") ) 
                {
                   qDebug() << "attribute default = " << e1.attribute("default");
                   p->defvalue = e1.attribute("default");
                }
-               if ( e1.attribute("init") != QString() ) 
+               if ( e1.hasAttribute("init") ) 
                {
                   qDebug() << "attribute init = " << e1.attribute("init");
                   p->init = e1.attribute("init");
                }
-               if ( e1.attribute("search") != QString() ) 
+               if ( e1.hasAttribute("search") ) 
                {
                   qDebug() << "attribute search = " << e1.attribute("search");
                   p->search = e1.attribute("search");
                }
-               if ( e1.attribute("type") != QString() ) 
+               if ( e1.hasAttribute("type") ) 
                {
                   qDebug() << "attribute type = " << e1.attribute("type");
                   p->fieldType = e1.attribute("type");
@@ -651,6 +664,7 @@ std::vector<struct QcjDataFields> QcjDataXML::getFields(QString name, QWidget *p
                printf("QcjDataXML::getFields():Assigning datafield to vector pos %d\n", idx);
                fflush(stdout);
                rv.push_back(*p);
+               WidgetUtils::fieldDefToString(rv.back());
                printf("QcjDataXML::getFields():Deleting datafield\n");
                fflush(stdout);
                delete p;
@@ -2553,14 +2567,13 @@ QcjLib::VariantHash QcjDataXML::xlateRecordToForm(const QString &config, const Q
          QVariant value = rec.value(field_def.dataName);
          if (labels)
          {
-            qDebug() << "Adding value: " << value << " for " << field_def.dataName
+            qDebug() << "Adding field value to form element: " << field_def.dataName
                      << " to form element (label): " << field_def.label;
             rv.insert(field_def.label, value);
          }
          else
          {
-            qDebug() << "Adding value: " << value << " for " << field_def.dataName
-                     << " to form element (field): " << field_def.dataName;
+            qDebug() << "Adding field value to form element: " << field_def.dataName;
             rv.insert(field_def.dataName, value);
          }
       }

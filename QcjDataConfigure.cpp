@@ -65,9 +65,9 @@ void QcjDataConfigure::initialize( QString config )
  
 #ifndef QT4_DESIGNER_PLUGIN
    connect(ui.saveBtn, SIGNAL(clicked()),
-           this, SLOT(save()));
+           this, SLOT(save()), Qt::UniqueConnection);
    connect(ui.cancelBtn, SIGNAL(clicked()),
-           this, SLOT(reject()));
+           this, SLOT(reject()), Qt::UniqueConnection);
 
    QString help = pFormDef->getConfigurationHelp(config);
    if ( help.size() == 0 ) 

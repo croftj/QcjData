@@ -56,7 +56,7 @@ class QcjPhotoScene : public QGraphicsScene
 public:
    QcjPhotoScene(QObject *parent = 0) : QGraphicsScene(parent)
    {
-      connect(&pressedTimer, SIGNAL(timeout()), this, SLOT(clearPressed()));
+      connect(&pressedTimer, SIGNAL(timeout()), this, SLOT(clearPressed()), Qt::UniqueConnection);
    };
 
 protected:

@@ -40,6 +40,7 @@ public:
    QcjDataReportDocument(QObject *pParent, QString report_fn);
 
    QStringList                getArgumentDetails(QString name);
+   QFont                      getFontDefinition();
    QVector<QString>           getRequiredArguments();
    QString                    generateReport(QMap<QString, QString> args, bool *error_occured = NULL);
    

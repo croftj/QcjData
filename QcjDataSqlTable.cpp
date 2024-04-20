@@ -60,7 +60,7 @@ QcjDataSqlTable::QcjDataSqlTable(QWidget *parent) : QTableView(parent)
 //   setSelectionMode(QAbstractItemView::NoSelection);
 
    connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
-           this, SLOT(recordActivated(const QModelIndex &)));
+           this, SLOT(recordActivated(const QModelIndex &)), Qt::UniqueConnection);
 
 /*
    connect(this, SIGNAL(activated(const QModelIndex &)),
@@ -352,7 +352,7 @@ void QcjDataSqlTable::clearSelection()
        
        \sa setFilter() \sa setSort()
 */ 
-bool QcjDataSqlTable::refresh(bool quiet, long limit)
+bool QcjDataSqlTable::refresh(bool no_select_row, bool quiet, long limit)
 {
    QStringList::iterator it;
    QString field_str = QString::null;
@@ -429,7 +429,7 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
          printf("QcjDataSqlTable::refresh(): Have %d rows\n", rows);
          qDebug().nospace().noquote() << "(" << m_xmldef << ")" << " Connecting recordSelected slot";
          connect(this->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
-                 this, SLOT(recordSelected(const QModelIndex &, const QModelIndex &)));
+                 this, SLOT(recordSelected(const QModelIndex &, const QModelIndex &)), Qt::UniqueConnection);
          haveCurrentChangedConnection = true;
       }
       else
@@ -439,7 +439,7 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
    {
       qDebug().nospace().noquote() << "(" << m_xmldef << ")" << " Connecting recordSelected slot";
       connect(this->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
-               this, SLOT(recordSelected(const QModelIndex &, const QModelIndex &)));
+               this, SLOT(recordSelected(const QModelIndex &, const QModelIndex &)), Qt::UniqueConnection);
       haveCurrentChangedConnection = true;
    }
 
@@ -501,12 +501,17 @@ bool QcjDataSqlTable::refresh(bool quiet, long limit)
          pModel->setHeaderData(col, Qt::Horizontal, QVariant((*it)));
       }
 
-      printf("QcjDataSqlTable::refresh(): select the first row, current_row = %d\n", current_row);
-      fflush(stdout);
-      QTableView::selectRow(current_row);
+      if (! no_select_row)
+      {
+         printf("QcjDataSqlTable::refresh(): select the first row, current_row = %d\n", current_row);
+         fflush(stdout);
+         QTableView::selectRow(current_row);
+      }
    }
-   else
+   else if (! no_select_row)
+   {
       QTableView::selectRow(0);
+   }
 
    printf("QcjDataSqlTable::refresh(): testing for errors\n");
    fflush(stdout);
@@ -644,6 +649,7 @@ void QcjDataSqlTable::recordSelected(int row)
    qDebug() << "(" << m_xmldef << ")" << "Enter, row = index.row = " << row;
 //   setItemSelected(pNew, false);
    selectRow(row);
+   qDebug() << "Emitting rowSelected";
    emit rowSelected(&rec);
    qDebug() << "(" << m_xmldef << ")" << "Exit";
 }
@@ -658,6 +664,7 @@ void QcjDataSqlTable::recordSelected(const QModelIndex &index)
    qDebug() << "(" << m_xmldef << ")" << "Enter, row = index.row = " << index.row();
 //   setItemSelected(pNew, false);
    selectRow(index.row());
+   qDebug() << "Emitting rowSelected";
    emit rowSelected(&rec);
    qDebug() << "(" << m_xmldef << ")" << "Exit";
 }
@@ -672,6 +679,7 @@ void QcjDataSqlTable::recordActivated(const QModelIndex &index)
    qDebug() << "model count = " << model()->rowCount();
 //   setItemSelected(pNew, false);
    seekRow(index.row());
+   qDebug() << "Emitting rowActivated";
    emit rowActivated(&rec);
    qDebug() << "(" << m_xmldef << ")" << "Exit";
 }
@@ -688,7 +696,7 @@ void QcjDataSqlTable::recordSelected(const QModelIndex &current, const QModelInd
    qDebug() << "model count = " << model()->rowCount();
 //   setItemSelected(pNew, false);
    seekRow(current.row());
-   qDebug() << "Emitting signal for rec: " << rec;
+   qDebug() << "Emitting rowSelected";
    emit rowSelected(&rec);
    qDebug() << "(" << m_xmldef << ")" << "Exit";
    qDebug() << "Exit";

@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>QcjDataReport</class>
- <widget class="QDialog" name="QcjDataReport" >
-  <property name="geometry" >
+ <widget class="QDialog" name="QcjDataReport">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,51 +10,67 @@
     <height>715</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Reports</string>
   </property>
-  <layout class="QVBoxLayout" >
-   <property name="margin" >
-    <number>9</number>
-   </property>
-   <property name="spacing" >
+  <layout class="QVBoxLayout">
+   <property name="spacing">
     <number>6</number>
    </property>
+   <property name="leftMargin">
+    <number>9</number>
+   </property>
+   <property name="topMargin">
+    <number>9</number>
+   </property>
+   <property name="rightMargin">
+    <number>9</number>
+   </property>
+   <property name="bottomMargin">
+    <number>9</number>
+   </property>
    <item>
-    <widget class="QFrame" name="inputFrame" >
-     <property name="sizePolicy" >
-      <sizepolicy>
-       <hsizetype>5</hsizetype>
-       <vsizetype>4</vsizetype>
+    <widget class="QFrame" name="inputFrame">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="frameShape" >
+     <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
-     <property name="frameShadow" >
+     <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QTextBrowser" name="textBrowser" />
+    <widget class="QTextBrowser" name="textBrowser"/>
    </item>
    <item>
-    <layout class="QHBoxLayout" >
-     <property name="margin" >
+    <layout class="QHBoxLayout">
+     <property name="spacing">
+      <number>6</number>
+     </property>
+     <property name="leftMargin">
       <number>0</number>
      </property>
-     <property name="spacing" >
-      <number>6</number>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
      </property>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>40</width>
          <height>20</height>
@@ -62,29 +79,36 @@
       </spacer>
      </item>
      <item>
-      <widget class="QCheckBox" name="plainTextCheckbox" >
-       <property name="text" >
+      <widget class="QCheckBox" name="plainTextCheckbox">
+       <property name="text">
         <string>Show Source</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="printBtn" >
-       <property name="text" >
+      <widget class="QPushButton" name="printBtn">
+       <property name="text">
         <string>Print</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="previewBtn" >
-       <property name="text" >
+      <widget class="QPushButton" name="previewBtn">
+       <property name="text">
         <string>Preview</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="closeBtn" >
-       <property name="text" >
+      <widget class="QPushButton" name="cancelBtn">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="closeBtn">
+       <property name="text">
         <string>Close</string>
        </property>
       </widget>
@@ -101,11 +125,11 @@
    <receiver>QcjDataReport</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>825</x>
      <y>701</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>585</x>
      <y>714</y>
     </hint>

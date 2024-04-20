@@ -74,8 +74,8 @@ QcjDataTable::QcjDataTable(QWidget *pParent) :
 //   sqlCursor = NULL;
    m_insertMode  = false;
    m_delegates = false;
-//   connect(this, SIGNAL(beforeInsert(QSqlRecord *)), this, SLOT(nextIdent(QSqlRecord *)));
-   connect((const QObject*)(horizontalHeader()), SIGNAL(sectionClicked(int)), this, SLOT(sortBy(int)));
+//   connect(this, SIGNAL(beforeInsert(QSqlRecord *)), this, SLOT(nextIdent(QSqlRecord *)), Qt::UniqueConnection);
+   connect((const QObject*)(horizontalHeader()), SIGNAL(sectionClicked(int)), this, SLOT(sortBy(int)), Qt::UniqueConnection);
    printf("QcjDataTable::QcjDataTable(): Exit\n");
    fflush(stdout);
 #else
@@ -164,7 +164,7 @@ void QcjDataTable::setDatabase(bool autoRefresh)
    will skipped. Each search term will be surounded with '%' chars
    to allow searched on partial strings.
 */
-void QcjDataTable::setFilter(QList<QLineEdit*> fields)
+void QcjDataTable::setFilter(QList<QLineEdit*> fields, const QString &filter)
 {
    QString where;
    QString wdt_text;
@@ -218,6 +218,10 @@ void QcjDataTable::setFilter(QList<QLineEdit*> fields)
                where += fn + " = regexp_replace('" + wdt_text + "', " + xlate + ") or ";
             }
             where += QString("cast(%1 as text) like '%%2%'").arg(fn).arg(wdt_text);
+         }
+         if ( ! filter.isEmpty())
+         {
+            where = "(" + where + ") and (" + filter + ")";
          }
       }
    }

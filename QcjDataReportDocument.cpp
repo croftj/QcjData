@@ -56,7 +56,8 @@
        length  string  returned  by  the function errorSrting() is the
        only indication of an error that will be made.
 */ 
-QcjDataReportDocument::QcjDataReportDocument(QObject *parent, QString report_fn) : QTextDocument(parent)
+QcjDataReportDocument::QcjDataReportDocument(QObject *parent, QString report_fn) : QTextDocument(parent),
+                                                                                   defaultDataSource(nullptr) 
 {
    int line, col;
    QString err;
@@ -180,6 +181,12 @@ QVector<QString> QcjDataReportDocument::getRequiredArguments()
    return(rv);
 }
 
+QFont QcjDataReportDocument::getFontDefinition()
+{
+   QDomElement docElem = def.documentElement();
+   return(getFontDefinition(docElem, QFont()));
+}
+
 /*!
        \fn QFont QcjDataReportDocument::getFontDefinition(QDocElement docElem, QFont font)
        
@@ -196,15 +203,19 @@ QFont QcjDataReportDocument::getFontDefinition(QDomElement docElem, QFont font)
       QDomElement e = n.toElement(); // try to convert the node to an element.
       if ( !e.isNull() && e.tagName() == "font" )
       {
-         if ( e.hasAttribute("family") )
+         if ( e.hasAttribute("family") && e.attribute("family").length() > 0 )
          {
             rv.setFamily(e.attribute("family"));
          }
-         if ( e.hasAttribute("point_size") )
+         if ( e.hasAttribute("point_size") && e.attribute("point_size").length() > 0)
          {
             rv.setPointSize(e.attribute("point_size").toInt());
          }
-         if ( e.hasAttribute("italic") )
+         if ( e.hasAttribute("weight") && e.attribute("weight").length() > 0)
+         {
+            rv.setWeight(e.attribute("weight").toInt());
+         }
+         if ( e.hasAttribute("italic") && e.attribute("italic").length() > 0)
          {
             if (e.attribute("italic") == "Y")
             {
@@ -331,7 +342,7 @@ QSqlQuery *QcjDataReportDocument::execDataSource(QString name)
             {
                printf("QcjDataReportDocument::execDataSource(): removing data source as default\n");
                fflush(stdout);
-               defaultDataSource = NULL;
+               defaultDataSource = nullptr;
             }
             delete q;
          }
@@ -374,8 +385,8 @@ QSqlQuery *QcjDataReportDocument::execDataSource(QString name)
 */
             if ( ! q->exec() )
             {
-               printf("QcjDataReportDocument::execDataSource(): Error occured |%s|, |%s|\n", qPrintable(q->lastError().driverText()), qPrintable(q->lastError().databaseText()));
-               fflush(stdout);
+               qDebug() << "sql error" << q->lastError().text();
+               qDebug() << "executed query: " << q->executedQuery();
                errorStr = "QcjDatabase Error: " + q->lastError().driverText() + " - " + q->lastError().databaseText();
                haveError = true;
                return(NULL);
@@ -394,7 +405,7 @@ QSqlQuery *QcjDataReportDocument::execDataSource(QString name)
       }
       n = n.nextSibling();
    }
-   printf("QcjDataReportDocument::execDataSource(): Enter\n");
+   printf("QcjDataReportDocument::execDataSource(): Exit\n");
    fflush(stdout);
    return(NULL);
 }
@@ -1070,15 +1081,15 @@ QString QcjDataReportDocument::processBody(QDomElement elem)
 
    body += "</tr>\n";
 
-   printf("QcjDataReportDocument::processBody(): moving to first row if not there defaultDataSource = |%ld|\n", (long)defaultDataSource);
+   printf("QcjDataReportDocument::processBody(): moving to first row if not there, defaultDataSource = |%ld|\n", (long)defaultDataSource);
    fflush(stdout);
-   if ( defaultDataSource->at() == QSql::BeforeFirstRow )
+   if ( defaultDataSource != nullptr && defaultDataSource->at() == QSql::BeforeFirstRow )
    {
       printf("QcjDataReportDocument::processBody(): Moving to first row of data\n");
       fflush(stdout);
       defaultDataSource->next();
    }
-   while ( defaultDataSource->at() != QSql::AfterLastRow ) 
+   while ( defaultDataSource != nullptr && defaultDataSource->at() != QSql::AfterLastRow ) 
    {
       printf("QcjDataReportDocument::processBody(): Processing row of data, mode = |%s|\n", qPrintable(attribMap["mode"]));
       fflush(stdout);

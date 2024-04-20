@@ -67,6 +67,7 @@ typedef struct QcjDataFields
    int         minWidth;
    int         maxWidth;
    bool        ro;
+   bool        visible;
    QString     init;
    QString     defvalue;
    QString     fieldType;

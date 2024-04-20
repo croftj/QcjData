@@ -40,8 +40,8 @@ extern QSettings *pConfig;
 QcjDataLogin::QcjDataLogin(QWidget *p) : QDialog(p)
 {
     ui.setupUi(this);
-    connect(ui.ConnectBtn, SIGNAL(clicked()), this, SLOT(Login()));
-    connect(ui.ExitBtn, SIGNAL(clicked()), this, SLOT(quitApp()));
+    connect(ui.ConnectBtn, SIGNAL(clicked()), this, SLOT(Login()), Qt::UniqueConnection);
+    connect(ui.ExitBtn, SIGNAL(clicked()), this, SLOT(quitApp()), Qt::UniqueConnection);
     setModal(true);
 }
 

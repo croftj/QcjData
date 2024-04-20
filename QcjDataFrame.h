@@ -45,7 +45,7 @@ public:
       pForm = pF;
       if ( pForm != 0 ) 
       {
-         connect(pForm, SIGNAL(updated()), this, SLOT(haveUpdated()));
+         connect(pForm, SIGNAL(updated()), this, SLOT(haveUpdated()), Qt::UniqueConnection);
       }
       printf("QcjDataFrame::setDataForm(): Exit\n");
    };
@@ -57,10 +57,10 @@ public:
       if ( pTable != 0 ) 
       {
          pTable->setFocusPolicy(Qt::NoFocus);
-         connect(pTable, SIGNAL(rowSelected(QSqlRecord*)), this, SLOT(haveRowSelected(QSqlRecord*)));
-         connect(pTable, SIGNAL(rowActivated(QSqlRecord*)), this, SLOT(haveRowActivated(QSqlRecord*)));
+         connect(pTable, SIGNAL(rowSelected(QSqlRecord*)), this, SLOT(haveRowSelected(QSqlRecord*)), Qt::UniqueConnection);
+         connect(pTable, SIGNAL(rowActivated(QSqlRecord*)), this, SLOT(haveRowActivated(QSqlRecord*)), Qt::UniqueConnection);
          if ( pForm != 0 ) 
-            connect(pTable, SIGNAL(emptyTable()), pForm, SLOT(clearForm()));
+            connect(pTable, SIGNAL(emptyTable()), pForm, SLOT(clearForm()), Qt::UniqueConnection);
       }
       printf("QcjDataFrame::setDataTable(): Exit\n");
    };

@@ -102,10 +102,10 @@ namespace QcjDataQuery
             }
          }
       }
-      qDebug().noquote() << "sql = " << pDb->driver()->sqlStatement(QSqlDriver::UpdateStatement,
-                                                          model.tableName(),
-                                                          rec,
-                                                          false);
+//      qDebug().noquote() << "sql = " << pDb->driver()->sqlStatement(QSqlDriver::UpdateStatement,
+//                                                          model.tableName(),
+//                                                          rec,
+//                                                          false);
       if ( ! model.setRecord(row, rec))
       {
          QString msg = model.database().lastError().text();
@@ -171,10 +171,10 @@ namespace QcjDataQuery
             idx--;
          }
       }
-      qDebug().noquote() << "sql = " << pDb->driver()->sqlStatement(QSqlDriver::InsertStatement,
-                                                          model.tableName(),
-                                                          rec,
-                                                          false);
+//      qDebug().noquote() << "sql = " << pDb->driver()->sqlStatement(QSqlDriver::InsertStatement,
+//                                                          model.tableName(),
+//                                                          rec,
+//                                                          false);
       if ( ! model.insertRecord(-1, rec))
       {
          QString msg = model.database().lastError().text();

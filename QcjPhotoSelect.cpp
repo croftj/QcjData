@@ -55,11 +55,11 @@ QcjPhotoSelect::QcjPhotoSelect(QString defPath, QWidget *parent, Qt::WindowFlags
    ui.treeView->resizeColumnToContents(0);
 
    connect(ui.treeView, SIGNAL(activated(const QModelIndex &)), 
-            this, SLOT(haveActivated(const QModelIndex &)));
+            this, SLOT(haveActivated(const QModelIndex &)), Qt::UniqueConnection);
    connect(ui.treeView, SIGNAL(clicked(const QModelIndex &)), 
-            this, SLOT(haveActivated(const QModelIndex &)));
+            this, SLOT(haveActivated(const QModelIndex &)), Qt::UniqueConnection);
    connect(ui.adjustBtn, SIGNAL(clicked()), 
-            this, SLOT(haveAdjust()));
+            this, SLOT(haveAdjust()), Qt::UniqueConnection);
    ui.graphicsView->setScene(&scene);
    ui.graphicsView->show();
    ui.okBtn->setEnabled(false);

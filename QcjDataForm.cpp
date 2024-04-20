@@ -489,7 +489,7 @@ void QcjDataForm::_setFields(QcjDataFields *fields, QSettings *pCfg, QcjDataXML 
       {
          printf("QcjDataForm::_setFields():have photo entry field, connecting filename\n");
          fflush(stdout);
-         connect((QcjPhotoEntry*)wdt, SIGNAL(filename(QString)), this, SLOT(haveFileName(QString)));
+         connect((QcjPhotoEntry*)wdt, SIGNAL(filename(QString)), this, SLOT(haveFileName(QString)), Qt::UniqueConnection);
       }
 #endif
       else if (QString(wdt->metaObject()->className()) == QString("QcjYesNoSelect")) 
