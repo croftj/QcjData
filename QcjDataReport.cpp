@@ -1,7 +1,7 @@
 /*********************************************************************************
 **
 **   $Id$
-**   Copyright (c) 2005 Joe Croft <joe@croftj.net>
+**   Copyright (c) 2005-2024 Joe Croft <joe@croftj.net>
 **   
 o**   This file is part of QcjData Class Libraries.
 **
