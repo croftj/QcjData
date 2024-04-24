@@ -66,6 +66,7 @@ QcjDataReport::QcjDataReport(QWidget *parent) : QDialog(parent)
     ui.setupUi(this);
     report = NULL;
     ui.printBtn->setEnabled(false);
+    connect(ui.closeBtn, SIGNAL(clicked()), this, SLOT(accept()), Qt::UniqueConnection);
     connect(ui.cancelBtn, SIGNAL(clicked()), this, SLOT(reject()), Qt::UniqueConnection);
     connect(ui.printBtn, SIGNAL(clicked()), this, SLOT(printReport()), Qt::UniqueConnection);
     connect(ui.previewBtn, SIGNAL(clicked()), this, SLOT(previewReport()), Qt::UniqueConnection);
